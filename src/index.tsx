@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Engine from './engine/Engine';
+
+export const gEngine = new Engine();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App engine={gEngine} />
   </React.StrictMode>,
   document.getElementById('root')
 );
