@@ -6,12 +6,13 @@ import { gEngine } from '..';
 import { Datamap } from '../engine/Datamap';
 import Engine from '../engine/Engine';
 import { SingleBuilding } from '../engine/externalfns/decimalInterfaces/SingleBuilding';
-import { canCheat, HOUR_MS, MINUTE_MS } from '../engine/externalfns/util';
+import { canCheat, HOUR_MS, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
 import DisplayDecimal from './DisplayDecimal';
 import DisplayNumber from './DisplayNumber';
 import ListedResourceClass from './ListedResourceClass';
+import ResearchUI from './ResearchUI';
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
 
@@ -64,23 +65,34 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const reached = gEngine.energy.canGiveUp();
   const clickGain = gEngine.energyModule.energyPerClick();
   const activityGain = gEngine.energyModule.energyGainFromActivity();  
+  const prize = gEngine.doomGain();
+  const prizeOK = prize.greaterThan(0)
 
 
   return (
     <div style={{position:'relative'}}>
       <ListedResourceClass resource={gEngine.energyResource} />
+      {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       <ListedResourceClass resource={gEngine.doom} />
+      Click Energy Gain: <DisplayDecimal decimal={clickGain}/> | Activity Energy Gain: <DisplayDecimal decimal={activityGain}/>
+      <br/>
       <button onClick={gEngine.energy.gatherEnergy} onSubmit={(ev)=>{ev.preventDefault()}}>
-        Gather (<DisplayDecimal decimal={clickGain}/>) Energy
+        Gather Energy
       </button>
       <button onMouseEnter={()=>gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity}>
-        Gather (<DisplayDecimal decimal={activityGain}/>) Energy /s
+        Gather Energy /s
       </button>
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />
       <br/>
-      Goal: <DisplayNumber  num={goal}/>
-      <button hidden={!reached} onClick={gEngine.energy.giveUp}>
+      <span>
+      Goal: <DisplayNumber  num={goal}/> Energy  </span>
+  <span>Progress: {percentOf(data.cell.a.toNumber(),goal)} </span>
+      {prizeOK && <span>
+        Consolation Prize: <DisplayDecimal decimal={prize} />
+      </span>}
+      <br/>
+      <button disabled={!reached} onClick={gEngine.energy.giveUp}>
         Give Up
       </button>
       <BasicCommandButton cmd={gEngine.gUL2}/>
@@ -98,6 +110,8 @@ const DoomRow = (props: { data: Datamap }) => {
       Doom Stuff<br/>
       <ListedResourceClass resource={engine.doom}/>
       <SingleBuildingUI building={engine.doomUpgrade1}/>
+      <SingleBuildingUI building={engine.doomUpgrade2}/>
+      <ResearchUI research={engine.research} />
     </div>
   )
 }

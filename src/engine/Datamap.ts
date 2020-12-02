@@ -28,6 +28,7 @@ export function newDefaultMap () {
         nav: 0,
         cell: {
             a: ZERO,
+            aa: ZERO,
             b: ZERO,
             c: ZERO,
             d1: ZERO,
@@ -54,6 +55,7 @@ export function newDefaultMap () {
 
 interface I_HoldDecimals {
         a: Decimal,
+        aa: Decimal,
         b: Decimal, 
         c: Decimal,
     doom: Decimal,

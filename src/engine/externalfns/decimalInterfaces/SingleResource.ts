@@ -8,6 +8,9 @@ export class SingleResource {
         //this.calculate();
         //this.gainPS = info.calculateGain?info.calculateGain():new Decimal(0);
         this.cap = info.calculateCap?info.calculateCap():new Decimal(Infinity);
+        if (this.count.greaterThan(this.cap)) {
+            this.info.setDecimal(this.cap)
+        }
     }
 
     get count () {
@@ -29,6 +32,14 @@ export class SingleResource {
     calculate = () => {
         if (this.info.calculateCap) this.cap = this.info.calculateCap();
         if (this.info.calculateGain) this.gainPS = this.info.calculateGain();
+        if (this.count.greaterThan(this.cap)) {
+            console.log('count over cap');
+            
+            this.info.setDecimal(this.cap)
+        } else {
+            console.log('calced not over cap');
+            
+        }
     };
 
 }
