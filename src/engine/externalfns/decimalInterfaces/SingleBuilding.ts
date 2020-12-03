@@ -94,7 +94,7 @@ export class SingleBuilding {
 
         this.info.costs.forEach((cost, index) => {
             let resource_cost = this.getCost(index);
-            console.log(cost.expo, this.count.toNumber(), resource_cost.toNumber());
+            //console.log(cost.expo, this.count.toNumber(), resource_cost.toNumber());
 
             cost.resource.loseResource(resource_cost)
         });

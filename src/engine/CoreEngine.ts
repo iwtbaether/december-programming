@@ -13,7 +13,7 @@ export default abstract class CoreEngine {
 
     notify: VoidFunction = ()=>{};
     constructor(){
-        console.log('MADE ME');
+        //console.log('MADE ME');
         
         this.datamap.last = Date.now();
         //this.start();
@@ -27,7 +27,9 @@ export default abstract class CoreEngine {
     start = () => {
         if (!this.loop) {
             this.loop = setInterval(this.tick, 200);
+            
         }
+        this.extraLoad();
     }
 
     stop = () => {
@@ -77,7 +79,7 @@ export default abstract class CoreEngine {
         this.checkSet();
         if (this.extraLoad) {
             this.extraLoad(); //doesn;t work when internally called
-        } else console.log('no extra load');
+        } //else console.log('no extra load');
         
     }
     

@@ -120,7 +120,7 @@ const BTStyle: React.CSSProperties = {
     backgroundColor: "white",
     textAlign: 'center',
     position: 'absolute',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'pre',
     margin: '5px',
     top: '10px',
     padding: '5px',

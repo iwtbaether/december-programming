@@ -53,7 +53,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
           <button onClick={gEngine.reset}>
             Reset
           </button>
-          {canCheat && <button onClick={()=>gEngine.processDelta(MINUTE_MS)}>
+          {canCheat && <button onClick={()=>gEngine.processDelta(MINUTE_MS*10)}>
             cheat</button>}
     </div>
   )
@@ -74,7 +74,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <ListedResourceClass resource={gEngine.energyResource} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       <ListedResourceClass resource={gEngine.doom} />
-      Click Energy Gain: <DisplayDecimal decimal={clickGain}/> | Activity Energy Gain: <DisplayDecimal decimal={activityGain}/>
+      Click Energy Gain: <DisplayDecimal decimal={clickGain}/>, Hover Energy Gain: <DisplayDecimal decimal={activityGain}/>
       <br/>
       <button onClick={gEngine.energy.gatherEnergy} onSubmit={(ev)=>{ev.preventDefault()}}>
         Gather Energy
@@ -84,11 +84,12 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       </button>
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />
+      <SingleBuildingUI building={gEngine.antiDrive} />
       <br/>
       <span>
-      Goal: <DisplayNumber  num={goal}/> Energy  </span>
-  <span>Progress: {percentOf(data.cell.a.toNumber(),goal)} </span>
-      {prizeOK && <span>
+      Goal: <DisplayNumber  num={goal}/> Energy,  </span>
+  <span>Progress: {percentOf(data.cell.a.toNumber(),goal)}, </span>
+      {data.unlocksStates.one >= 3 && <span>
         Consolation Prize: <DisplayDecimal decimal={prize} />
       </span>}
       <br/>
@@ -111,6 +112,7 @@ const DoomRow = (props: { data: Datamap }) => {
       <ListedResourceClass resource={engine.doom}/>
       <SingleBuildingUI building={engine.doomUpgrade1}/>
       <SingleBuildingUI building={engine.doomUpgrade2}/>
+      <SingleBuildingUI building={engine.doomUpgrade3}/>
       <ResearchUI research={engine.research} />
     </div>
   )

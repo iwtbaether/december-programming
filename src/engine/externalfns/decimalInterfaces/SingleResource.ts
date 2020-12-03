@@ -33,11 +33,11 @@ export class SingleResource {
         if (this.info.calculateCap) this.cap = this.info.calculateCap();
         if (this.info.calculateGain) this.gainPS = this.info.calculateGain();
         if (this.count.greaterThan(this.cap)) {
-            console.log('count over cap');
+            //console.log('count over cap');
             
             this.info.setDecimal(this.cap)
         } else {
-            console.log('calced not over cap');
+            //console.log('calced not over cap');
             
         }
     };

@@ -53,7 +53,9 @@ export default class Engine extends CoreEngine {
     }
 
     energyGainMult = () => {
-        return this.drive.count.add(1)
+        const mult1 = this.drive.count.add(1).add(this.antiDrive.count)
+        const mult2 = this.doomUpgrade3.count.add(1)
+        return Decimal.times(mult1, mult2)
     }
 
 
@@ -106,6 +108,23 @@ export default class Engine extends CoreEngine {
         outcome: () => 'Even more Energy!',
     })
 
+    antiDrive: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Anti Drive',
+            get: () => this.datamap.cell.cc,
+            setDecimal: (dec) => {
+                this.datamap.cell.cc = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 100, coefficient: 1.3 }, resource: this.antiEnergyResource },
+        ],
+        description: 'Increased Energy Gain',
+        hidden: () => this.datamap.unlocksStates.one < 4,
+        outcome: () => '+1x Energy Gain',
+    })
+
     setNav = (num: number) => {
         this.datamap.nav = num;
         this.notify();
@@ -134,6 +153,7 @@ export default class Engine extends CoreEngine {
         },
         giveUp: () => {
             if (this.energy.canGiveUp()) {
+                this.clearDoom();
                 this.clearEnergyDown();
                 this.datamap.unlocksStates.one++;
                 this.calcEnergy();
@@ -142,7 +162,7 @@ export default class Engine extends CoreEngine {
         },
         giveUpLevel2Cost: 100000,
         giveUpLevel2: () => {
-            console.log('gul2');
+            //console.log('gul2');
             
             if (this.energyResource.count.greaterThanOrEqualTo(this.energy.giveUpLevel2Cost)) {
                 const gainedDoom = this.doomGain();
@@ -164,10 +184,19 @@ export default class Engine extends CoreEngine {
         gainedDoom = gainedDoom.add(gainedDoom.times(this.doomUpgrade2.count));
         return gainedDoom;
     }
+    clearDoom = () => {
+        const zero = new Decimal(0)
+        this.doom.info.setDecimal(zero);
+        this.doomUpgrade1.info.building.info.setDecimal(zero);
+        this.doomUpgrade2.info.building.info.setDecimal(zero);
+        this.doomUpgrade3.info.building.info.setDecimal(zero);
+    }
     clearEnergyDown = () =>{
         this.energyResource.info.setDecimal(new Decimal(0))
         this.effort.info.building.info.setDecimal(new Decimal(0))
         this.drive.info.building.info.setDecimal(new Decimal(0))
+        this.antiDrive.info.building.info.setDecimal(new Decimal(0))
+        
     }
     
 
@@ -193,9 +222,9 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 1.2 }, resource: this.energyResource },
         ],
-        description: '+1 Energy Gain',
+        description: 'More Energy!',
         hidden: () => this.datamap.unlocksStates.one < 1,
-        outcome: () => 'More Energy!',
+        outcome: () => '+1 Energy Gain',
     })
 
     doomUpgrade1: SingleBuilding = new SingleBuilding({
@@ -210,17 +239,17 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 2 }, resource: this.doom },
         ],
-        description: '-1 Base Energy Gain from Clicking',
+        description: 'Clicking was ok...',
         hidden: () => this.datamap.unlocksStates.two < 1,
         outcome: () => {
             const now = this.datamap.cell.d1;
-            return `Current: ${this.energyGainClickBase()}`
+            return `-1 Base Energy Gain from Clicking\nCurrent: ${this.energyGainClickBase()}`
         },
     })
 
     doomUpgrade2: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Anti Doom',
+            name: 'Impending Doom',
             get: () => this.datamap.cell.d2,
             setDecimal: (dec) => {
                 this.datamap.cell.d2 = dec
@@ -231,12 +260,32 @@ export default class Engine extends CoreEngine {
             { expo: { initial: 5, coefficient: 1.2 }, resource: this.doom },
             { expo: { initial: 4, coefficient: 2 }, resource: this.antiEnergyResource },
         ],
-        description: '+1 Base Doom Gain',
+        description: `Knowing makes it worse`,
         hidden: () => this.datamap.unlocksStates.two < 2,
         outcome: () => {
-            return ``
+            return `+1 Base Doom Gain`
         },
     })
+
+    doomUpgrade3: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Empowering Doom',
+            get: () => this.datamap.cell.d3,
+            setDecimal: (dec) => {
+                this.datamap.cell.d3 = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 20, coefficient: 1.3 }, resource: this.doom },
+        ],
+        description: `Increased Energy Gain`,
+        hidden: () => this.datamap.cell.d2.lessThan(1),
+        outcome: () => {
+            return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`
+        },
+    })
+
 
 
     calcEnergy = () => {
@@ -244,7 +293,7 @@ export default class Engine extends CoreEngine {
     }
 
     extraLoad = () => {
-        console.log('EXTRALOAD');
+        //console.log('EXTRALOAD');
         this.calcEnergy();
         this.antiEnergyResource.calculate();
     }
