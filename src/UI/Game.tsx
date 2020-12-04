@@ -30,6 +30,8 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         </React.Fragment>}
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a}/>}
         {data.nav === 1 && <DoomRow data={data} />}
+        {data.nav === 3 && <GardenRow data={data} />}
+        {data.nav === 2 && <StatsRow data={data}/>}
         <hr />
         <FileButtons auto={data.autosave} last={data.last} />
       </div>
@@ -88,7 +90,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <br/>
       <span>
       Goal: <DisplayNumber  num={goal}/> Energy,  </span>
-  <span>Progress: {percentOf(data.cell.a.toNumber(),goal)}, </span>
+  <span>Progress: {percentOf(data.cell.a.toNumber(),goal)} | {data.unlocksStates.one}, </span>
       {data.unlocksStates.one >= 3 && <span>
         Consolation Prize: <DisplayDecimal decimal={prize} />
       </span>}
@@ -125,6 +127,32 @@ const NavRow = (props: {data: Datamap}) => {
     <div>
       {true &&<button onClick={()=>engine.setNav(0)}>Energy</button>}
       {data.unlocksStates.two > 0 &&<button onClick={()=>engine.setNav(1)}>Doom</button>}
+      {data.unlocksStates.one >= 5 &&<button onClick={()=>engine.setNav(3)}>Garden</button>}
+      {data.cell.swimmerNumber.greaterThan(10) &&<button onClick={()=>engine.setNav(2)}>Stats</button>}
     </div>
   )
 }
+
+
+const StatsRow = (props: {data: Datamap}) => {
+  const data = props.data;
+  const engine = gEngine;
+  return (
+    <div>
+      Stats<br/>
+      You are attempt #<DisplayDecimal decimal={data.cell.swimmerNumber} />
+    </div>
+  )
+}
+
+const GardenRow = (props: {data: Datamap}) => {
+  const data = props.data;
+  const engine = gEngine;
+  return (
+    <div>
+      Spiritual Garden<br/>
+      You are attempt #<DisplayDecimal decimal={data.cell.swimmerNumber} />
+    </div>
+  )
+}
+

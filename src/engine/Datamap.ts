@@ -38,6 +38,7 @@ export function newDefaultMap () {
             doom: ZERO,
             gloom: ZERO,
             zoom: ZERO,
+            swimmerNumber: new Decimal(1),
         },
         unlocksStates: {
             five: 0,
@@ -66,6 +67,7 @@ interface I_HoldDecimals {
         d1: Decimal,
         d2: Decimal,
         d3: Decimal,
+        swimmerNumber: Decimal,
     [key: string]: Decimal
 }
 

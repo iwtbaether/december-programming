@@ -103,9 +103,9 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 1000, coefficient: 1.3 }, resource: this.energyResource },
         ],
-        description: '+1x Energy Gain',
+        description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 2,
-        outcome: () => 'Even more Energy!',
+        outcome: () => '+1x Energy Gain!',
     })
 
     antiDrive: SingleBuilding = new SingleBuilding({
@@ -154,8 +154,9 @@ export default class Engine extends CoreEngine {
         giveUp: () => {
             if (this.energy.canGiveUp()) {
                 this.clearDoom();
-                this.clearEnergyDown();
+                this.clearEnergy();
                 this.datamap.unlocksStates.one++;
+                this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
                 this.calcEnergy();
                 this.notify();
             }
@@ -170,7 +171,9 @@ export default class Engine extends CoreEngine {
                 if (this.datamap.unlocksStates.two === 0) {
                     this.datamap.unlocksStates.two = 1
                 }
-                this.clearEnergyDown();
+                this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
+
+                this.clearEnergy();
                 this.calcEnergy();
                 this.notify();
             }
@@ -191,7 +194,7 @@ export default class Engine extends CoreEngine {
         this.doomUpgrade2.info.building.info.setDecimal(zero);
         this.doomUpgrade3.info.building.info.setDecimal(zero);
     }
-    clearEnergyDown = () =>{
+    clearEnergy = () =>{
         this.energyResource.info.setDecimal(new Decimal(0))
         this.effort.info.building.info.setDecimal(new Decimal(0))
         this.drive.info.building.info.setDecimal(new Decimal(0))
@@ -222,7 +225,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 1.2 }, resource: this.energyResource },
         ],
-        description: 'More Energy!',
+        description: 'Base Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 1,
         outcome: () => '+1 Energy Gain',
     })
@@ -239,7 +242,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 2 }, resource: this.doom },
         ],
-        description: 'Clicking was ok...',
+        description: 'Makes clicking better[!/?]',
         hidden: () => this.datamap.unlocksStates.two < 1,
         outcome: () => {
             const now = this.datamap.cell.d1;
@@ -260,10 +263,10 @@ export default class Engine extends CoreEngine {
             { expo: { initial: 5, coefficient: 1.2 }, resource: this.doom },
             { expo: { initial: 4, coefficient: 2 }, resource: this.antiEnergyResource },
         ],
-        description: `Knowing makes it worse`,
+        description: `Base Doom Gain`,
         hidden: () => this.datamap.unlocksStates.two < 2,
         outcome: () => {
-            return `+1 Base Doom Gain`
+            return `+1 Doom Gain`
         },
     })
 
