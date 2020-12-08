@@ -1,4 +1,5 @@
 import React, { CSSProperties, ReactNode } from "react";
+import { gEngine } from "..";
 import { SingleBuilding } from "../engine/externalfns/decimalInterfaces/SingleBuilding";
 import DisplayDecimal from "./DisplayDecimal";
 
@@ -72,6 +73,13 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding}
         this.setState({open:false})
     }
 
+    buy = (ev: React.MouseEvent) => {
+        if (ev.shiftKey) {
+            this.props.building.buyMaxMaybe();
+        } else this.props.building.buy();
+        gEngine.notify();
+    }
+
 
     render () {
         
@@ -92,7 +100,7 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding}
         <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative'}}>
             {building.info.active && <button className={'base-button left-button red-text'} onClick={building.activeDOWN}>{building.activeDISABLED()?.toNumber()}</button>}
             <BuildingTip tip={this.getTip()} show={tipDiv}/>
-       <button className={style2} onClick={building.buy} disabled={bcb !== 1}>
+       <button className={style2} onClick={this.buy} disabled={bcb !== 1}>
     {building.info.building.info.name} <span className='comment-text'>({building.count.toNumber()})</span>
         </button>
 

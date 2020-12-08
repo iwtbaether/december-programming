@@ -102,6 +102,20 @@ export class SingleBuilding {
         this.gainBuilding(1)
 
     }
+
+    buyMaxMaybe = () => {
+        while (this.canBuy() === 1) {
+   
+            this.info.costs.forEach((cost, index) => {
+                let resource_cost = this.getCost(index);
+                //console.log(cost.expo, this.count.toNumber(), resource_cost.toNumber());
+                
+                cost.resource.loseResource(resource_cost)
+            });
+            
+            this.gainBuilding(1)
+        }
+    }
 }
 
 

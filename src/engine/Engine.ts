@@ -14,6 +14,15 @@ export const AUTOSAVE_INTERVAL = 1000 * 60;
 
 export default class Engine extends CoreEngine {
 
+    doom: SingleResource = new SingleResource({
+        name: 'Doom',
+        get: () => this.datamap.cell.doom,
+        setDecimal: (d) => {
+            this.datamap.cell.doom = d;
+            this.antiEnergyResource.calculate();
+        }
+    })
+
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
@@ -60,7 +69,8 @@ export default class Engine extends CoreEngine {
     energyGainMult = () => {
         const mult1 = this.drive.count.add(1).add(this.antiDrive.count)
         const mult2 = this.doomUpgrade3.count.add(1)
-        return Decimal.times(mult1, mult2)
+        const mult3 = this.datamap.cell.determination.add(1)
+        return Decimal.times(mult1, mult2).times(mult3);
     }
 
 
@@ -87,14 +97,7 @@ export default class Engine extends CoreEngine {
         calculateCap: ()=>this.datamap.cell.doom
     })
 
-    doom: SingleResource = new SingleResource({
-        name: 'Doom',
-        get: () => this.datamap.cell.doom,
-        setDecimal: (d) => {
-            this.datamap.cell.doom = d;
-            this.antiEnergyResource.calculate();
-        }
-    })
+    
 
     drive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
@@ -151,7 +154,8 @@ export default class Engine extends CoreEngine {
             this.notify();
         },
         unlockGoal: () => {
-            return 100 * Math.pow(100, this.datamap.unlocksStates.one)
+            return Decimal.pow(100, this.datamap.unlocksStates.one).times(100)
+            //return 100 * Math.pow(100, this.datamap.unlocksStates.one)
         },
         canGiveUp: () => {
             return this.datamap.cell.a.greaterThanOrEqualTo(this.energy.unlockGoal())
@@ -190,6 +194,9 @@ export default class Engine extends CoreEngine {
     doomGain = () => {
         let gainedDoom = Decimal.floor(this.energyResource.count.divideBy(this.energy.giveUpLevel2Cost))
         gainedDoom = gainedDoom.add(gainedDoom.times(this.doomUpgrade2.count));
+        if (this.datamap.garden.fruits.doom.greaterThan(0)) {
+            gainedDoom = gainedDoom.times(this.datamap.garden.fruits.doom.add(1))
+        }
         return gainedDoom;
     }
     clearDoom = () => {
@@ -288,9 +295,28 @@ export default class Engine extends CoreEngine {
             { expo: { initial: 20, coefficient: 1.3 }, resource: this.doom },
         ],
         description: `MORE Energy Gain`,
-        hidden: () => this.datamap.cell.d2.lessThan(1),
+        hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 5,
         outcome: () => {
             return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`
+        },
+    })
+
+    determination: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Determination',
+            get: () => this.datamap.cell.determination,
+            setDecimal: (dec) => {
+                this.datamap.cell.determination = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 10, coefficient: 1.1 }, resource: this.garden.hopeFruit },
+        ],
+        description: `MORE Energy Gain`,
+        hidden: () => this.datamap.cell.determination.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
+        outcome: () => {
+            return `+1x Energy Gain\nCurrent: ${this.datamap.cell.determination.add(1)}x`
         },
     })
 

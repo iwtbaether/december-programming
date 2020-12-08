@@ -36,7 +36,7 @@ export default class App extends React.Component<AppProps, { data: Datamap }> {
             A game by IWTB-AETHER [Time: {data.last}]
           </div>
           <div>  
-          Want to suggest something? <Reddit/> Want do do the CSS? <Discord/>
+          Want to suggest something, or give detailed feedback? <Reddit/> Want to design the UI? Need Tips? Questions? <Discord/>
         </div>
         </div>
       </div>

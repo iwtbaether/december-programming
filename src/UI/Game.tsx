@@ -1,20 +1,14 @@
 import Decimal from 'break_infinity.js';
-import { last } from 'lodash';
-import { relative } from 'path';
 import React from 'react';
 import { gEngine } from '..';
 import { Datamap } from '../engine/Datamap';
-import Engine from '../engine/Engine';
-import { SingleBuilding } from '../engine/externalfns/decimalInterfaces/SingleBuilding';
-import { canCheat, HOUR_MS, MINUTE_MS, percentOf } from '../engine/externalfns/util';
-import { GardenPlant, SeedGrowthTimeRequired, SeedType, TimeRequiredForSeed } from '../engine/garden/Garden';
-import { SingleResearch } from '../engine/Research';
+import { canCheat, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
 import DisplayDecimal from './DisplayDecimal';
-import DisplayNumber from './DisplayNumber';
+import GardenRow from './GardenRow';
 import ListedResourceClass from './ListedResourceClass';
-import ResearchUI, { SingleResearchUI } from './ResearchUI';
+import ResearchUI from './ResearchUI';
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
 
@@ -70,7 +64,6 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const clickGain = gEngine.energyModule.energyPerClick();
   const activityGain = gEngine.energyModule.energyGainFromActivity();
   const prize = gEngine.doomGain();
-  const prizeOK = prize.greaterThan(0)
 
 
   return (
@@ -89,10 +82,11 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />
       <SingleBuildingUI building={gEngine.antiDrive} />
+      <SingleBuildingUI building={gEngine.determination} />
       <br />
       <span>
-        Goal: <DisplayNumber num={goal} /> Energy,  </span>
-      <span>Progress: {percentOf(data.cell.a.toNumber(), goal)} | {data.unlocksStates.one}, </span>
+        Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>
+      <span>Progress: {percentOf(data.cell.a.toNumber(), goal.toNumber())} | {data.unlocksStates.one}, </span>
       {data.unlocksStates.one >= 3 && <span>
         Consolation Prize: <DisplayDecimal decimal={prize} />
       </span>}
@@ -114,6 +108,7 @@ const DoomRow = (props: { data: Datamap }) => {
     <div>
       Doom Stuff<br />
       <ListedResourceClass resource={engine.doom} />
+      {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       <SingleBuildingUI building={engine.doomUpgrade1} />
       <SingleBuildingUI building={engine.doomUpgrade2} />
       <SingleBuildingUI building={engine.doomUpgrade3} />
@@ -138,113 +133,10 @@ const NavRow = (props: { data: Datamap }) => {
 
 const StatsRow = (props: { data: Datamap }) => {
   const data = props.data;
-  const engine = gEngine;
   return (
     <div>
       Stats<br />
       You are attempt #<DisplayDecimal decimal={data.cell.swimmerNumber} />
-    </div>
-  )
-}
-
-const GardenRow = (props: { data: Datamap }) => {
-  const data = props.data;
-  const engine = gEngine;
-  return (
-    <div>
-      Spiritual Garden<br />
-      {canCheat && <div>
-        <button onClick={engine.garden.resetGarden}>
-          Reset Garden
-        </button>
-      </div>}
-
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div>
-
-          Seed Generation: {data.garden.seedTimer}/{TimeRequiredForSeed} - {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}<br />
-          {data.garden.researches.progression > 0 && <div>
-
-            Seeds: <DisplayDecimal decimal={data.garden.seeds} /><br />
-            <button disabled={!engine.garden.canGetSeed()} onClick={engine.garden.getSeed} >
-              Get Seed
-      </button><br />
-            {data.garden.researches.progression > 1 && <div>
-            Bag: {engine.garden.data.bag.length}/{engine.garden.maxBagSlots} seeds<br />
-            <form onSubmit={(ev: any) => {
-              ev.preventDefault();
-              const index = ev.target[0].selectedIndex;
-              if (index < 0) return;
-              //console.log(ev.target[0].selectedIndex);
-              engine.garden.plantSeed(index)
-              //engine.garden.plantSeed()
-            }}>
-              <label htmlFor="seeds">Choose a Seed:</label>
-              <select id="seed" name="seed">
-                {data.garden.bag.map((seed, index) => {
-                  const vk = seed.type + index;
-                  return <option value={vk} key={vk} >
-                    {SeedType[seed.type]} {index}
-                  </option>
-                })}
-              </select>
-              <input type="submit" value='Plant' disabled={!engine.garden.canPlantSeed()} />
-            </form>
-            </div>}
-
-          </div>}
-          {data.garden.researches.progression > 1 && <div>
-
-          Garden: {engine.garden.data.plots.length}/{engine.garden.maxgGardenPlots} plots<br />
-            {data.garden.plots.map((plant, index) => {
-              return <PlotDisplay plant={plant} index={index} key={'plot' + index} />
-            })}
-          </div>}
-        </div>
-        <div>
-          {data.garden.researches.progression > 2 && <div>
-          <span>
-            Horticulture:<br />
-          </span>
-          <SingleResearchUI research={engine.garden.res_watering} active={0} />
-          <SingleResearchUI research={engine.garden.res_expansion_one} active={0} />
-          <SingleResearchUI research={engine.garden.res_seedtype_circle} active={0} />
-          <SingleResearchUI research={engine.garden.res_seedtype_squre} active={0} />
-          <SingleResearchUI research={engine.garden.res_seedtype_bunch} active={0} />
-          <SingleResearchUI research={engine.garden.res_seedtype_triangle} active={0} />
-          </div>}
-        </div>
-        <div>
-          {data.garden.researches.progression > 2 && <div>
-
-          <span>
-            Fruits:
-        </span>
-          {<ListedResourceClass resource={engine.garden.hopeFruit} />}
-          </div>}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const PlotDisplay = (props: { plant: GardenPlant, index: number }) => {
-  const req = SeedGrowthTimeRequired(props.plant.seed);
-  const engine = gEngine;
-  return (
-    <div>
-      Planto de {SeedType[props.plant.seed.type]} -
-      {props.plant.plantTimer}/{req} {percentOf(props.plant.plantTimer, req)}
-      {engine.datamap.garden.researches.watering && <button onClick={() => {
-        engine.garden.waterPlant(props.index);
-      }}>
-        Water {percentOf(props.plant.water, MINUTE_MS)}
-      </button>}
-      {req < props.plant.plantTimer && <button onClick={() => {
-        engine.garden.harvest(props.index);
-      }}>
-        Harvest
-          </button>}
     </div>
   )
 }
