@@ -62,6 +62,10 @@ export class SingleBuilding {
         }
     }
 
+    reset = () => {
+        this.info.building.info.setDecimal(new Decimal(0));
+    }
+
     //return 0 = no
     //return 1 = yes
     //return 2 = capped

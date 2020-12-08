@@ -212,6 +212,7 @@ export default class Engine extends CoreEngine {
         this.effort.info.building.info.setDecimal(new Decimal(0))
         this.drive.info.building.info.setDecimal(new Decimal(0))
         this.antiDrive.info.building.info.setDecimal(new Decimal(0))
+        this.autoclickerBuilding.reset();
         
     }
     
@@ -253,7 +254,7 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 10, coefficient: 2 }, resource: this.doom },
+            { expo: { initial: 5, coefficient: 2 }, resource: this.doom },
         ],
         description: 'Makes clicking better[!/?]',
         hidden: () => this.datamap.unlocksStates.two < 1,
@@ -321,8 +322,28 @@ export default class Engine extends CoreEngine {
         },
     })
 
+
+
     doomResearch: DoomResearches = new DoomResearches(this);
 
+    autoclickerBuilding: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Autoclickers',
+            get: () => this.datamap.cell.autoclicker,
+            setDecimal: (dec) => {
+                this.datamap.cell.determination = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 10000, coefficient: 1.1 }, resource: this.energyResource },
+        ],
+        description: `Gathers Energy Once Every Second`,
+        hidden: () => this.datamap.cell.autoclicker.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
+        outcome: () => {
+            return `+1 Autoclicker`
+        },
+    })
 
     calcEnergy = () => {
         this.energyResource.calculate();

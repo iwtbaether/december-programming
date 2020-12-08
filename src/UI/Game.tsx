@@ -72,7 +72,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
     <div style={{ position: 'relative' }}>
       <ListedResourceClass resource={gEngine.energyResource} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
-      {data.unlocksStates.one > 0 && <ListedResourceClass resource={gEngine.doom} />}
+      {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
       Click Energy Gain: <DisplayDecimal decimal={clickGain} />, Hover Energy Gain: <DisplayDecimal decimal={activityGain} />
       <br />
       <button onClick={gEngine.energy.gatherEnergy} onSubmit={(ev) => { ev.preventDefault() }}>
@@ -90,7 +90,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
         Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>
       <span>Progress: {percentOf(data.cell.a.toNumber(), goal.toNumber())} | {data.unlocksStates.one}, </span>
       {data.unlocksStates.one >= 3 && <span>
-        Consolation Prize: <DisplayDecimal decimal={prize} />
+        Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
       </span>}
       <br />
       <button disabled={!reached} onClick={gEngine.energy.giveUp}>

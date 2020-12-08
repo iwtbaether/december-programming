@@ -45,6 +45,7 @@ export function newDefaultMap() {
             determination: ZERO,
             swimmerNumber: new Decimal(1),
             rebirth: ZERO,
+            autoclicker: ZERO,
         },
         unlocksStates: {
             five: 0,
@@ -77,6 +78,7 @@ interface I_HoldDecimals {
     swimmerNumber: Decimal,
     determination: Decimal,
     rebirth: Decimal,
+    autoclicker: Decimal,
     [key: string]: Decimal
 }
 

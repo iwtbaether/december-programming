@@ -30,7 +30,7 @@ export default class DoomResearches {
             this.data.autoclicker = true
         },
         costs: [
-            { resource: this.engine.doom, count: new Decimal(1e5) },
+            { resource: this.engine.doom, count: new Decimal(5) },
         ]
     })
 }
