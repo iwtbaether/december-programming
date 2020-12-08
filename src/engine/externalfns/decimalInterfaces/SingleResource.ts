@@ -8,7 +8,7 @@ export class SingleResource {
         //this.calculate();
         //this.gainPS = info.calculateGain?info.calculateGain():new Decimal(0);
         this.cap = info.calculateCap?info.calculateCap():new Decimal(Infinity);
-        if (this.count.greaterThan(this.cap)) {
+        if (this.info.get().greaterThan(this.cap)) {
             this.info.setDecimal(this.cap)
         }
     }

@@ -36,7 +36,7 @@ export default class ResearchUI extends React.Component<CompProps, CompState> {
 
 }
 
-class SingleResearchUI extends React.Component<{research: SingleResearch, active: number}, {open: boolean}> {
+export class SingleResearchUI extends React.Component<{research: SingleResearch, active: number}, {open: boolean}> {
 
     constructor(props:any){
         super(props)
@@ -89,9 +89,9 @@ class SingleResearchUI extends React.Component<{research: SingleResearch, active
         const style = stylelist[research.canBuy()];
        
     return (
-        <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative'}} >
+        <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative', overflow: 'visible'}} >
             {tipDiv && <BuildingTip show={tipDiv} tip={this.getTip()}/>}
-       {(!have && this.props.active === 0) && <button className={style} onClick={()=>{research.buy(); this.leave()}}>
+       {(!have && this.props.active === 0) && <button className={style} disabled={style != 'active-button'} onClick={()=>{research.buy(); this.leave()}}>
     {research.info.name}
         </button>}
         {(have && this.props.active === 1 ) && <span className='researched' >

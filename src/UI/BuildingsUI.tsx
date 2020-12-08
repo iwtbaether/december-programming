@@ -125,6 +125,7 @@ const BTStyle: React.CSSProperties = {
     top: '10px',
     padding: '5px',
     pointerEvents: 'none',    
-    display: 'inline-block'
+    display: 'inline-block',
+    overflow: 'visible'
 
 }

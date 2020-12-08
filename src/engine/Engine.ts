@@ -6,6 +6,7 @@ import CoreEngine from "./CoreEngine";
 import EnergyModule from "./EnergyModule";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
+import Garden from "./garden/Garden";
 import Research from "./Research";
 
 
@@ -15,8 +16,12 @@ export default class Engine extends CoreEngine {
 
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
+    garden: Garden = new Garden(this);
+    
     processDelta = (delta: number) => {
 
+
+        this.garden.processDelta(delta)
 
         if (delta < 0) delta = 0;
 
@@ -260,8 +265,8 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 5, coefficient: 1.2 }, resource: this.doom },
             { expo: { initial: 4, coefficient: 2 }, resource: this.antiEnergyResource },
+            { expo: { initial: 5, coefficient: 1.2 }, resource: this.doom },
         ],
         description: `Base Doom Gain`,
         hidden: () => this.datamap.unlocksStates.two < 2,
@@ -282,7 +287,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 20, coefficient: 1.3 }, resource: this.doom },
         ],
-        description: `Increased Energy Gain`,
+        description: `MORE Energy Gain`,
         hidden: () => this.datamap.cell.d2.lessThan(1),
         outcome: () => {
             return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`

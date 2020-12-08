@@ -1,4 +1,5 @@
 import Decimal from "break_infinity.js";
+import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 
 export interface Datamap {
     //core data
@@ -16,7 +17,8 @@ export interface Datamap {
         three: number,
         four: number,
         five: number,
-    }
+    };
+    garden: GardenData;
 }
 
 export function newDefaultMap () {
@@ -51,6 +53,7 @@ export function newDefaultMap () {
 
 
         testDec: new Decimal(0),
+        garden: GardenData_Init(),
     }
     return map;
 }
@@ -74,9 +77,12 @@ interface I_HoldDecimals {
 
 export function setDecimals (data: Datamap) {
     data.testDec = new Decimal(data.testDec);
+
     Object.keys(data.cell).forEach(key => {
         data.cell[key] = new Decimal(data.cell[key])
     });
+    
+    GardenData_SetDecimals(data);
     //data.whateverdecimal = new Decimal(whateverdecimal)
 }
 
