@@ -3,6 +3,7 @@ import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
 import DisplayDecimal from "../UI/DisplayDecimal";
 import CoreEngine from "./CoreEngine";
+import DoomResearches from "./DoomResearches";
 import EnergyModule from "./EnergyModule";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
@@ -320,6 +321,7 @@ export default class Engine extends CoreEngine {
         },
     })
 
+    doomResearch: DoomResearches = new DoomResearches(this);
 
 
     calcEnergy = () => {

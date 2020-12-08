@@ -31,33 +31,10 @@ export default class App extends React.Component<AppProps, { data: Datamap }> {
     return (
       <div>
         <Game data={data} />
-        <div>
-          <div>
-            A game by IWTB-AETHER [Time: {data.last}]
-          </div>
-          <div>  
-          Want to suggest something, or give detailed feedback? <Reddit/> Want to design the UI? Need Tips? Questions? <Discord/>
-        </div>
-        </div>
+        
       </div>
     );
 
 
   }
-}
-
-const Discord = () => {
-  return (
-    <a target="_blank" href="https://discord.gg/F63vNBN">
-      Discord
-    </a>
-  )
-}
-
-const Reddit = () => {
-  return (
-    <a target="_blank" href='https://old.reddit.com/r/IA_Games/'>
-      Reddit
-    </a>
-  )
 }

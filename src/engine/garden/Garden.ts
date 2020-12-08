@@ -10,6 +10,7 @@ import { SingleResearch } from "../Research";
 
 export default class Garden {
 
+    chosenSeed: number|undefined = undefined;
     maxBagSlots: number = 0;
     maxgGardenPlots: number = 0;
     constructor(public engine: Engine) {

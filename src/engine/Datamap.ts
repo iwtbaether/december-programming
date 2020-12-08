@@ -1,4 +1,5 @@
 import Decimal from "break_infinity.js";
+import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 
 export interface Datamap {
@@ -8,7 +9,7 @@ export interface Datamap {
     last: number;
     nav: number,
     activity: number,
-
+    doomResearch: DoomResearchData,
     testDec: Decimal;
     cell: I_HoldDecimals;
     unlocksStates: {
@@ -21,12 +22,13 @@ export interface Datamap {
     garden: GardenData;
 }
 
-export function newDefaultMap () {
+export function newDefaultMap() {
     let map: Datamap = {
         autosave: false,
         autosaveCounter: 0,
         activity: 0,
         last: Date.now(),
+        doomResearch: DoomResearchData_Init(),
         nav: 0,
         cell: {
             a: ZERO,
@@ -61,31 +63,31 @@ export function newDefaultMap () {
 }
 
 interface I_HoldDecimals {
-        a: Decimal,
-        aa: Decimal,
-        b: Decimal, 
-        c: Decimal,
-        cc: Decimal,
+    a: Decimal,
+    aa: Decimal,
+    b: Decimal,
+    c: Decimal,
+    cc: Decimal,
     doom: Decimal,
     gloom: Decimal,
     zoom: Decimal,
-        d1: Decimal,
-        d2: Decimal,
-        d3: Decimal,
-        swimmerNumber: Decimal,
-        determination: Decimal,
-        rebirth: Decimal,
+    d1: Decimal,
+    d2: Decimal,
+    d3: Decimal,
+    swimmerNumber: Decimal,
+    determination: Decimal,
+    rebirth: Decimal,
     [key: string]: Decimal
 }
 
 
-export function setDecimals (data: Datamap) {
+export function setDecimals(data: Datamap) {
     data.testDec = new Decimal(data.testDec);
 
     Object.keys(data.cell).forEach(key => {
         data.cell[key] = new Decimal(data.cell[key])
     });
-    
+
     GardenData_SetDecimals(data);
     //data.whateverdecimal = new Decimal(whateverdecimal)
 }
