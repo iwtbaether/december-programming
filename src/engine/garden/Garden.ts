@@ -230,7 +230,7 @@ export default class Garden {
     })
 
     res_seedtype_squre: SingleResearch = new SingleResearch({
-        name: "Squre Seeds",
+        name: "Square Seeds",
         hidden: () => this.data.researches.expansion === 0,
         description: "You can generate square seeds now",
         get: () => this.data.researches.typeSquare,

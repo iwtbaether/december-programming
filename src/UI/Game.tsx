@@ -108,7 +108,6 @@ const DoomRow = (props: { data: Datamap }) => {
 
   return (
     <div>
-      Doom Stuff<br />
       <ListedResourceClass resource={engine.doom} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       <SingleBuildingUI building={engine.doomUpgrade1} />
