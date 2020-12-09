@@ -95,7 +95,7 @@ export default class Engine extends CoreEngine {
         setDecimal: (decimal) => {
             this.datamap.cell.aa = decimal
         },
-        calculateCap: ()=>this.datamap.cell.doom
+        calculateCap: ()=>this.datamap.cell.doom.add(1)
     })
 
     
@@ -297,7 +297,7 @@ export default class Engine extends CoreEngine {
             { expo: { initial: 20, coefficient: 1.3 }, resource: this.doom },
         ],
         description: `MORE Energy Gain`,
-        hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 5,
+        hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 4,
         outcome: () => {
             return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`
         },
