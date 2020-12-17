@@ -222,7 +222,7 @@ export default class Engine extends CoreEngine {
 
     gUL2: BasicCommand = {
         command: this.energy.giveUpLevel2,
-        label: "Give up, accept doom",
+        label: "Give up, accept Doom",
         hidden: () => this.datamap.unlocksStates.one < 3,
         able: () => this.energyResource.count.greaterThanOrEqualTo(this.energy.giveUpLevel2Cost),
         description: 'wy?'
@@ -283,7 +283,7 @@ export default class Engine extends CoreEngine {
         description: `Base Doom Gain`,
         hidden: () => this.datamap.unlocksStates.two < 2,
         outcome: () => {
-            return `+1 Doom Gain`
+            return `+1 Base Doom Gain`
         },
     })
 

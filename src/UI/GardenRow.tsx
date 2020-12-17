@@ -159,7 +159,7 @@ const BagDisplay = () => {
             <div style={{height:'50px', flexBasis:'20px'}}/>
                 {data.garden.bag.map((seed, index) => {
                     const vk = seed.type + index;
-                    return <NewSeedDisplay seed={seed} index={index} key={vk+'of'+data.garden.bag.length} canPlantSeed={cps} />
+                    return <NewSeedDisplay seed={seed} index={index} key={'bag'+index} canPlantSeed={cps} />
                 })}
             </div>
 
