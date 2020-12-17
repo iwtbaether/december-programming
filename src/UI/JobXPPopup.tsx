@@ -51,6 +51,9 @@ const JobXPPopup = (props: { data: Datamap }) => {
                 close
             </button>
             </span>
+            <span>
+                If you're here, you've pretty much beat the game so far. Come by Discord and make a suggestion on what to add next!
+            </span>
         </div>)
 }
 

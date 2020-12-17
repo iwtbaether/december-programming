@@ -262,7 +262,7 @@ export default class Jobs {
     res_doubleWateringAgain: SingleResearch = new SingleResearch({
         name: "Super Watering",
         hidden: () => this.data.notReset.upgrades.garden === 0,
-        description: "Doubles watering power in the garden.",
+        description: "Doubles watering power in the garden.\n ps this doesn't work yet",
         get: () => this.data.notReset.upgrades.garden > 1,
         makeTrue: () => { this.data.notReset.upgrades.garden = 2 },
         costs: [
@@ -273,7 +273,7 @@ export default class Jobs {
     res_doom1_autoclickers: SingleResearch = new SingleResearch({
         name: "Cursed Clicking",
         hidden: () => this.data.notReset.upgrades.garden === 0,
-        description: "Unlocks a new Doom upgrade",
+        description: "Unlocks a new Doom upgrade\n ps this doesn't work yet",
         get: () => this.data.notReset.upgrades.doom > 0,
         makeTrue: () => { this.data.notReset.upgrades.doom = 1 },
         costs: [
@@ -284,7 +284,7 @@ export default class Jobs {
     res_jobs1_morexp: SingleResearch = new SingleResearch({
         name: "Distance -> XP",
         hidden: () => this.data.notReset.upgrades.effectiveResistance.eq(0),
-        description: "Get 1XP per 100k distance on prestige.",
+        description: "Get 1XP per 100k distance on prestige.\n ps this doesn't work yet",
         get: () => this.data.notReset.upgrades.job > 0,
         makeTrue: () => { this.data.notReset.upgrades.job = 1 },
         costs: [
