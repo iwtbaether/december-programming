@@ -30,7 +30,7 @@ export default class DoomResearches {
             this.data.autoclicker = true
         },
         costs: [
-            { resource: this.engine.doom, count: new Decimal(5) },
+            { resource: this.engine.doom, count: new Decimal(100000) },
         ]
     })
 }
@@ -38,10 +38,12 @@ export default class DoomResearches {
 
 export interface DoomResearchData {
     autoclicker: boolean;
+    purpose: boolean; //unlocks jobs! first job is swimming
 }
 
 export function DoomResearchData_Init(): DoomResearchData {
     return {
         autoclicker: false,
+        purpose: false,
     }
 }

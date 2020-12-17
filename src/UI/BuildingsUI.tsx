@@ -126,6 +126,7 @@ const BTStyle: React.CSSProperties = {
     border: '2px solid black',
     zIndex: 1,
     backgroundColor: "white",
+    color: "black",
     textAlign: 'center',
     position: 'absolute',
     whiteSpace: 'pre',

@@ -1,6 +1,7 @@
 import Decimal from "break_infinity.js";
 import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
+import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 
 export interface Datamap {
     //core data
@@ -8,10 +9,12 @@ export interface Datamap {
     autosaveCounter: number;
     last: number;
     nav: number,
+    popupUI: number,
     activity: number,
     doomResearch: DoomResearchData,
     testDec: Decimal;
     cell: I_HoldDecimals;
+    jobs: JobsData;
     unlocksStates: {
         one: number,
         two: number,
@@ -27,7 +30,9 @@ export function newDefaultMap() {
         autosave: false,
         autosaveCounter: 0,
         activity: 0,
+        popupUI: 0,
         last: Date.now(),
+        jobs: JobsData_Init(),
         doomResearch: DoomResearchData_Init(),
         nav: 0,
         cell: {
@@ -46,6 +51,7 @@ export function newDefaultMap() {
             swimmerNumber: new Decimal(1),
             rebirth: ZERO,
             autoclicker: ZERO,
+
         },
         unlocksStates: {
             five: 0,
@@ -79,6 +85,9 @@ interface I_HoldDecimals {
     determination: Decimal,
     rebirth: Decimal,
     autoclicker: Decimal,
+
+
+
     [key: string]: Decimal
 }
 
@@ -91,6 +100,7 @@ export function setDecimals(data: Datamap) {
     });
 
     GardenData_SetDecimals(data);
+    JobsData_SetDecimals(data);
     //data.whateverdecimal = new Decimal(whateverdecimal)
 }
 

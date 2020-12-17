@@ -9,7 +9,21 @@ const OptionsRow = (props: { data: Datamap }) => {
       A game by IWTB-AETHER [Time: {data.last}]
           </div>
     <div>
-      Want to suggest something, or give detailed feedback? <Reddit /> Want to design the UI? Need Tips? Questions? <Discord />
+      Want to suggest something, or give detailed feedback? <Reddit /> Want to complain about the UI? Need Tips? Questions? <Discord />
+    </div>
+    <div>
+      Want to support me and get access to more idle gaming? Patreon!
+    </div>
+    <div>
+      Made with <a href='https://create-react-app.dev/docs/adding-typescript/'>react, typescript</a>, <a href='https://github.com/Patashu/break_infinity.js'>
+        break_infinity.js
+        </a>, 
+        and <a href='https://github.com/antimatter-dimensions/notations'>
+        @antimatter-dimensions/notations
+        </a>
+    </div>
+    <div>
+      lol no options
     </div>
   </div>)
 }

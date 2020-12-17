@@ -7,7 +7,7 @@ const SCIENNOT = new ADNotations.MixedScientificNotation();
 
 const DisplayDecimal: React.FC<{decimal: Decimal}> = (props) => (
     <span>
-        {SCIENNOT.formatDecimal(props.decimal,2)}
+        {props.children}{SCIENNOT.formatDecimal(props.decimal,2)}
     </span>
 )
 //{props.decimal.toFixed(2)}

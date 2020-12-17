@@ -6,7 +6,7 @@ export function getRandomInt(min: number, max: number) {
 }   
 
 export function formatNumber(num:number): string {
-    if (Math.abs(num) < 1e6) return num.toString();
+    if (Math.abs(num) < 1e6) return num.toFixed(2);
     else return num.toExponential(2);
 }
 export function percentOf (num: number, base: number) {

@@ -123,3 +123,69 @@ class ResearchNavButton extends React.Component<{navKey: number, setFn: (num:num
     }
 
 }
+
+
+export class NewSingleResearchUI extends React.Component<{research: SingleResearch}, {open: boolean}> {
+
+    constructor(props:any){
+        super(props)
+        this.state = {
+            open: false
+        }
+    }
+
+    over = () => {
+        //console.log('over');
+        
+        this.setState({open:true})
+    }
+
+    getTip () {
+
+        const research = this.props.research;
+        
+        return (<div>
+                {research.info.description}
+                <hr/>
+                {research.getCosts().map((cost_and_name)=>{
+                    return (
+                    <span key={`tooltip${cost_and_name.name}cost`} className={cost_and_name.can?'CostAble':'CostUnable'}>
+                {cost_and_name.name} : <DisplayDecimal decimal={cost_and_name.cost} /><br/>
+                    </span>)
+                })}
+            </div>)
+
+    }
+
+    leave = () => {
+        //console.log('out');
+        
+        this.setState({open:false})
+    }
+
+
+    render () {
+        
+        const research = this.props.research;
+        if (research.info.hidden()) return null;
+        const have = research.info.get();
+    
+        const tipDiv = this.state.open;
+
+        const stylelist = ['disabled-button', 'active-button', 'capped-button'];
+        const style = stylelist[research.canBuy()];
+       
+    return (
+        <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative', overflow: 'visible'}} >
+            {tipDiv && <BuildingTip show={tipDiv} tip={this.getTip()}/>}
+       {(!have) && <button className={style} disabled={style != 'active-button'} onClick={()=>{research.buy(); this.leave()}}>
+    {research.info.name}
+        </button>}
+        {(have) && <button disabled style={{color:'blue'}}>
+    {research.info.name}
+        </button>}
+        </span>
+        )
+
+    }
+}

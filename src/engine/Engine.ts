@@ -8,6 +8,7 @@ import EnergyModule from "./EnergyModule";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
 import Garden from "./garden/Garden";
+import Jobs from "./Jobs";
 import Research from "./Research";
 
 
@@ -27,6 +28,7 @@ export default class Engine extends CoreEngine {
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
+    jobs: Jobs = new Jobs(this);
     
     processDelta = (delta: number) => {
 
@@ -39,6 +41,7 @@ export default class Engine extends CoreEngine {
 
         this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
 
+        if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta)
 
         //console.log(deltaS);
         //console.log(this.datamap.last)
@@ -114,12 +117,12 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 2,
-        outcome: () => '+1x Energy Gain!',
+        outcome: () => '+1x Energy Gain',
     })
 
     antiDrive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Anti Drive',
+            name: 'Drive (A)',
             get: () => this.datamap.cell.cc,
             setDecimal: (dec) => {
                 this.datamap.cell.cc = dec
@@ -296,7 +299,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 20, coefficient: 1.3 }, resource: this.doom },
         ],
-        description: `MORE Energy Gain`,
+        description: `More Energy Gain`,
         hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 4,
         outcome: () => {
             return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`
@@ -315,7 +318,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 1.1 }, resource: this.garden.hopeFruit },
         ],
-        description: `MORE Energy Gain`,
+        description: `More Energy Gain`,
         hidden: () => this.datamap.cell.determination.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
         outcome: () => {
             return `+1x Energy Gain\nCurrent: ${this.datamap.cell.determination.add(1)}x`
@@ -353,6 +356,11 @@ export default class Engine extends CoreEngine {
         //console.log('EXTRALOAD');
         this.calcEnergy();
         this.antiEnergyResource.calculate();
+    }
+  
+    clearPopup = () => {
+        this.datamap.popupUI = 0;
+        this.notify();
     }
 
 }

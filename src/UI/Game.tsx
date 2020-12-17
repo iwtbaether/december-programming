@@ -7,9 +7,11 @@ import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
 import DisplayDecimal from './DisplayDecimal';
 import GardenRow from './GardenRow';
+import JobXPPopup from './JobXPPopup';
 import ListedResourceClass from './ListedResourceClass';
 import OptionsRow from './OptionsRow';
 import ResearchUI from './ResearchUI';
+import JobsRow from './WorkRow';
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
 
@@ -28,13 +30,23 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a} />}
         {data.nav === 1 && <DoomRow data={data} />}
         {data.nav === 3 && <GardenRow data={data} />}
+        {data.nav === 5 && <JobsRow data={data} />}
         {data.nav === 2 && <StatsRow data={data} />}
         {data.nav === 4 && <OptionsRow data={data} />}
         <hr />
         <FileButtons auto={data.autosave} last={data.last} />
+        <PopupRow data={data} />
       </div>
     );
   }
+}
+
+const PopupRow = (props: {data: Datamap}) => {
+  if (props.data.popupUI === 0) return null;
+
+  return (<div style={{position:'absolute',backgroundColor:'black', left: 0, top: 0, width: "100%", height: '100%'}}>
+        {props.data.popupUI === 1 && <JobXPPopup data={props.data}/>}
+  </div>)
 }
 
 const FileButtons = (props: { last: number, auto: boolean }) => {
@@ -127,6 +139,7 @@ const NavRow = (props: { data: Datamap }) => {
         {true && <button onClick={() => engine.setNav(0)}>Energy</button>}
         {data.unlocksStates.two > 0 && <button onClick={() => engine.setNav(1)}>Doom</button>}
         {data.unlocksStates.one >= 5 && <button onClick={() => engine.setNav(3)}>Garden</button>}
+        {data.unlocksStates.one >= 6 && <button onClick={() => engine.setNav(5)}>Jobs</button>}
       </div>
       <div>
         {data.cell.swimmerNumber.greaterThan(10) && <button onClick={() => engine.setNav(2)}>Stats</button>}
