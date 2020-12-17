@@ -67,7 +67,7 @@ export default class Engine extends CoreEngine {
     }
 
     energyGainFromActivityBase = () => {
-        return this.effort.count.add(1);
+        return this.effort.count.add(1).times(2);
     }
 
     energyGainMult = () => {
