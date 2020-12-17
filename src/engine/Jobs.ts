@@ -24,7 +24,7 @@ export default class Jobs {
     }
 
     processDelta = (delta: number) => {
-        //if (delta > 10000) delta = 10000;
+        if (delta > 10000) delta = 10000;
         this.progress(delta)
     }
 
@@ -44,14 +44,18 @@ export default class Jobs {
         this.calced.finalBaseJobSpeed = this.data.jobspeedplus;
         const jsMult1 = this.data.jobspeedmult.add(1);
         const jsMult2 = this.data.notReset.upgrades.jobSpeed.add(1);
-        this.calced.finalJobSpeedMult = jsMult1.times(jsMult2)
-        this.calced.finalJobSpeed = this.calced.finalBaseJobSpeed.times(this.calced.finalJobSpeedMult)
+        this.engine.garden.setJobSpeedMult();
+        const jsMult3 = this.engine.garden.jobSpeedMult;
+        this.calced.finalJobSpeedMult = jsMult1.times(jsMult2).times(jsMult3);
+        const precap = this.calced.finalBaseJobSpeed.times(this.calced.finalJobSpeedMult)
+        this.calced.finalJobSpeed = precap;
     }
 
     progress = (delta: number) => {
         const deltaS = Decimal.divide(delta, 1000);
-        const progressAfterResistance = this.calced.finalJobSpeed.times(deltaS).div(this.calced.finalResitanceDiv);
-        this.data.jobProgress = this.data.jobProgress.add(progressAfterResistance);
+        const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.calced.finalResitanceDiv);
+        const capped = Decimal.min(100, progressPerSecondAfterResistance);
+        this.data.jobProgress = this.data.jobProgress.add(capped.times(deltaS));
         this.setResistanceDiv();
     }
 
@@ -190,7 +194,7 @@ export default class Jobs {
 
     workRewardBuilding: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Work Reward',
+            name: 'Goal Focused',
             get: () => this.data.notReset.upgrades.workFromPrestige,
             setDecimal: (dec) => {
                 this.data.notReset.upgrades.workFromPrestige = dec;
@@ -208,7 +212,7 @@ export default class Jobs {
 
     jobSpeedXPBuilding: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Job Speed',
+            name: 'Years of Experience',
             get: () => this.data.notReset.upgrades.jobSpeed,
             setDecimal: (dec) => {
                 this.data.notReset.upgrades.jobSpeed = dec;
@@ -227,7 +231,7 @@ export default class Jobs {
 
     resistanceUpgradeBuilding: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Upgrade Resistance',
+            name: 'Care Free',
             get: () => this.data.notReset.upgrades.effectiveResistance,
             setDecimal: (dec) => {
                 this.data.notReset.upgrades.effectiveResistance = dec;
@@ -245,7 +249,7 @@ export default class Jobs {
     })
 
     res_doubleWatering: SingleResearch = new SingleResearch({
-        name: "Double Watering",
+        name: "Long Watering",
         hidden: () => this.data.notReset.upgrades.workFromPrestige.eq(0),
         description: "Doubles watering duration in the garden.",
         get: () => this.data.notReset.upgrades.garden > 0,
@@ -256,7 +260,7 @@ export default class Jobs {
     })
 
     res_doubleWateringAgain: SingleResearch = new SingleResearch({
-        name: "Double Watering",
+        name: "Super Watering",
         hidden: () => this.data.notReset.upgrades.garden === 0,
         description: "Doubles watering power in the garden.",
         get: () => this.data.notReset.upgrades.garden > 1,
@@ -267,7 +271,7 @@ export default class Jobs {
     })
 
     res_doom1_autoclickers: SingleResearch = new SingleResearch({
-        name: "Doomed Clicking 2",
+        name: "Cursed Clicking",
         hidden: () => this.data.notReset.upgrades.garden === 0,
         description: "Unlocks a new Doom upgrade",
         get: () => this.data.notReset.upgrades.doom > 0,

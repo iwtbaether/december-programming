@@ -356,6 +356,8 @@ export default class Engine extends CoreEngine {
         //console.log('EXTRALOAD');
         this.calcEnergy();
         this.antiEnergyResource.calculate();
+        this.garden.setTempData();
+        this.jobs.setTempData();
     }
   
     clearPopup = () => {

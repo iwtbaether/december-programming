@@ -335,7 +335,11 @@ export default class Garden {
 
     eggFruit: SingleResource = new SingleResource({
         get: () => this.data.fruits.egg,
-        setDecimal: (dec) => this.data.fruits.egg = dec,
+        setDecimal: (dec) => {
+            this.data.fruits.egg = dec;
+            this.engine.jobs.calcJobSpeed();
+            
+        },
         name: 'Egg Fruit'
     })
 
@@ -405,8 +409,8 @@ export default class Garden {
 
     jobSpeedMult = new Decimal(1);
     setJobSpeedMult = () => {
-        const mult = this.data.fruits.egg.div(100).add(1);
-        this.jobSpeedMult = Decimal.add(0,Decimal.ln(mult));
+        const mult = this.data.fruits.egg.div(1).add(1);
+        this.jobSpeedMult = Decimal.add(1,Decimal.ln(mult));
     }
 
     res_expansion_two: SingleResearch = new SingleResearch({

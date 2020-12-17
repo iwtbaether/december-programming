@@ -13,6 +13,7 @@ const JobsRow = (props: { data: Datamap }) => {
   const data = props.data;
   const jobs = gEngine.jobs;
   const selectedJob = FULL_JOBS_LIST[jobs.data.jobID];
+  const postResistance = jobs.calced.finalJobSpeed.div(jobs.calced.finalResitanceDiv)
   return (<div style={{display:'flex',flexDirection:'column'}}>
     <span>
       Current Job: Swimmer
@@ -37,10 +38,12 @@ const JobsRow = (props: { data: Datamap }) => {
     <SingleBuildingUI building={jobs.jobResistance} />
     </div>
     <span>
-      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.calced.finalJobSpeed.div(jobs.calced.finalResitanceDiv)} /> /s
+      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
+      {postResistance.greaterThan(100) && <span> Capped at 100/s </span>}
     </span>
+
     <span>
-      {selectedJob.unitsLabel} slows progress by: x<DisplayDecimal decimal={Decimal.div(1,jobs.calced.finalResitanceDiv)}/>
+      {selectedJob.slowReason} slows progress by: x<DisplayDecimal decimal={Decimal.div(1,jobs.calced.finalResitanceDiv)}/>
     </span>
     {jobs.seedGainSpeedMult > 1 && <span style={{display:'flex'}}>
       Seed Gain Speed Multi: x<DisplayNumber num={jobs.seedGainSpeedMult} />
