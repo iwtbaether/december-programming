@@ -68,7 +68,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
         <br/>
-        v2
+        v.3
     </div>
   )
 }
