@@ -125,7 +125,6 @@ const DoomRow = (props: { data: Datamap }) => {
       <SingleBuildingUI building={engine.doomUpgrade1} />
       <SingleBuildingUI building={engine.doomUpgrade2} />
       <SingleBuildingUI building={engine.doomUpgrade3} />
-      <ResearchUI research={engine.research} />
     </div>
   )
 }
