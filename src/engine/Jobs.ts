@@ -54,7 +54,7 @@ export default class Jobs {
     progress = (delta: number) => {
         const deltaS = Decimal.divide(delta, 1000);
         const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.calced.finalResitanceDiv);
-        const capped = Decimal.min(100, progressPerSecondAfterResistance);
+        const capped = Decimal.min(1000, progressPerSecondAfterResistance);
         this.data.jobProgress = this.data.jobProgress.add(capped.times(deltaS));
         this.setResistanceDiv();
     }
@@ -130,7 +130,7 @@ export default class Jobs {
     seedGainSpeedMult = 1;
     setSeedGainSpeedMulti = () => {
         let base = 1;
-        base = base + Decimal.log10(this.data.farthesthProgress.add(1))
+        base = base + Decimal.log10(this.data.farthesthProgress.add(1))/10
         this.seedGainSpeedMult = base;
     }
 
@@ -262,7 +262,7 @@ export default class Jobs {
     res_doubleWateringAgain: SingleResearch = new SingleResearch({
         name: "Super Watering",
         hidden: () => this.data.notReset.upgrades.garden === 0,
-        description: "Doubles watering power in the garden.\n ps this doesn't work yet",
+        description: "Doubles watering power in the garden.",
         get: () => this.data.notReset.upgrades.garden > 1,
         makeTrue: () => { this.data.notReset.upgrades.garden = 2 },
         costs: [

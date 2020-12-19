@@ -112,7 +112,10 @@ export default class Garden {
                 plot.plantTimer += delta;
                 if (plot.water) {
                     const extra = Math.min(plot.water, delta);
+
                     plot.plantTimer += extra;
+                    if (this.engine.datamap.jobs.notReset.upgrades.garden >= 2) plot.plantTimer += extra
+                    
                     plot.water -= extra;
                 }
             })

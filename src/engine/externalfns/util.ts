@@ -35,3 +35,35 @@ export const HOUR_MS = MINUTE_MS * 60
 
 
 export const canCheat = window.location.href === 'http://localhost:3000/'
+
+export function randomEnum<T>(anEnum: T): T[keyof T] {
+    const enumValues = Object.keys(anEnum)
+      .map(n => Number.parseInt(n))
+      .filter(n => !Number.isNaN(n)) as unknown as T[keyof T][]
+
+    console.log(enumValues);
+
+    
+    const randomIndex = Math.floor(Math.random() * enumValues.length)
+    const randomEnumValue = enumValues[randomIndex]
+    return randomEnumValue;
+  }
+
+  export function randomEnumWithExclusion<T>(anEnum: T, exclusions: T[keyof T][]): T[keyof T] {
+    const enumValues = Object.keys(anEnum)
+      .map(n => Number.parseInt(n))
+      .filter(n => !Number.isNaN(n)) as unknown as T[keyof T][]
+    
+    //console.log(enumValues);
+
+    exclusions.forEach(enumItem => {
+        enumValues.splice(enumValues.indexOf(enumItem),1)
+    });
+
+    //console.log(enumValues)
+
+    
+    const randomIndex = Math.floor(Math.random() * enumValues.length)
+    const randomEnumValue = enumValues[randomIndex]
+    return randomEnumValue;
+  }

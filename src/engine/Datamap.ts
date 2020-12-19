@@ -2,6 +2,7 @@ import Decimal from "break_infinity.js";
 import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
+import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
 
 export interface Datamap {
     //core data
@@ -23,6 +24,7 @@ export interface Datamap {
         five: number,
     };
     garden: GardenData;
+    crafting: CraftingData;
 }
 
 export function newDefaultMap() {
@@ -65,6 +67,7 @@ export function newDefaultMap() {
 
         testDec: new Decimal(0),
         garden: GardenData_Init(),
+        crafting: CraftingData_Init(),
     }
     return map;
 }

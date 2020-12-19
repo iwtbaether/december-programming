@@ -9,6 +9,7 @@ import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
 import Garden from "./garden/Garden";
 import Jobs from "./Jobs";
+import Crafting from "./m_st/Crafting";
 import Research from "./Research";
 
 
@@ -29,6 +30,7 @@ export default class Engine extends CoreEngine {
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
+    crafting: Crafting = new Crafting(this);
     
     processDelta = (delta: number) => {
 
@@ -206,15 +208,16 @@ export default class Engine extends CoreEngine {
     clearDoom = () => {
         const zero = new Decimal(0)
         this.doom.info.setDecimal(zero);
-        this.doomUpgrade1.info.building.info.setDecimal(zero);
-        this.doomUpgrade2.info.building.info.setDecimal(zero);
-        this.doomUpgrade3.info.building.info.setDecimal(zero);
+        this.doomUpgrade1.reset();
+        this.doomUpgrade2.reset();
+        this.doomUpgrade3.reset();
     }
     clearEnergy = () =>{
         this.energyResource.info.setDecimal(new Decimal(0))
-        this.effort.info.building.info.setDecimal(new Decimal(0))
-        this.drive.info.building.info.setDecimal(new Decimal(0))
-        this.antiDrive.info.building.info.setDecimal(new Decimal(0))
+        this.antiEnergyResource.info.setDecimal(new Decimal(0))
+        this.effort.reset();
+        this.drive.reset()
+        this.antiDrive.reset();
         this.autoclickerBuilding.reset();
         
     }

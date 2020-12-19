@@ -45,7 +45,7 @@ const GardenRow = (props: { data: Datamap }) => {
 
                         Garden: {engine.garden.data.plots.length}/{engine.garden.maxgGardenPlots} plots<br />
                         <div style={{display:'flex'}}>
-            <div style={{height:'100px', flexBasis:'20px'}}/>
+            <div style={{height:'100px', flexBasis:'20px',flexShrink:0}}/>
                         {data.garden.plots.map((plant, index) => {
                             return <NewPlotDisplay plant={plant} index={index} key={'plot' + index} />
                         })}
@@ -193,7 +193,7 @@ const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
     const waterTime = engine.garden.waterTimeBase.times(engine.garden.waterTimeMulti).toNumber();
     const waterPercent = percentOf(props.plant.water, waterTime);
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px', flexShrink:0 }}>
 
             <span>
                 {SeedType[props.plant.seed.type].toUpperCase()} PLANT

@@ -39,7 +39,7 @@ const JobsRow = (props: { data: Datamap }) => {
     </div>
     <span>
       Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
-      {postResistance.greaterThan(100) && <span> Capped at 100/s </span>}
+      {postResistance.greaterThan(1000) && <span> Capped at 1000/s </span>}
     </span>
 
     <span>
