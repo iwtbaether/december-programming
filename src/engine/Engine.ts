@@ -73,7 +73,9 @@ export default class Engine extends CoreEngine {
             const mult: Decimal = this.energyModule.energyGainMult;
             let base = this.energyModule.energyGainPerSecondBase();
             if (this.datamap.activity === 1) base = base.add(this.energyModule.energyGainFromActivityBase());
-            return base.times(mult)
+            let gain = base.times(mult);
+            if (this.energyModule.energyGainFromAutoClickers.greaterThan(0)) gain = gain.add(this.energyModule.energyGainFromAutoClickers)
+            return gain;
         }
     })
 
@@ -102,7 +104,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 2,
-        outcome: () =>`+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}`,
+        outcome: () =>`+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
     })
 
     antiDrive: SingleBuilding = new SingleBuilding({
@@ -119,7 +121,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 4,
-        outcome: () => `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}`,
+        outcome: () => `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
     })
 
     setNav = (num: number) => {
@@ -232,7 +234,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Base Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 1,
-        outcome: () => `+1 Base Energy Gain\nCurrent ${this.energyModule.energyGainBase}`,
+        outcome: () => `+1 Base Energy Gain\nCurrent: ${this.energyModule.energyGainBase}`,
     })
 
     doomUpgrade1: SingleBuilding = new SingleBuilding({

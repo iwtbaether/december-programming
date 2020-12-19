@@ -1,3 +1,4 @@
+import Decimal from "break_infinity.js";
 import { EnumType, isTypeNode } from "typescript";
 import Engine from "../Engine";
 import { getRandomInt, randomEnum, randomEnumWithExclusion } from "../externalfns/util";
@@ -11,11 +12,25 @@ export default class Crafting {
         return this.engine.datamap.crafting;
     }
 
-    
-
     makeNewCatalyst = () => {
+        if (this.data.currency.transmutes < 1) return;
+
+        this.data.currency.transmutes --;
         this.data.currentCraft = makeEnergyItem();
         this.engine.notify();
+    }
+
+    makeNewMiniCatalyst = () => {
+        if (this.data.currency.transmutes < 1) return;
+
+        this.data.currency.transmutes --;
+        this.data.currentCraft = makeSmallEnergyItem();
+        this.engine.notify();
+    }
+
+    getCurrency = () => {
+        this.data.currency.transmutes += 10;
+        this.data.currency.augmentations += 10;
     }
 
     calc = () => {
@@ -23,7 +38,12 @@ export default class Crafting {
     }
 
     addModToCurrentCraft = () => {
+        if (this.data.currency.augmentations < 1) return;
+
         if (this.data.currentCraft?.itemType === 1) {
+            const cata = this.data.currentCraft as EnergyItem;
+            if (cata.mod3) return;
+            this.data.currency.augmentations --;
             this.data.currentCraft = addRandomMod(this.data.currentCraft);
         }
         this.engine.notify();
@@ -112,19 +132,55 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
 export interface CraftingData {
     currentCraft: ItemData | null,
     equipedEnergyItem: EnergyItem | null,
+    currency: CraftingCurrency;
+}
+
+interface CraftingCurrency {
+    transmutes: number, //makes item
+    alterations: number,  //rerolls properties
+    augmentations: number, //adds property
+    reglas: number, //
+    scours: number, //clears mods from item
+    divines: number, //rerolls values of mods on item
 }
 
 export function CraftingData_Init(): CraftingData {
     return {
         currentCraft: null,
         equipedEnergyItem: null,
+        currency: {
+            transmutes: 0,
+            alterations: 0,
+            augmentations: 0,
+            reglas: 0,
+            divines: 0,
+            scours: 0,
+        }
     }
 }
 
 function makeEnergyItem (): EnergyItem {
-    return {
+    let item: EnergyItem = {
         itemType: ItemTypes.EnergyItem,
     }
+    item = addRandomMod(item);
+    return item;
+}
+
+function makeSmallEnergyItem (): EnergyItem {
+    let item: EnergyItem = {
+        itemType: ItemTypes.SmallEnergyItem,
+    }
+    item = addRandomMod(item);
+    return item;
+}
+
+function makeTinyEnergyItem (): EnergyItem {
+    let item: EnergyItem = {
+        itemType: ItemTypes.TinyEnergyItem,
+    }
+    item = addRandomMod(item);
+    return item;
 }
 
 function addRandomMod (item: EnergyItem): EnergyItem {
@@ -163,6 +219,15 @@ export interface EnergyItem extends ItemData {
     mod3?: EnergyItemMod,
 }
 
+export interface SmallEnergyItem extends ItemData {
+    mod1?: EnergyItemMod,
+    mod2?: EnergyItemMod,
+}
+
+export interface TinyEnergyItem extends ItemData {
+    mod1?: EnergyItemMod,
+}
+
 export interface EnergyItemMod {
     mod: EnergyItemMods
     value: number
@@ -170,7 +235,9 @@ export interface EnergyItemMod {
 
 export enum ItemTypes {
     broken,
-    EnergyItem
+    EnergyItem,
+    SmallEnergyItem,
+    TinyEnergyItem,
 }
 
 //gonna do values for all 1-10 with 10% for each 1
