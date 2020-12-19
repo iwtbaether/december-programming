@@ -5,7 +5,12 @@ export default class EnergyModule {
     constructor(public engine: Engine) {
     }
 
+    get energyEquipmentMods () {
+        return this.engine.crafting.energyCalcedData;
+    }
+
     setEnergyValues = () => {
+        this.setEnergyGainBase();
         this.setEnergyGainMult();
         this.setEnergyPerClick();
         this.setEnergyGainFromActivity();
@@ -33,28 +38,35 @@ export default class EnergyModule {
         this.energyGainFromAutoClickers = mult.times(base);
     }
 
+    energyGainBase: Decimal = new Decimal(0);
+    setEnergyGainBase = () => {
+        this.energyGainBase = this.engine.effort.count.add(this.energyEquipmentMods.baseGain);
+    }
+
     energyGainClickBase = () => {
-        return this.engine.effort.count.add(1).minus(this.engine.doomUpgrade1.count);
+        return this.energyGainBase.add(1).minus(this.engine.doomUpgrade1.count);
     }
 
     energyGainPerSecondBase = (): Decimal => {
-        return this.engine.effort.count;
+        return this.energyGainBase;
     }
 
     energyGainFromActivityBase = () => {
-        return this.engine.effort.count.add(1).times(2);
+        return this.energyGainBase.add(1).times(2);
     }
 
     energyGainMult: Decimal = new Decimal(0);
     totalEnergyGainIncreased: Decimal = new Decimal(0);
     totalEnergyGainMore: Decimal = new Decimal(0);
     setEnergyGainMult = () => {
-        this.totalEnergyGainIncreased = this.engine.drive.count.add(this.engine.antiDrive.count);
+        this.totalEnergyGainIncreased = this.engine.drive.count.add(this.engine.antiDrive.count).add(1);
         const mult2 = this.engine.doomUpgrade3.count.add(1)
         const mult3 = this.engine.datamap.cell.determination.add(1)
         this.totalEnergyGainMore = mult2.times(mult3);
-        this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased.add(1),this.totalEnergyGainMore);
+        this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);
     }
+
+    
 
 
 }

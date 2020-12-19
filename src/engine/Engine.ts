@@ -102,7 +102,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 2,
-        outcome: () => '+1x Energy Gain',
+        outcome: () =>`+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}`,
     })
 
     antiDrive: SingleBuilding = new SingleBuilding({
@@ -119,7 +119,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 4,
-        outcome: () => '+1x Energy Gain',
+        outcome: () => `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}`,
     })
 
     setNav = (num: number) => {
@@ -232,7 +232,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Base Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 1,
-        outcome: () => '+1 Energy Gain',
+        outcome: () => `+1 Base Energy Gain\nCurrent ${this.energyModule.energyGainBase}`,
     })
 
     doomUpgrade1: SingleBuilding = new SingleBuilding({
@@ -290,7 +290,7 @@ export default class Engine extends CoreEngine {
         description: `More Energy Gain`,
         hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 4,
         outcome: () => {
-            return `+1x Energy Gain\nCurrent: ${this.datamap.cell.d3.add(1)}x`
+            return `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainMore}x`
         },
     })
 
@@ -309,7 +309,7 @@ export default class Engine extends CoreEngine {
         description: `More Energy Gain`,
         hidden: () => this.datamap.cell.determination.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
         outcome: () => {
-            return `+1x Energy Gain\nCurrent: ${this.datamap.cell.determination.add(1)}x`
+            return `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainMore}x`
         },
     })
 

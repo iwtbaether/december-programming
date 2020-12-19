@@ -70,7 +70,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
         <br/>
-        v.3
+        v.4
     </div>
   )
 }
@@ -80,7 +80,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const goal = gEngine.energy.unlockGoal();
   const reached = gEngine.energy.canGiveUp();
   const clickGain = gEngine.energyModule.energyPerClick;
-  const activityGain = gEngine.energyModule.energyGainFromActivity();
+  const activityGain = gEngine.energyModule.energyGainFromActivity;
   const prize = gEngine.doomGain();
 
 
