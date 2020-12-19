@@ -79,7 +79,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const data = props.data;
   const goal = gEngine.energy.unlockGoal();
   const reached = gEngine.energy.canGiveUp();
-  const clickGain = gEngine.energyModule.energyPerClick();
+  const clickGain = gEngine.energyModule.energyPerClick;
   const activityGain = gEngine.energyModule.energyGainFromActivity();
   const prize = gEngine.doomGain();
 

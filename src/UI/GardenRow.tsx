@@ -44,7 +44,7 @@ const GardenRow = (props: { data: Datamap }) => {
                     {data.garden.researches.progression > 1 && <div>
 
                         Garden: {engine.garden.data.plots.length}/{engine.garden.maxgGardenPlots} plots<br />
-                        <div style={{display:'flex'}}>
+                        <div style={{display:'flex',flexWrap:'wrap'}}>
             <div style={{height:'100px', flexBasis:'20px',flexShrink:0}}/>
                         {data.garden.plots.map((plant, index) => {
                             return <NewPlotDisplay plant={plant} index={index} key={'plot' + index} />

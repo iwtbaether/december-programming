@@ -26,11 +26,11 @@ export default class Engine extends CoreEngine {
         }
     })
 
+    crafting: Crafting = new Crafting(this);
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
-    crafting: Crafting = new Crafting(this);
     
     processDelta = (delta: number) => {
 
@@ -60,24 +60,7 @@ export default class Engine extends CoreEngine {
         this.notify();
     }
 
-    energyGainClickBase = () => {
-        return this.effort.count.add(1).minus(this.doomUpgrade1.count);
-    }
-
-    energyGainPerSecondBase = (): Decimal => {
-        return this.effort.count;
-    }
-
-    energyGainFromActivityBase = () => {
-        return this.effort.count.add(1).times(2);
-    }
-
-    energyGainMult = () => {
-        const mult1 = this.drive.count.add(1).add(this.antiDrive.count)
-        const mult2 = this.doomUpgrade3.count.add(1)
-        const mult3 = this.datamap.cell.determination.add(1)
-        return Decimal.times(mult1, mult2).times(mult3);
-    }
+    
 
 
     energyResource = new SingleResource({
@@ -87,9 +70,9 @@ export default class Engine extends CoreEngine {
             this.datamap.cell.a = decimal
         },
         calculateGain: () => {
-            const mult: Decimal = this.energyGainMult();
-            let base = this.energyGainPerSecondBase();
-            if (this.datamap.activity === 1) base = base.add(this.energyGainFromActivityBase());
+            const mult: Decimal = this.energyModule.energyGainMult;
+            let base = this.energyModule.energyGainPerSecondBase();
+            if (this.datamap.activity === 1) base = base.add(this.energyModule.energyGainFromActivityBase());
             return base.times(mult)
         }
     })
@@ -144,19 +127,21 @@ export default class Engine extends CoreEngine {
         this.notify();
     }
 
+    gainEnergy = (gain: Decimal) => {
+        if (gain.greaterThanOrEqualTo(0)) {
+            this.energyResource.gainResource(gain)
+        } else {
+            this.antiEnergyResource.gainResource(gain.negate())
+            if (this.datamap.unlocksStates.two === 1) {
+                this.datamap.unlocksStates.two = 2;
+            }
+        }
+    }
+
     energy = {
         gatherEnergy: () => {
-            const gain = Decimal.times(this.energyGainClickBase(), this.energyGainMult())
-            if (gain.greaterThanOrEqualTo(0)) {
-                this.energyResource.gainResource(
-                    Decimal.times(this.energyGainClickBase(), this.energyGainMult())
-                )
-            } else {
-                this.antiEnergyResource.gainResource(gain.negate())
-                if (this.datamap.unlocksStates.two === 1) {
-                    this.datamap.unlocksStates.two = 2;
-                }
-            }
+            const gain = this.energyModule.energyPerClick;
+            this.gainEnergy(gain);
             this.notify();
         },
         unlockGoal: () => {
@@ -219,7 +204,7 @@ export default class Engine extends CoreEngine {
         this.drive.reset()
         this.antiDrive.reset();
         this.autoclickerBuilding.reset();
-        
+        this.calcEnergy();
     }
     
 
@@ -266,7 +251,7 @@ export default class Engine extends CoreEngine {
         hidden: () => this.datamap.unlocksStates.two < 1,
         outcome: () => {
             const now = this.datamap.cell.d1;
-            return `-1 Base Energy Gain from Clicking\nCurrent: ${this.energyGainClickBase()}`
+            return `-1 Base Energy Gain from Clicking\nCurrent: ${this.energyModule.energyGainClickBase()}`
         },
     })
 
@@ -352,6 +337,7 @@ export default class Engine extends CoreEngine {
     })
 
     calcEnergy = () => {
+        this.energyModule.setEnergyValues();
         this.energyResource.calculate();
     }
 

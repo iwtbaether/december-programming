@@ -10,9 +10,10 @@ const CraftingRow = (props: { data: Datamap }) => {
     <span style={{color:'red'}}>
       BETA FEATURE: Just added this to speedup progress after Progression Reset #4, might move it to 3 or 2 instead.
     </span><br/>
-    <button onClick={crafting.makeNewCatalyst}>
+    {!data.crafting.currentCraft && <div>
+      <button onClick={crafting.makeNewCatalyst}>
       Make new Catalyst
-    </button>
+    </button></div>}
     {data.crafting.currentCraft && <div>
       <ItemDisplay item={data.crafting.currentCraft} />
     <button onClick={crafting.addModToCurrentCraft}>

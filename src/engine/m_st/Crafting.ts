@@ -16,6 +16,10 @@ export default class Crafting {
         this.engine.notify();
     }
 
+    calc = () => {
+        this.energyCalcedData = energyItemCalc(this.engine.datamap.crafting.equipedEnergyItem);
+    }
+
     addModToCurrentCraft = () => {
         if (this.data.currentCraft?.itemType === 1) {
             this.data.currentCraft = addRandomMod(this.data.currentCraft);
@@ -32,9 +36,10 @@ export default class Crafting {
     equipCurrentCraft = () => {
         const toEquip = this.data.currentCraft;
         if (this.data.currentCraft?.itemType === 1) {
-            this.data.currentCraft = this.data.equipedEnergyItem;
+            this.data.currentCraft = null;//this.data.equipedEnergyItem;
             this.data.equipedEnergyItem = toEquip;
             this.energyCalcedData = energyItemCalc(toEquip);
+            this.engine.calcEnergy();
         }
         this.engine.notify();
     }
