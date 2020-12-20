@@ -36,6 +36,11 @@ button {
     height: 28px;
 }
 
+button:disabled {
+    border-color: darkslategrey;
+}
+
+
 
 .building-button  {
     @extend .base-button;
@@ -79,6 +84,10 @@ button {
 
 button:hover {
     filter: brightness(150%);
+}
+
+button:disabled:hover {
+    filter: none;
 }
 
 .BuildingTip {
