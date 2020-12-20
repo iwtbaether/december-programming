@@ -13,7 +13,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     <span style={{color:'red'}}>
       BETA FEATURE: Just added this to speedup progress after Progression Reset #4.
       You get currency from doom resets and use it to make items that modify your energy gain.
-      Better UI and explinations incoming. Come to discord if you need help!
+      Better UI and explinations incoming. Come to discord if you need help! You can ignore this and still beat the game (Progress |7).
     </span><br/>
     <div style={{display:'flex',flexDirection:'row'}}>
       <div style={{display:'flex',flexDirection:'column', flexShrink:0, flexBasis:'240px'}}>

@@ -117,6 +117,7 @@ export default class Crafting {
             
         }
         this.setEnergyCalcedData();
+        this.engine.calcEnergy();
         this.engine.notify();
     }
     
@@ -156,24 +157,6 @@ export default class Crafting {
 
 }
 
-function energyItemCalc (item: EnergyItem|null): EnergyItemValues {
-    
-    //things to recalculate on equiping a new energy item;
-    let base: EnergyItemValues = {
-        baseGain: 0,
-        clicksPerSecond: 0,
-        increasedGain: 0,
-        clickMore: 1,
-        moreGain: 1,
-        hoverMore: 1,
-        passiveMore: 1,
-    }
-    if (item === null) return base;
-    item.mods.forEach(mod => {
-        base = modifyEnergyItemValues(mod,base);
-    });
-    return base
-}
 
 function energyItemCalc2 (item: EnergyItem|null, base:EnergyItemValues): EnergyItemValues {
     
@@ -191,7 +174,7 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
             break;
 
             case EnergyItemMods.ClickMore:
-            values.baseGain *= 1 + mod.value * .1;
+            values.clickMore *= 1 + mod.value * .1;
             break;
 
             case EnergyItemMods.ClicksPerSecond:

@@ -32,7 +32,8 @@ button {
 }
 
 button {
-    @extend .base-button 
+    @extend .base-button;
+    height: 28px;
 }
 
 
