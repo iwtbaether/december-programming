@@ -1,0 +1,132 @@
+$base03:    #002b36; //bakground 
+$base02:    #073642; //background highlight
+$base01:    #586e75; //secondary text
+$base00:    #657b83; //light primary text
+$base0:     #839496; //primary text
+$base1:     #93a1a1; //emphasized content (i cant see this with my bad eye lol)
+$base2:     #eee8d5; //light bakground highlight
+$base3:     #fdf6e3; //light background
+$yellow:    #b58900;
+$orange:    #cb4b16;
+$red:       #dc322f;
+$magenta:   #d33682;
+$violet:    #6c71c4;
+$blue:      #268bd2;
+$cyan:      #2aa198;
+$green:     #859900;
+
+
+button {
+    //border: none;
+    font-size: 1rem;
+}   
+
+.base-button {
+    height: 40px;
+    background-color: $base02;
+    color: $base0;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: $base0;
+    white-space: nowrap;
+}
+
+button {
+    @extend .base-button 
+}
+
+
+.building-button  {
+    @extend .base-button;
+    min-width: 100px;
+}
+
+
+
+.middle-button {
+    border-radius: 0px;
+}
+
+
+.MainColumn {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.NavRow {
+    border-bottom: 1px solid $green;
+    margin-bottom: 4px;
+}
+
+.NavButton {
+    font-size: 1em;
+    color: $base0;
+    border: none;
+    background: none;
+}
+
+
+.NavRow button:hover {
+    filter: brightness(150%);
+}
+
+.ActiveNavButton {
+    @extend .NavButton;
+    color: $green;
+}
+
+button:hover {
+    filter: brightness(150%);
+}
+
+.BuildingTip {
+    border: 2px solid $base2;
+    color: $base1;
+    z-index: 1;
+    background-color: $base02;
+    text-align: center  ;
+
+    position: absolute;
+    white-space: nowrap;
+    margin: 5px;
+    padding: 5px;
+    pointer-events: none;
+    white-space: pre;
+}
+
+.HeaderRow {
+    background-color: $base02;
+    color: $base0;
+}
+
+
+
+.HighlightText {
+    background-color: $base00;
+}
+
+.gap {
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.comment-text {
+    color: $base01;
+}
+
+.orange-text {
+    color: $orange;
+}
+
+.green-text {
+    color: green;
+}
+
+.red-text {
+    color: red;
+}
+
+.flexWrap {
+    flex-wrap: wrap;
+}

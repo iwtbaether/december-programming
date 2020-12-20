@@ -2,7 +2,7 @@ import React from "react";
 import { gEngine } from "../..";
 import { Datamap } from "../../engine/Datamap";
 import { canCheat } from "../../engine/externalfns/util";
-import { EnergyItem, EnergyItemMod, EnergyItemMods, ItemData, ItemTypes } from "../../engine/m_st/Crafting";
+import { EnergyItem, EnergyItemMod, EnergyItemMods, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
 import DisplayDecimal from "../DisplayDecimal";
 import DisplayNumber from "../DisplayNumber";
 
@@ -11,7 +11,9 @@ const CraftingRow = (props: { data: Datamap }) => {
   const crafting = gEngine.crafting;
   return (<div>
     <span style={{color:'red'}}>
-      BETA FEATURE: Just added this to speedup progress after Progression Reset #4, might move it to 3 or 2 instead.
+      BETA FEATURE: Just added this to speedup progress after Progression Reset #4.
+      You get currency from doom resets and use it to make items that modify your energy gain.
+      Better UI and explinations incoming. Come to discord if you need help!
     </span><br/>
     <div style={{display:'flex',flexDirection:'row'}}>
       <div style={{display:'flex',flexDirection:'column', flexShrink:0, flexBasis:'240px'}}>
@@ -20,11 +22,17 @@ const CraftingRow = (props: { data: Datamap }) => {
         <DisplayNumber num={crafting.data.currency.augmentations} name={'Enchantment'}/>
       </div>
     {!data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'column'}}>
-      <button onClick={crafting.makeNewCatalyst}>
-      Create Catalyst (Energy)
+      {data.unlocksStates.one >=  7 && <button onClick={crafting.makeNewCatalyst}>
+      Create Large Catalyst (Energy)
+    </button>}
+    <button onClick={crafting.makeNewMediumCatalyst}>
+      Create Medium Catalyst (Energy)
     </button>
-    {canCheat && <button onClick={crafting.getCurrency}>
-      Cheat
+    {data.unlocksStates.one >= 5 &&<button onClick={crafting.makeNewSmallCatalyst}>
+      Create Small Catalyst (Energy)
+    </button>}
+    {canCheat && <button onClick={crafting.getRandomCurrency}>
+      Get Random Currency
     </button>}
     </div>}
     {data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'row'}}>
@@ -44,9 +52,13 @@ const CraftingRow = (props: { data: Datamap }) => {
     </div>
     <br/>
     Equipped:<br/>
+    <div style={{display:'flex',flexDirection:'row'}}>
     {data.crafting.equipedEnergyItem && <ItemDisplay item={data.crafting.equipedEnergyItem} />}<br/>
+    {data.crafting.equipedMedEnergyItem && <ItemDisplay item={data.crafting.equipedMedEnergyItem} />}<br/>
+    {data.crafting.equipedSmallEnergyItem && <ItemDisplay item={data.crafting.equipedSmallEnergyItem} />}<br/>
+    </div>
     Final Stats From Equipment:<br/>
-    {gEngine.energyModule.energyGainFromAutoClickers.greaterThan(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}
+    {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}
     {JSON.stringify(crafting.energyCalcedData)}
   </div>)
 }
@@ -56,14 +68,15 @@ export default CraftingRow;
 const EnergyItemDisplay = (props: {item: EnergyItem}) => {
   return (<div>
     Energy Catalyst<br/>
-    {props.item.mod1 && <ModDisplay mod={props.item.mod1} />}
-    {props.item.mod2 && <ModDisplay mod={props.item.mod2} />}
-    {props.item.mod3 && <ModDisplay mod={props.item.mod3} />}
+    Size {maxMods(props.item)}<br/>
+    {props.item.mods.map((mod,index)=><ModDisplay key={index} mod={mod}/>)}
   </div>)
 }
 
 const ItemDisplay = (props: {item: ItemData}) => {
-  if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item}/>
+  if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item as EnergyItem}/>
+  if (props.item.itemType === 2) return <EnergyItemDisplay item={props.item as EnergyItem}/>
+  if (props.item.itemType === 3) return <EnergyItemDisplay item={props.item as EnergyItem}/>
   return <span>error</span>;
 }
 

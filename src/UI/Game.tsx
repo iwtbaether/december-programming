@@ -5,6 +5,7 @@ import { Datamap } from '../engine/Datamap';
 import { canCheat, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
+import ConfirmCommandButton from './comps/ConfirmCommandButton';
 import DisplayDecimal from './DisplayDecimal';
 import GardenRow from './GardenRow';
 import JobXPPopup from './JobXPPopup';
@@ -21,12 +22,12 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
     const data = this.props.data
 
     return (
-      <div>
+      <div className='Game'>
         //TODO: name game
-        <hr />
+        <hr style={{width:'100%'}} />
         {data.unlocksStates.two > 0 && <React.Fragment>
           <NavRow data={data} />
-          <hr />
+        <hr style={{width:'100%'}} />
         </React.Fragment>}
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a} />}
         {data.nav === 1 && <DoomRow data={data} />}
@@ -35,7 +36,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 6 && <CraftingRow data={data} />}
         {data.nav === 2 && <StatsRow data={data} />}
         {data.nav === 4 && <OptionsRow data={data} />}
-        <hr />
+        <hr style={{width:'100%'}} />
         <FileButtons auto={data.autosave} last={data.last} />
         <PopupRow data={data} />
       </div>
@@ -43,11 +44,11 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
   }
 }
 
-const PopupRow = (props: {data: Datamap}) => {
+const PopupRow = (props: { data: Datamap }) => {
   if (props.data.popupUI === 0) return null;
 
-  return (<div style={{position:'absolute',backgroundColor:'black', left: 0, top: 0, width: "100%", height: '100%'}}>
-        {props.data.popupUI === 1 && <JobXPPopup data={props.data}/>}
+  return (<div style={{ position: 'absolute', backgroundColor: 'black', left: 0, top: 0, width: "100%", height: '100%' }}>
+    {props.data.popupUI === 1 && <JobXPPopup data={props.data} />}
   </div>)
 }
 
@@ -61,15 +62,44 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       <button onClick={gEngine.autosaveToggle}>
         Auto ({props.auto.toString()})
           </button>
-      <button onClick={gEngine.load}>
-        Load
+          <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
+      <button onClick={gEngine.export} >
+        Export
           </button>
-      <button onClick={gEngine.reset}>
-        Reset
-          </button>
+      <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
+        Import
+                                </button>
+      <input id="file-input" type="file" name="name" style={{ display: "none" }}
+        onChange={(e) => {
+          let list = e.target.files;
+          if (list) {
+            let file = list[0];
+            var reader = new FileReader();
+
+            //reader.readAsArrayBuffer(file)
+            reader.readAsText(file, 'UTF-8');
+
+            // here we tell the reader what to do when it's done reading...
+            reader.onload = readerEvent => {
+              let target = readerEvent.target;
+              if (target) {
+                let content = target.result;
+                if (content) {
+                  console.log(content);
+                  gEngine.import(content.toString())
+
+                }
+              }
+            }
+
+          }
+
+        }} />
+          <ConfirmCommandButton do={gEngine.reset} label={'Reset All Data'} warning={'This does nothing good. It is just a data wipe.'} />
+      
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
-        <br/>
+      <br />
         v.4
     </div>
   )

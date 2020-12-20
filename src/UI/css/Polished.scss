@@ -1,0 +1,178 @@
+@import './Apps.scss';
+
+#root, body, html {
+    height: 100%;
+}
+
+a {
+    color: $blue;
+}
+
+.Game {
+    display: flex;
+    flex-direction: column;
+    background-color: $base03;
+    color: $base0;
+
+    height: 100%;
+}
+
+.HeaderRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: $base02;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.MyButton path {
+    fill: $base00;
+}
+
+
+.FooterRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: $base02;
+    padding: 5px;
+}
+
+.MyButton {
+    background-color:black;
+    color: $base00;
+    border-radius: 10px;
+    border: 2px solid $base00;
+}
+
+.MyButton svg {
+    height: 3rem;
+}
+
+
+.SingleActivityActive {
+    @extend .MyButton;
+    color: $green;
+    border-color: $green;
+}
+
+.SingleActivityActive path {
+    fill: $green;
+}
+
+.SingleActivity {
+    @extend .MyButton;
+}
+
+.SingleActivity path {
+    fill: $base00
+}
+
+.LogColumn {
+    flex-basis: 300px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border-left: 3px solid $base02;
+    text-align: right;
+    font-size: .9rem;
+}
+
+.ResourceColumn {
+    flex-basis: 380px;
+    flex-shrink: 0;
+    border-right: 3px solid $base02;
+    margin-right: 5px;
+    padding-right: 5px;
+}
+
+
+.ResourceColumn>div:nth-child(2n) {
+    background-color: $base03;
+}
+
+.ResourceColumn>div:nth-child(2n+1) {
+    background-color: $base02;
+}
+
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.spaceBetween {
+    justify-content: space-between;
+}
+
+.cancelButton {
+    @extend .MyButton;
+    color: $red;
+    border-color: $red;
+}
+
+.flexGrow {
+    flex-grow: 1;
+}
+
+
+.rightButton {
+    @extend .MyButton;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.leftButton {
+    @extend .MyButton;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+
+.TipFC {
+        border: 2px solid $base2;
+        color: $base1;
+        z-index: 1;
+        background-color: $base02;
+        text-align: center  ;
+    
+        position: absolute;
+        white-space: nowrap;
+        margin: 5px;
+        padding: 5px;
+        pointer-events: none;
+        white-space: pre;
+}
+
+.active-button  {
+    @extend .MyButton;
+    color: $base1;
+}
+
+.disabled-button  {
+    @extend .MyButton;
+    color: $orange;
+}
+
+.capped-button  {
+    @extend .MyButton;
+    color: $red;
+}
+
+.cost-able {
+    color: $green;
+}
+
+.cost-unable {
+    color: $orange
+}
+
+.cost-capped {
+    color: $red;
+}

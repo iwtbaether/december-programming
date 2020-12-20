@@ -9,7 +9,7 @@ import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
 import Garden from "./garden/Garden";
 import Jobs from "./Jobs";
-import Crafting from "./m_st/Crafting";
+import Crafting, { CraftingData_Init } from "./m_st/Crafting";
 import Research from "./Research";
 
 
@@ -42,7 +42,7 @@ export default class Engine extends CoreEngine {
         const deltaS = delta / 1000;
 
         this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
-
+        this.antiEnergyResource.gainResource(this.antiEnergyResource.gainPS.times(deltaS))
         if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta)
 
         //console.log(deltaS);
@@ -70,11 +70,11 @@ export default class Engine extends CoreEngine {
             this.datamap.cell.a = decimal
         },
         calculateGain: () => {
-            const mult: Decimal = this.energyModule.energyGainMult;
-            let base = this.energyModule.energyGainPerSecondBase();
-            if (this.datamap.activity === 1) base = base.add(this.energyModule.energyGainFromActivityBase());
+            const mult: Decimal = this.energyModule.energyGainMult.times(this.crafting.energyCalcedData.passiveMore);
+            const base = this.energyModule.energyGainPerSecondBase();
             let gain = base.times(mult);
             if (this.energyModule.energyGainFromAutoClickers.greaterThan(0)) gain = gain.add(this.energyModule.energyGainFromAutoClickers)
+            if (this.datamap.activity === 1) gain = gain.add(this.energyModule.energyGainFromActivity);
             return gain;
         }
     })
@@ -84,6 +84,11 @@ export default class Engine extends CoreEngine {
         get: () => this.datamap.cell.aa,
         setDecimal: (decimal) => {
             this.datamap.cell.aa = decimal
+        },
+        calculateGain: () => {
+            let gain = new Decimal(0);
+            if (this.energyModule.energyGainFromAutoClickers.lessThan(0)) gain = gain.minus(this.energyModule.energyGainFromAutoClickers)
+            return gain;
         },
         calculateCap: ()=>this.datamap.cell.doom.add(1)
     })
@@ -117,7 +122,7 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 100, coefficient: 1.3 }, resource: this.antiEnergyResource },
+            { expo: { initial: 100, coefficient: 1.2 }, resource: this.antiEnergyResource },
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 4,
@@ -174,6 +179,7 @@ export default class Engine extends CoreEngine {
                     this.datamap.unlocksStates.two = 1
                 }
                 this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
+                this.crafting.getRandomCurrencyCount(5);
 
                 this.clearEnergy();
                 this.calcEnergy();
@@ -340,10 +346,15 @@ export default class Engine extends CoreEngine {
 
     calcEnergy = () => {
         this.energyModule.setEnergyValues();
+        this.antiEnergyResource.calculate();
         this.energyResource.calculate();
     }
 
     extraLoad = () => {
+        //this.datamap.crafting = CraftingData_Init();
+        //console.log('i fixed the bug');
+        
+        this.crafting.calc();
         //console.log('EXTRALOAD');
         this.calcEnergy();
         this.antiEnergyResource.calculate();

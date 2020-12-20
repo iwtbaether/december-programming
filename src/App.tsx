@@ -29,10 +29,7 @@ export default class App extends React.Component<AppProps, { data: Datamap }> {
     const data = engine.datamap;
 
     return (
-      <div>
         <Game data={data} />
-        
-      </div>
     );
 
 

@@ -1,5 +1,6 @@
 import {Datamap, newDefaultMap, setDecimals} from './Datamap';
 import * as _ from 'lodash';
+import { CraftingData_Init } from './m_st/Crafting';
 
 export const GAMEKEY = 'uglylikeme'
 
@@ -77,10 +78,13 @@ export default abstract class CoreEngine {
         }
 
         this.checkSet();
+
         if (this.extraLoad) {
             this.extraLoad(); //doesn;t work when internally called
-        } //else console.log('no extra load');
-        
+        } else 
+            {
+                //console.log('no extra load');
+            }
     }
     
     tick = () => {
@@ -154,7 +158,7 @@ export default abstract class CoreEngine {
         //console.log(dataString.length)
 
         //        download(`prophet_export_${Date.now()}.txt`,dataString)
-        download(`${GAMEKEY}_export_${Date.now()}.txt`, based)
+        download(`todonamegame_export_${Date.now()}.txt`, based)
 
         function download(filename: string, text: string) {
             var element = document.createElement('a');

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './UI/css/Polished.scss'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Engine from './engine/Engine';

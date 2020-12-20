@@ -1,3 +1,4 @@
+import { throws } from "assert";
 import Decimal from "break_infinity.js";
 import { EnumType, isTypeNode } from "typescript";
 import Engine from "../Engine";
@@ -20,7 +21,7 @@ export default class Crafting {
         this.engine.notify();
     }
 
-    makeNewMiniCatalyst = () => {
+    makeNewMediumCatalyst = () => {
         if (this.data.currency.transmutes < 1) return;
 
         this.data.currency.transmutes --;
@@ -28,13 +29,36 @@ export default class Crafting {
         this.engine.notify();
     }
 
+    makeNewSmallCatalyst = () => {
+        if (this.data.currency.transmutes < 1) return;
+
+        this.data.currency.transmutes --;
+        this.data.currentCraft = makeTinyEnergyItem();
+        this.engine.notify();
+    }
+
+
     getCurrency = () => {
         this.data.currency.transmutes += 10;
         this.data.currency.augmentations += 10;
     }
 
+    getRandomCurrency = () => {
+        let rng = getRandomInt(0, 99);
+        let type = rng % 2;
+        if (type === 0) this.data.currency.transmutes ++;
+        if (type === 1) this.data.currency.augmentations ++;
+    }
+
+    getRandomCurrencyCount = (count: number) => {
+        let rng = getRandomInt(0, 99);
+        let type = rng % 2;
+        if (type === 0) this.data.currency.transmutes += count;
+        if (type === 1) this.data.currency.augmentations += count;
+    }
+
     calc = () => {
-        this.energyCalcedData = energyItemCalc(this.engine.datamap.crafting.equipedEnergyItem);
+        this.setEnergyCalcedData();
     }
 
     addModToCurrentCraft = () => {
@@ -42,28 +66,86 @@ export default class Crafting {
 
         if (this.data.currentCraft?.itemType === 1) {
             const cata = this.data.currentCraft as EnergyItem;
-            if (cata.mod3) return;
+            if (cata.mods.length >= maxMods(cata)) return;
             this.data.currency.augmentations --;
-            this.data.currentCraft = addRandomMod(this.data.currentCraft);
-        }
+            this.data.currentCraft = addRandomMod(cata);
+        } else
+        if (this.data.currentCraft?.itemType === 2) {
+            const cata = this.data.currentCraft as EnergyItem;
+            if (cata.mods.length >= maxMods(cata)) return;
+            this.data.currency.augmentations --;
+            this.data.currentCraft = addRandomMod(cata);
+        } else
+        if (this.data.currentCraft?.itemType === 3) {
+            const cata = this.data.currentCraft as EnergyItem;
+            if (cata.mods.length >= maxMods(cata)) return;
+            this.data.currency.augmentations --;
+            this.data.currentCraft = addRandomMod(cata);
+        } else
         this.engine.notify();
     }
 
     clearCraft = () => {
         this.data.currentCraft = null;
+        this.getRandomCurrency();
         this.engine.notify();
     }
 
-    energyCalcedData: EnergyItemValues = energyItemCalc(this.engine.datamap.crafting.equipedEnergyItem)
     equipCurrentCraft = () => {
         const toEquip = this.data.currentCraft;
         if (this.data.currentCraft?.itemType === 1) {
+            const eEquip = toEquip as EnergyItem;
+            
             this.data.currentCraft = this.data.equipedEnergyItem;
-            this.data.equipedEnergyItem = toEquip;
-            this.energyCalcedData = energyItemCalc(toEquip);
-            this.engine.calcEnergy();
+            this.data.equipedEnergyItem = eEquip;
+            
         }
+
+        if (this.data.currentCraft?.itemType === 2) {
+            const eEquip = toEquip as EnergyItem;
+            
+            this.data.currentCraft = this.data.equipedMedEnergyItem;
+            this.data.equipedMedEnergyItem = eEquip;
+            
+        }
+
+        if (this.data.currentCraft?.itemType === 3) {
+            const eEquip = toEquip as EnergyItem;
+
+            this.data.currentCraft = this.data.equipedSmallEnergyItem;
+            this.data.equipedSmallEnergyItem = eEquip;
+            
+        }
+        this.setEnergyCalcedData();
         this.engine.notify();
+    }
+    
+
+    calcEnergyEquipment = () => {
+        console.log('why');
+        
+        let base: EnergyItemValues = {
+            baseGain: 0,
+            clicksPerSecond: 0,
+            increasedGain: 0,
+            clickMore: 1,
+            moreGain: 1,
+            hoverMore: 1,
+            passiveMore: 1,
+        }
+        base = energyItemCalc2(this.data.equipedEnergyItem, base);
+        base = energyItemCalc2(this.data.equipedMedEnergyItem, base);
+        base = energyItemCalc2(this.data.equipedSmallEnergyItem, base);
+        
+        return base;
+    }
+
+    energyCalcedData: EnergyItemValues = this.calcEnergyEquipment();
+
+
+    setEnergyCalcedData = () => {
+        let base = this.calcEnergyEquipment();
+        this.energyCalcedData = base;
     }
 
 
@@ -75,6 +157,7 @@ export default class Crafting {
 }
 
 function energyItemCalc (item: EnergyItem|null): EnergyItemValues {
+    
     //things to recalculate on equiping a new energy item;
     let base: EnergyItemValues = {
         baseGain: 0,
@@ -86,9 +169,18 @@ function energyItemCalc (item: EnergyItem|null): EnergyItemValues {
         passiveMore: 1,
     }
     if (item === null) return base;
-    if (item.mod1) modifyEnergyItemValues(item.mod1, base);
-    if (item.mod2) modifyEnergyItemValues(item.mod2, base);
-    if (item.mod3) modifyEnergyItemValues(item.mod3, base);
+    item.mods.forEach(mod => {
+        base = modifyEnergyItemValues(mod,base);
+    });
+    return base
+}
+
+function energyItemCalc2 (item: EnergyItem|null, base:EnergyItemValues): EnergyItemValues {
+    
+    if (item === null) return base;
+    item.mods.forEach(mod => {
+        base = modifyEnergyItemValues(mod,base);
+    });
     return base
 }
 
@@ -99,7 +191,7 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
             break;
 
             case EnergyItemMods.ClickMore:
-            values.baseGain += mod.value * .1;
+            values.baseGain *= 1 + mod.value * .1;
             break;
 
             case EnergyItemMods.ClicksPerSecond:
@@ -107,7 +199,7 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
             break;
 
             case EnergyItemMods.HoverMore:
-            values.hoverMore += mod.value * .1;
+            values.hoverMore *= 1 + mod.value * .1;
             break;
 
             case EnergyItemMods.IncreasedGain:
@@ -115,11 +207,11 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
             break;
 
             case EnergyItemMods.MoreGain:
-            values.moreGain += mod.value * .1;
+            values.moreGain *= 1 + mod.value * .1;
             break;
 
             case EnergyItemMods.PassiveMore:
-            values.passiveMore += mod.value * .1;
+            values.passiveMore *= 1 + mod.value * .1;
             break;
     
         default:
@@ -132,6 +224,8 @@ function modifyEnergyItemValues (mod: EnergyItemMod, values: EnergyItemValues): 
 export interface CraftingData {
     currentCraft: ItemData | null,
     equipedEnergyItem: EnergyItem | null,
+    equipedMedEnergyItem: EnergyItem | null,
+    equipedSmallEnergyItem: EnergyItem | null,
     currency: CraftingCurrency;
 }
 
@@ -148,6 +242,8 @@ export function CraftingData_Init(): CraftingData {
     return {
         currentCraft: null,
         equipedEnergyItem: null,
+        equipedMedEnergyItem: null,
+        equipedSmallEnergyItem: null,
         currency: {
             transmutes: 0,
             alterations: 0,
@@ -162,6 +258,7 @@ export function CraftingData_Init(): CraftingData {
 function makeEnergyItem (): EnergyItem {
     let item: EnergyItem = {
         itemType: ItemTypes.EnergyItem,
+        mods: [],
     }
     item = addRandomMod(item);
     return item;
@@ -170,6 +267,7 @@ function makeEnergyItem (): EnergyItem {
 function makeSmallEnergyItem (): EnergyItem {
     let item: EnergyItem = {
         itemType: ItemTypes.SmallEnergyItem,
+        mods: [],
     }
     item = addRandomMod(item);
     return item;
@@ -178,34 +276,40 @@ function makeSmallEnergyItem (): EnergyItem {
 function makeTinyEnergyItem (): EnergyItem {
     let item: EnergyItem = {
         itemType: ItemTypes.TinyEnergyItem,
+        mods: [],
     }
     item = addRandomMod(item);
     return item;
 }
 
 function addRandomMod (item: EnergyItem): EnergyItem {
+    if (item.mods.length >= maxMods(item)) return item;
+
     let exclusions = getModExclusions(item)
-    
     let chosen = randomEnumWithExclusion(EnergyItemMods, exclusions)
     
     let newMod: EnergyItemMod = {
         mod: chosen,
-        value: getRandomInt(0,10)
+        value: getRandomInt(1,10)
     }
     
-    if (item.mod3) return item;
-    else if (item.mod2) item.mod3 = newMod;
-    else if (item.mod1) item.mod2 = newMod;
-    else item.mod1 = newMod;
+    item.mods.push(newMod);
 
     return item;
 }
 
+export function maxMods (item: ItemData): number {
+    if (item.itemType === ItemTypes.EnergyItem) return 3;
+    if (item.itemType === ItemTypes.SmallEnergyItem) return 2;
+    if (item.itemType === ItemTypes.TinyEnergyItem) return 1;
+    return 0;
+}
+
 function getModExclusions (item: EnergyItem): EnergyItemMods[]  {
-    let exclusions = [];
-    if (item.mod1) exclusions.push(item.mod1.mod);
-    if (item.mod2) exclusions.push(item.mod2.mod);
-    if (item.mod3) exclusions.push(item.mod3.mod);
+    let exclusions: EnergyItemMods[] = [];
+    item.mods.forEach(mod => {
+        exclusions.push(mod.mod)
+    });
     return exclusions;
 }
 
@@ -214,18 +318,7 @@ export interface ItemData {
 }
 
 export interface EnergyItem extends ItemData {
-    mod1?: EnergyItemMod,
-    mod2?: EnergyItemMod,
-    mod3?: EnergyItemMod,
-}
-
-export interface SmallEnergyItem extends ItemData {
-    mod1?: EnergyItemMod,
-    mod2?: EnergyItemMod,
-}
-
-export interface TinyEnergyItem extends ItemData {
-    mod1?: EnergyItemMod,
+    mods: EnergyItemMod[];
 }
 
 export interface EnergyItemMod {
