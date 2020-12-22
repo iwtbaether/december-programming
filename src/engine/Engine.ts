@@ -238,7 +238,7 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 10, coefficient: 1.2 }, resource: this.energyResource },
         ],
-        description: 'Base Energy Gain',
+        description: 'Base Energy Gain\nShift+Click to buy max',
         hidden: () => this.datamap.unlocksStates.one < 1,
         outcome: () => `+1 Base Energy Gain\nCurrent: ${this.energyModule.energyGainBase}`,
     })

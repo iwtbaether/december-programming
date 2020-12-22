@@ -1,6 +1,7 @@
 import React from "react";
 import Research, { SingleResearch } from "../engine/Research";
 import { BuildingTip } from "./BuildingsUI";
+import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 
 interface CompProps {research: Research}
@@ -90,7 +91,7 @@ export class SingleResearchUI extends React.Component<{research: SingleResearch,
        
     return (
         <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative', overflow: 'visible'}} >
-            {tipDiv && <BuildingTip show={tipDiv} tip={this.getTip()}/>}
+            <TipFC tip={this.getTip()}/>
        {(!have && this.props.active === 0) && <button className={style} disabled={style != 'active-button'} onClick={()=>{research.buy(); this.leave()}}>
     {research.info.name}
         </button>}

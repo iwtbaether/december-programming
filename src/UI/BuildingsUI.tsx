@@ -1,6 +1,7 @@
 import React, { CSSProperties, ReactNode } from "react";
 import { gEngine } from "..";
 import { SingleBuilding } from "../engine/externalfns/decimalInterfaces/SingleBuilding";
+import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 
 interface CompProps {}
@@ -97,9 +98,9 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding}
         //const style = (building.canBuy())? CSSSTYLES.activeButton: CSSSTYLES.disabledButton;
        
     return (
-        <span onMouseOver={this.over} onMouseOut={this.leave} style={{position:'relative'}}>
+        <span style={{position:'relative'}}>
             {building.info.active && <button className={'base-button left-button red-text'} onClick={building.activeDOWN}>{building.activeDISABLED()?.toNumber()}</button>}
-            <BuildingTip tip={this.getTip()} show={tipDiv}/>
+            <TipFC tip={this.getTip()}/>
        <button className={style2} onClick={this.buy} disabled={bcb !== 1}>
     {building.info.building.info.name} <span className='comment-text'>({building.count.toNumber()})</span>
         </button>

@@ -1,0 +1,9 @@
+@import '../css/Apps.scss';
+
+.TipFC {
+    display: none;
+}
+
+:hover > .TipFC {
+    display: initial;
+}
