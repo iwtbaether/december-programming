@@ -5,7 +5,7 @@ import { Datamap } from "../engine/Datamap";
 import Engine from "../engine/Engine";
 import { canCheat, MINUTE_MS, percentOf } from "../engine/externalfns/util";
 import { TimeRequiredForSeed, SeedType, GardenPlant, SeedGrowthTimeRequired, GardenSeed } from "../engine/garden/Garden";
-import { BuildingTip, SingleBuildingUI } from "./BuildingsUI";
+import {  SingleBuildingUI } from "./BuildingsUI";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass from "./ListedResourceClass";

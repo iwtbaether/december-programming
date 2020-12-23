@@ -22,7 +22,7 @@ const CraftingRow = (props: { data: Datamap }) => {
         <DisplayNumber num={crafting.data.currency.augmentations} name={'Enchantment'}/>
       </div>
     {!data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'column'}}>
-      {data.unlocksStates.one >=  7 && <button onClick={crafting.makeNewCatalyst}>
+      {data.unlocksStates.one >=  6 && <button onClick={crafting.makeNewCatalyst}>
       Create Large Catalyst (Energy)
     </button>}
     <button onClick={crafting.makeNewMediumCatalyst}>

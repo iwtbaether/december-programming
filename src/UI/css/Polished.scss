@@ -167,6 +167,11 @@ a {
     color: $red;
 }
 
+.achieved-button {
+    @extend .MyButton;
+    color: $blue;
+}
+
 .cost-able {
     color: $green;
 }

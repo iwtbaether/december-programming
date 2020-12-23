@@ -112,16 +112,6 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding}
     }
 }
 
-export const BuildingTip: React.FC<{ tip?: ReactNode, show: boolean}> = (props) => {
-    if (props.tip === undefined) return null
-    if (props.show === false) return null;
-    return (
-          <div className='BuildingTip' style={BTStyle}>
-              {props.tip} 
-        </div>
-      )
-  
-  }
 
 const BTStyle: React.CSSProperties = {
     border: '2px solid black',
