@@ -100,7 +100,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
       <br />
-        v.5.1
+        v.5.2
     </div>
   )
 }
@@ -121,6 +121,8 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
       Click Energy Gain: <DisplayDecimal decimal={clickGain} />, Hover Energy Gain: <DisplayDecimal decimal={activityGain} />
       <br />
+      <div style={{display:'flex',gap:'5px'}}>
+
       <button onClick={gEngine.energy.gatherEnergy} onSubmit={(ev) => { ev.preventDefault() }}>
         Gather Energy
       </button>
@@ -131,6 +133,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <SingleBuildingUI building={gEngine.drive} />
       <SingleBuildingUI building={gEngine.antiDrive} />
       <SingleBuildingUI building={gEngine.determination} />
+      </div>
       <br />
       <span>
         Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>

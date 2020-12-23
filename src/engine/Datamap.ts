@@ -3,6 +3,7 @@ import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
+import { SkillManager_Data, SkillManager_Data_Init } from "./skills/SkillManager";
 
 export interface Datamap {
     //core data
@@ -15,6 +16,7 @@ export interface Datamap {
     doomResearch: DoomResearchData,
     testDec: Decimal;
     cell: I_HoldDecimals;
+    skillManager: SkillManager_Data;
     jobs: JobsData;
     unlocksStates: {
         one: number,
@@ -36,6 +38,7 @@ export function newDefaultMap() {
         last: Date.now(),
         jobs: JobsData_Init(),
         doomResearch: DoomResearchData_Init(),
+        skillManager: SkillManager_Data_Init(),
         nav: 0,
         cell: {
             a: ZERO,
