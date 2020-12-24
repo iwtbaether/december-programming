@@ -95,6 +95,14 @@ a {
     background-color: $base02;
 }
 
+.ListedResourceClass:nth-child(2n) {
+    background-color: $base03;
+}
+
+.ListedResourceClass:nth-child(2n+1) {
+    background-color: $base02;
+}
+
 
 .flexRow {
     display: flex;
@@ -182,4 +190,36 @@ a {
 
 .cost-capped {
     color: $red;
+}
+
+.ItemDisplay {
+    border: 1px solid;
+    margin: 2px;
+    text-align: center;
+}
+
+.EnergyItemDisplay {
+    @extend .ItemDisplay;
+    border-color: $yellow;
+}
+
+.GardeningItemDisplay {
+    @extend .ItemDisplay;
+    border-color: $green;
+}
+
+.ItemTitle {
+    background-color: $base02;
+    min-height: 20px;
+    padding: 2px;
+}
+
+.EnergyItemDisplay > .ItemTitle {
+    background-color: $yellow;
+    color: $base03;
+}
+
+.GardeningItemDisplay > .ItemTitle {
+    background-color: $green;
+    color: $base03;
 }

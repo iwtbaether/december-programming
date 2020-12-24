@@ -17,6 +17,10 @@ export default class Garden {
         this.setTempData();
     }
 
+    get equipment () {
+        return this.engine.crafting.gardeningCalcData;
+    }
+
     setTempData = () => {
         this.maxBagSlots = this.calcBagSlots();
         this.maxgGardenPlots = this.calcGardenPlots();
@@ -28,11 +32,11 @@ export default class Garden {
     }
 
     calcBagSlots = () => {
-        return 1 + this.data.researches.expansion + this.data.researches.bagExpansion;
+        return 1 + this.data.researches.expansion + this.data.researches.bagExpansion + this.equipment.bagSlots;
     }
 
     calcGardenPlots = () => {
-        let base = 1 + this.data.researches.expansion;
+        let base = 1 + this.data.researches.expansion + this.equipment.gardenPlots;
         if (this.engine.datamap.unlocksStates.one >= 6) base ++;
         return base
     }
@@ -42,6 +46,11 @@ export default class Garden {
     }
 
     plantSeed = (bagIndex: number) => {
+        this.quietPlantSeed(bagIndex);
+        this.engine.notify();
+    }
+
+    quietPlantSeed = (bagIndex: number) => {
         const seed = this.data.bag[bagIndex];
         if (isUndefined(seed)) {
             return;
@@ -52,13 +61,16 @@ export default class Garden {
             this.data.bag.splice(bagIndex, 1);
 
             if (this.data.researches.doomedSeeds) {
-                const rng = getRandomInt(1, 10);
-                if (rng === 10) {
+                const rng = getRandomInt(1, 100);
+                if (rng <= this.doomChance()) {
                     this.getSeedType(SeedType.doom)
                 }
             }
         }
-        this.engine.notify();
+    }
+
+    doomChance = () => {
+        return 10 + this.equipment.doomChance
     }
 
     discardSeed = (bagIndex: number) => {
@@ -71,8 +83,8 @@ export default class Garden {
             this.data.bag.splice(bagIndex, 1);
             this.engine.doom.gainResource(1);
 
-                const rng = getRandomInt(1, 10);
-                if (rng === 10) {
+                const rng = getRandomInt(1, 100);
+                if (rng <= this.doomChance()) {
                     this.getSeedType(SeedType.doom)
                 }
         }
@@ -94,6 +106,13 @@ export default class Garden {
         if (this.engine.datamap.cell.rebirth.greaterThan(0)) {
             delta = delta * this.engine.datamap.cell.rebirth.add(1).toNumber();
         }
+        if (this.equipment.autoPlant) {
+            if (this.data.bag.length > 0) {
+                if (this.canPlantSeed()) {
+                    this.quietPlantSeed(0);
+                }
+            }
+        }
 
         this.data.seedTimer += delta * this.engine.jobs.seedGainSpeedMult;
         if (this.data.seedTimer >= TimeRequiredForSeed) {
@@ -104,7 +123,7 @@ export default class Garden {
             }
         }
         
-        delta = Math.floor(delta * this.gardenSpeedMult)
+        delta = Math.floor(delta * this.plantSpeedMult)
         if (this.data.plots.length > 0) {
             this.data.plots.forEach((plot, index) => {
                 //console.log('andling plot', index, plot.plantTimer, delta);
@@ -112,37 +131,51 @@ export default class Garden {
                 plot.plantTimer += delta;
                 if (plot.water) {
                     const extra = Math.min(plot.water, delta);
-
+                    
                     plot.plantTimer += extra;
                     if (this.engine.datamap.jobs.notReset.upgrades.garden >= 2) plot.plantTimer += extra
                     
                     plot.water -= extra;
+                } else if (this.equipment.autoWater) {
+                    this.waterPlantQuietly(index);
                 }
             })
+            if (this.equipment.autoHarvest) for (let index = this.data.plots.length - 1; index >= 0; index--) {
+                this.quietHarvest(index);
+            }
         }
+
 
         //console.log('end of garden delta');
         
     }
 
-    harvest = (index: number) => {
-        if (index >= this.data.plots.length) return;
+    quietHarvest = (index: number) => {
         const plant = this.data.plots[index];
         if (SeedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
             this.data.plots.splice(index, 1)
             this.getFruit(plant.seed.type)
+            if (this.data.researches.progression === 2) {
+                this.data.researches.progression = 3
+            }
         }
-        if (this.data.researches.progression === 2) {
-            this.data.researches.progression = 3
-        }
+    }
+
+    harvest = (index: number) => {
+        if (index >= this.data.plots.length) return;
+        this.quietHarvest(index);
         this.engine.notify();
     }
 
     getFruit(type: SeedType) {
         let gain = 1;
-        if (this.data.fruits.bunched.greaterThan(0)) {
+        if (this.equipment.fruitGainBase) {
+            gain = gain + this.equipment.fruitGainBase;
+        }
+        if (this.fruitGainMult !== 1) {
             gain = gain * this.fruitGainMult
         }
+
         switch (type) {
             case SeedType.hope:
                 this.hopeFruit.gainResource(gain);
@@ -211,11 +244,15 @@ export default class Garden {
         }
     }
 
-    waterPlant = (index: number) => {
+    waterPlantQuietly = (index: number) => {
         if (this.data.plots.length <= index) return;
         else {
             this.data.plots[index].water = this.waterTimeBase.times(this.waterTimeMulti).toNumber();
         }
+    }
+
+    waterPlant = (index: number) => {
+        this.waterPlantQuietly(index);
         this.engine.notify();
     }
 
@@ -377,12 +414,15 @@ export default class Garden {
         name: 'Fruit of Doom'
     })
 
-    gardenSpeedMult = 1;
+    plantSpeedMult = 1;
     setGardenSpeedMult = () => {
 
-        const mult = Decimal.ln(this.data.fruits.circular.add(1))
+        let mult = Decimal.ln(this.data.fruits.circular.add(1)) + 1;
         //console.log('calcing garden speed mult',mult);
-        this.gardenSpeedMult = 1 + mult;
+        if (this.equipment.plantGrowthMulti !== 1) {
+            mult = mult * this.equipment.plantGrowthMulti;
+        }
+        this.plantSpeedMult = mult;
     }
 
     waterTimeMulti = new Decimal(1);
@@ -392,16 +432,23 @@ export default class Garden {
         if (this.engine.datamap.jobs.notReset.upgrades.garden >= 1) {
             mult = mult.times(2)
         }
+        if (this.equipment.waterTimeMulti !== 1) {
+            mult = mult.times(this.equipment.waterTimeMulti);
+        }
         this.waterTimeMulti = mult;
 
-        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS);
+        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS).add(this.equipment.waterTimeBase);
         this.waterTimeBase = base;
     }
 
     fruitGainMult = 1;
     setFruitGainMulti = () => {
         const mult = this.data.fruits.bunched.times(.01).add(1);
-        this.fruitGainMult = Decimal.ln(mult) + 1;
+        let scaled = Decimal.ln(mult) + 1;
+        if (this.equipment.fruitGainMulti !== 1) {
+            scaled = scaled * this.equipment.fruitGainMulti;
+        }
+        this.fruitGainMult = scaled;
     }
 
     doomFruitMult = new Decimal(1);

@@ -8,7 +8,7 @@ import { TimeRequiredForSeed, SeedType, GardenPlant, SeedGrowthTimeRequired, Gar
 import {  SingleBuildingUI } from "./BuildingsUI";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
-import ListedResourceClass from "./ListedResourceClass";
+import ListedResourceClass, { ListedDecimal, ListedNumber } from "./ListedResourceClass";
 import { SingleResearchUI } from "./ResearchUI";
 
 const GardenRow = (props: { data: Datamap }) => {
@@ -87,31 +87,11 @@ const GardenRow = (props: { data: Datamap }) => {
                         {data.garden.researches.doomedSeeds && <ListedResourceClass resource={engine.garden.doomedFruits} />}
                         {data.garden.researches.typeEgg && <ListedResourceClass resource={engine.garden.eggFruit} />}
                         <hr />
-                        {data.garden.researches.typeCircle && <DisplayNumber num={engine.garden.gardenSpeedMult} name="Plant Growth Multi:" />}
-                        {data.garden.researches.typeBunch && <span>
-                            <DisplayNumber num={engine.garden.fruitGainMult} name="Fruit Gain Multi:" />
-                        </span>}
-                        {data.garden.researches.typeTriangle && <span>
-                            <span style={{ minWidth: '200px', display: 'inline-block' }}>
-                                Water Time Multi
-                            </span>
-                            <DisplayDecimal decimal={engine.garden.waterTimeMulti}>
-                            </DisplayDecimal>
-                        </span>}
-                        {data.garden.researches.doomedSeeds && <span style={{ display: 'flex', flexDirection: 'row' }}>
-                            <span style={{ flexBasis: '200px' }}>
-                                Doom Gain Multi:
-                        </span>
-                            <DisplayDecimal decimal={engine.garden.doomFruitMult} />
-
-                        </span>}
-                        {data.garden.researches.typeEgg && <span style={{ display: 'flex', flexDirection: 'row' }}>
-                            <span style={{ flexBasis: '200px' }}>
-                                Job Speed Multi:
-                        </span>
-                            <DisplayDecimal decimal={engine.garden.jobSpeedMult} />
-
-                        </span>}
+                        {data.garden.researches.typeCircle && <ListedNumber resource={engine.garden.plantSpeedMult} name="Plant Growth Multi:" />}
+                        {data.garden.researches.typeBunch && <ListedNumber resource={engine.garden.fruitGainMult} name="Fruit Gain Multi:" />}
+                        {data.garden.researches.typeTriangle && <ListedDecimal resource={engine.garden.waterTimeMulti} name='Water Time Multi'/>}
+                        {data.garden.researches.doomedSeeds && <ListedDecimal resource={engine.garden.doomFruitMult} name='Doom Gain Multi'/>}
+                        {data.garden.researches.typeEgg && <ListedDecimal resource={engine.garden.jobSpeedMult} name='Job Speed Multi'/>}
 
                     </div>}
 

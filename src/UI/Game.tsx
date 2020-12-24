@@ -100,7 +100,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
       <br />
-        v.5.2
+        v.6
     </div>
   )
 }
@@ -134,7 +134,6 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <SingleBuildingUI building={gEngine.antiDrive} />
       <SingleBuildingUI building={gEngine.determination} />
       </div>
-      <br />
       <span>
         Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>
       <span>Progress: {percentOf(data.cell.a.toNumber(), goal.toNumber())} | {data.unlocksStates.one}, </span>

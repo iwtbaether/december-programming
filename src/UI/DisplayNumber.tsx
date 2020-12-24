@@ -3,9 +3,8 @@ import React from "react"
 import { formatNumber } from "../engine/externalfns/util";
 
 
-const DisplayNumber: React.FC<{num: number, name? :string}> = (props) => (
-    <span style={{display:"flex",flexDirection:'row'}}>
-        {props.name && <span style={{flexBasis:'200px',flexShrink:0}}>{props.name}</span>}
+const DisplayNumber: React.FC<{num: number}> = (props) => (
+    <span>
         {formatNumber(props.num)}
     </span>
 )

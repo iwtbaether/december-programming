@@ -67,3 +67,14 @@ export function randomEnum<T>(anEnum: T): T[keyof T] {
     const randomEnumValue = enumValues[randomIndex]
     return randomEnumValue;
   }
+
+
+export function randomEnumFromListWithExclusions<T>(enumValues: T[], exclusions: T[]): T {
+  exclusions.forEach(enumItem => {
+    enumValues.splice(enumValues.indexOf(enumItem), 1)
+  });
+
+    const randomIndex = Math.floor(Math.random() * enumValues.length)
+    const randomEnumValue = enumValues[randomIndex]
+    return randomEnumValue;
+}

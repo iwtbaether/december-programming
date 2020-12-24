@@ -1,6 +1,8 @@
+import Decimal from "break_infinity.js";
 import React from "react";
 import { SingleResource } from "../engine/externalfns/decimalInterfaces/SingleResource";
 import DisplayDecimal from "./DisplayDecimal";
+import DisplayNumber from "./DisplayNumber";
 
 const ListedResourceClass: React.FC<{ resource: SingleResource}> = (props) => {
 
@@ -11,7 +13,7 @@ const ListedResourceClass: React.FC<{ resource: SingleResource}> = (props) => {
     if (cap.eq(0)) return null;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
             <span style={{ marginRight: '5px' }} className='resourceColor'>
                 {props.resource.info.name}
             </span>
@@ -33,3 +35,36 @@ const ListedResourceClass: React.FC<{ resource: SingleResource}> = (props) => {
 }
 
 export default ListedResourceClass;
+
+
+export const ListedDecimal: React.FC<{ resource: Decimal, name: string}> = (props) => {
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
+            <span style={{ marginRight: '5px' }} className='resourceColor'>
+                {props.name}
+            </span>
+            <span style={{flexGrow:1, textAlign:'right'}}>
+                <span>
+                 <DisplayDecimal decimal={props.resource} /> 
+                </span>
+            </span>
+        </div>
+    )
+}
+
+export const ListedNumber: React.FC<{ resource: number, name: string}> = (props) => {
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
+            <span style={{ marginRight: '5px' }} className='resourceColor'>
+                {props.name}
+            </span>
+            <span style={{flexGrow:1, textAlign:'right'}}>
+                <span>
+                 <DisplayNumber num={props.resource} /> 
+                </span>
+            </span>
+        </div>
+    )
+}

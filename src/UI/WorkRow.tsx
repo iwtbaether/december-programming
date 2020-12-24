@@ -18,8 +18,10 @@ const JobsRow = (props: { data: Datamap }) => {
     <span>
       Current Job: Swimmer
     </span>
+    <div>
     <ListedResourceClass resource={jobs.workResource}/>
     {jobs.data.notReset.mechancProgession > 0 && <ListedResourceClass resource={jobs.xpResource}/>}
+    </div>
     <div>
 
     {data.jobs.work.eq(0) && <button onClick={jobs.convertToWork} disabled={jobs.data.converted}>
