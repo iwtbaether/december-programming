@@ -1,6 +1,7 @@
 import {Datamap, newDefaultMap, setDecimals} from './Datamap';
 import * as _ from 'lodash';
 import { CraftingData_Init } from './m_st/Crafting';
+import { AUTOSAVE_INTERVAL } from './Engine';
 
 export const GAMEKEY = 'uglylikeme'
 
@@ -97,6 +98,10 @@ export default abstract class CoreEngine {
         this.datamap.last = newnow;
         
         this.processDelta(delta)
+        if (this.datamap.autosave) {
+            this.datamap.autosaveCounter += delta;
+            if (this.datamap.autosaveCounter >= AUTOSAVE_INTERVAL) this.save();
+        }
         this.notify();
     }
     

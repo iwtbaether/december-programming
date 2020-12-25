@@ -29,6 +29,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
           <NavRow data={data} />
         <hr style={{width:'100%'}} />
         </React.Fragment>}
+        <div style={{flexGrow:1}}>
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a} />}
         {data.nav === 1 && <DoomRow data={data} />}
         {data.nav === 3 && <GardenRow data={data} />}
@@ -36,6 +37,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 6 && <CraftingRow data={data} />}
         {data.nav === 2 && <StatsRow data={data} />}
         {data.nav === 4 && <OptionsRow data={data} />}
+        </div>
         <hr style={{width:'100%'}} />
         <FileButtons auto={data.autosave} last={data.last} />
         <PopupRow data={data} />
@@ -100,7 +102,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
       <br />
-        v.6
+        v.6.1
     </div>
   )
 }
@@ -112,22 +114,23 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const clickGain = gEngine.energyModule.energyPerClick;
   const activityGain = gEngine.energyModule.energyGainFromActivity;
   const prize = gEngine.doomGain();
-
+  const color = clickGain.greaterThanOrEqualTo(0)? 'inherit':'purple'
+  const cn = clickGain.greaterThanOrEqualTo(0)? '':'Anti'
 
   return (
     <div style={{ position: 'relative' }}>
       <ListedResourceClass resource={gEngine.energyResource} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
-      Click Energy Gain: <DisplayDecimal decimal={clickGain} />, Hover Energy Gain: <DisplayDecimal decimal={activityGain} />
+      Hover Energy Gain: <DisplayDecimal decimal={activityGain} />, <span className={cn}>Click Energy Gain: <DisplayDecimal decimal={clickGain} /></span>
       <br />
       <div style={{display:'flex',gap:'5px'}}>
 
-      <button onClick={gEngine.energy.gatherEnergy} onSubmit={(ev) => { ev.preventDefault() }}>
-        Gather Energy
-      </button>
       <button onMouseEnter={() => gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity}>
         Gather Energy /s
+      </button>
+      <button className={cn} onClick={gEngine.energy.gatherEnergy} onSubmit={(ev) => { ev.preventDefault() }}>
+        Gather Energy
       </button>
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />

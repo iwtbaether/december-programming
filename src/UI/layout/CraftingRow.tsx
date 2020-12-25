@@ -12,8 +12,8 @@ const CraftingRow = (props: { data: Datamap }) => {
   const crafting = gEngine.crafting;
   return (<div>
     <span style={{color:'red'}}>
-      BETA FEATURE: Freshly added to speedup progress after Progression Reset #4. You get currency from doom resets and use it to make items that modify your energy gain.<br/>
-      Better UI and explinations incoming. Come to discord if you need help, and please report bugs! You can ignore this and still beat the game (Progress |7).
+      BETA FEATURE: Freshly added to speedup progress after Progression Reset #4. You get currency from doom resets and use it to make different items that modify your energy gain.<br/>
+      Better UI and explinations incoming. Come to discord if you need help, and please report bugs! You can ignore this and still beat the game (Progress |7), when the final 3 item types are unlocked.
     </span><br/>
     <div style={{display:'flex',flexDirection:'row'}}>
       <div style={{display:'flex',flexDirection:'column', flexShrink:0, flexBasis:'240px'}}>
