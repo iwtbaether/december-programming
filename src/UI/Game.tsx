@@ -6,7 +6,9 @@ import { canCheat, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
 import ConfirmCommandButton from './comps/ConfirmCommandButton';
+import TipFC from './comps/TipFC';
 import DisplayDecimal from './DisplayDecimal';
+import FancySaveButton from './FancySaveButton';
 import GardenRow from './GardenRow';
 import JobXPPopup from './JobXPPopup';
 import CraftingRow from './layout/CraftingRow';
@@ -58,11 +60,10 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
   return (
     <div>
       File:
-      <button onClick={gEngine.save}>
-        Save
-          </button>
-      <button onClick={gEngine.autosaveToggle}>
-        Auto ({props.auto.toString()})
+      <FancySaveButton/>
+      <button onClick={gEngine.autosaveToggle} className={props.auto?'AutoOn':'AutoOff'}>
+        Autosave
+        <TipFC tip={props.auto?'On':'Off'}/>
           </button>
           <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
       <button onClick={gEngine.export} >
@@ -102,7 +103,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
       <br />
-        v.6.1
+        v.6.2
     </div>
   )
 }

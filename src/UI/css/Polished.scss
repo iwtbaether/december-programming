@@ -227,3 +227,26 @@ a {
 .Anti {
     color: $violet
 }
+
+.FancySaveButtonOn {
+    animation: wobble 1s;
+}
+  
+  @keyframes wobble {
+    
+    50% {
+        background-color: $blue;
+    }
+    
+  }
+
+  .AutoOn {
+    background-color: $blue;
+    color: black;
+}
+
+.AutoOff {
+    background-color: $red;
+    color: black;
+}
+  

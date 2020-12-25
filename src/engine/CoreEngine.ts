@@ -51,6 +51,12 @@ export default abstract class CoreEngine {
         let based = window.btoa(stringy);
         localStorage.setItem(GAMEKEY, based)
 
+        let btn  = document.getElementById('save-button');
+        if (btn) {
+            btn.className = 'FancySaveButtonOn'
+            btn.style.animationPlayState = 'running'
+        }
+
     }
 
     load= () => {
