@@ -98,8 +98,44 @@ const ItemDisplay = (props: {item: ItemData}) => {
 
 const EnergyModDisplay = (props: {mod: EnergyItemMod}) => {
   return (<div className='EnergyModDisplay'>
-    {EnergyItemModList[props.mod.mod]} - {props.mod.value}
+    {EnergyModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
+}
+
+function EnergyModAndValueToString  (mod: EnergyItemModList, value: number):string {
+  switch (mod) {
+    case EnergyItemModList.BaseGain:
+      return `+${value} Base Energy Gain`
+      break;
+
+      case EnergyItemModList.ClickMore:
+        return `x${value*.1+1} More Energy from Clicking`
+        break;
+
+        case EnergyItemModList.ClicksPerSecond:
+          return `${value} Autoclickers`
+          break;
+
+          case EnergyItemModList.HoverMore:
+            return `x${value*.1+1} More Energy from Hovering`
+            break;
+            
+            case EnergyItemModList.IncreasedGain:
+              return `+${value} Increased Energy Gain`
+              break;
+              
+              case EnergyItemModList.MoreGain:
+            return `x${value*.1+1} More Energy Gain`
+        break;
+
+                case EnergyItemModList.PassiveMore:
+            return `x${value*.1+1} More Energy per second`
+                  break;
+  
+    default:
+      return 'error'
+      break;
+  }
 }
 
 const GardeningItemDisplay = (props: {item: GardeningItem}) => {

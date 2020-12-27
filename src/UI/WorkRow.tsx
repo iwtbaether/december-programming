@@ -38,6 +38,9 @@ const JobsRow = (props: { data: Datamap }) => {
     <SingleBuildingUI building={jobs.jobSpeed} />
     <SingleBuildingUI building={jobs.jobSpeedMult} />
     <SingleBuildingUI building={jobs.jobResistance} />
+    {data.jobs.notReset.mechancProgession >= 1 && <button className={data.jobs.notReset.rebuy?"AutoOn":'AutoOff'} onClick={jobs.toggleRebuy}>
+      Rebuy After Prestige
+    </button>}
     </div>
     <span>
       Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
@@ -57,7 +60,10 @@ const JobsRow = (props: { data: Datamap }) => {
     Best {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.farthesthProgress}/>
     </span>
     <span>
-    Goal {selectedJob.unitsLabel}: units //todo
+    Last {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.last}/>
+    </span>
+    <span>
+    Goal {selectedJob.unitsLabel}: 10k
     </span>
   </div>)
 }
