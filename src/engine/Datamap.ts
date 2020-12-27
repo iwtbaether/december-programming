@@ -31,7 +31,7 @@ export interface Datamap {
 
 export function newDefaultMap() {
     let map: Datamap = {
-        autosave: false,
+        autosave: true,
         autosaveCounter: 0,
         activity: 0,
         popupUI: 0,

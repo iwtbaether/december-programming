@@ -52,7 +52,7 @@ export default class EnergyModule {
     }
 
     energyGainFromActivityBase = () => {
-        return this.energyGainBase.add(1).times(10);
+        return this.energyGainBase.add(1).times(9);
     }
 
     energyGainMult: Decimal = new Decimal(0);

@@ -1,6 +1,6 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import DisplayDecimal from "../../../UI/DisplayDecimal";
-import ExpoCurve, { expoI_getCost } from "./ExpoCurve";
+import ExpoCurve, { expoI_buyNCost, expoI_getCost } from "./ExpoCurve";
 import { SingleResource } from "./SingleResource";
 
 export class SingleBuilding {
@@ -28,8 +28,23 @@ export class SingleBuilding {
         });
     }
 
+    getCostsN=(n: Decimal)=> {
+        return this.info.costs.map((cost, index) => {
+            const costDecimal = this.getCostN(index, n);
+
+            return {
+                cost: costDecimal, name: cost.resource.info.name, can: cost.resource.count.greaterThanOrEqualTo(costDecimal),
+                capped: cost.resource.cap.lessThan(costDecimal)
+            };
+        });
+    }
+
     getCost(index: number) {
         return expoI_getCost(this.info.costs[index].expo, this.count)
+    }
+
+    getCostN = (index:number, n:Decimal) => {
+        return expoI_buyNCost(this.info.costs[index].expo, this.count, n)
     }
 
     display() {
@@ -93,6 +108,34 @@ export class SingleBuilding {
         return can;*/
     }
 
+    //return 0 = no
+    //return 1 = yes
+    //return 2 = capped
+    canBuyN = (n: Decimal) => {
+        let can: number = 1;
+        let costs = this.getCostsN(n);
+        costs.forEach((cost) => {
+            if (can != 2) {
+                if (can != 0) {
+                    if (!cost.can) can = 0;
+                }
+                if (cost.capped) can = 2
+            }
+
+        })
+        return can;
+        /*
+        if (this.info.building.cap.lessThanOrEqualTo(this.count)) return false;
+        this.info.costs.forEach((cost, index) => {
+            if (can) {
+                let resource_cost = this.getCost(index);
+                if (resource_cost.greaterThan(cost.resource.count)) can = false;
+            }
+        });
+        return can;*/
+    }
+
+
     buy = () => {
         if (this.canBuy() !== 1) return;
 
@@ -105,6 +148,18 @@ export class SingleBuilding {
 
         this.gainBuilding(1)
 
+    }
+
+    buyN = (n: Decimal) => {
+        if (this.canBuyN(n) !== 1) return;
+
+        this.info.costs.forEach((cost, index) => {
+            let resource_cost = this.getCostN(index, n);
+
+            cost.resource.loseResource(resource_cost)
+        });
+
+        this.gainBuilding(n)
     }
 
     buyMaxMaybe = () => {

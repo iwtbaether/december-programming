@@ -105,31 +105,31 @@ const EnergyModDisplay = (props: {mod: EnergyItemMod}) => {
 function EnergyModAndValueToString  (mod: EnergyItemModList, value: number):string {
   switch (mod) {
     case EnergyItemModList.BaseGain:
-      return `+${value} Base Energy Gain`
+      return `+${value.toFixed(1)} Base Energy Gain`
       break;
 
       case EnergyItemModList.ClickMore:
-        return `x${value*.1+1} More Energy from Clicking`
+        return `x${(value*.1+1).toFixed(1)} More Energy from Clicking`
         break;
 
         case EnergyItemModList.ClicksPerSecond:
-          return `${value} Autoclickers`
+          return `${value.toFixed(1)} Autoclickers`
           break;
 
           case EnergyItemModList.HoverMore:
-            return `x${value*.1+1} More Energy from Hovering`
+            return `x${(value*.1+1).toFixed(1)} More Energy from Hovering`
             break;
             
             case EnergyItemModList.IncreasedGain:
-              return `+${value} Increased Energy Gain`
+              return `+${value.toFixed(1)} Increased Energy Gain`
               break;
               
               case EnergyItemModList.MoreGain:
-            return `x${value*.1+1} More Energy Gain`
+            return `x${(value*.1+1).toFixed(1)} More Energy Gain`
         break;
 
                 case EnergyItemModList.PassiveMore:
-            return `x${value*.1+1} More Energy per second`
+            return `x${(value*.1+1).toFixed(1)} More Energy per second`
                   break;
   
     default:

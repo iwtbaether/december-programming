@@ -109,7 +109,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 2,
-        outcome: () =>`+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
+        outcome: () =>`+1x Increased Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
     })
 
     antiDrive: SingleBuilding = new SingleBuilding({
@@ -126,7 +126,7 @@ export default class Engine extends CoreEngine {
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 4,
-        outcome: () => `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
+        outcome: () => `+1x Increased Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
     })
 
     setNav = (num: number) => {
@@ -149,6 +149,10 @@ export default class Engine extends CoreEngine {
         gatherEnergy: () => {
             const gain = this.energyModule.energyPerClick;
             this.gainEnergy(gain);
+            if (this.datamap.activity != 0) {
+                this.datamap.activity = 0;
+                this.calcEnergy();
+            }
             this.notify();
         },
         unlockGoal: () => {
@@ -298,7 +302,8 @@ export default class Engine extends CoreEngine {
         description: `More Energy Gain`,
         hidden: () => this.datamap.cell.d2.lessThan(1) && this.datamap.unlocksStates.one < 4,
         outcome: () => {
-            return `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainMore}x`
+            let now = this.doomUpgrade3.count.add(1);
+            return `x${now} -> x${now.add(1)} Energy Gain`
         },
     })
 
@@ -317,7 +322,8 @@ export default class Engine extends CoreEngine {
         description: `More Energy Gain`,
         hidden: () => this.datamap.cell.determination.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
         outcome: () => {
-            return `+1x Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainMore}x`
+            let now = this.determination.count.add(1);
+            return `x${now} -> x${now.add(1)} Energy Gain`
         },
     })
 

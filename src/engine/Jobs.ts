@@ -1,3 +1,4 @@
+import { throws } from "assert";
 import Decimal from "break_infinity.js";
 import { Datamap } from "./Datamap";
 import Engine from "./Engine";
@@ -76,6 +77,11 @@ export default class Jobs {
         },
     })
 
+    toggleRebuy = () => {
+        this.data.notReset.rebuy = !this.data.notReset.rebuy;
+        this.engine.notify();
+    }
+
     xpResource = new SingleResource({
         name: 'XP',
         get: () => this.engine.datamap.jobs.notReset.xp,
@@ -112,6 +118,11 @@ export default class Jobs {
             rng = getRandomInt(1, 3)
         }
 
+        let old;
+        if (this.data.notReset.rebuy) {
+            old = [this.data.jobspeedplus, this.data.jobspeedmult, this.data.jobResistance]
+        }
+
         //reset
         this.reset();
 
@@ -119,6 +130,13 @@ export default class Jobs {
         this.workResource.gainResource(reward);
         this.xpResource.gainResource(rng)
         this.data.farthesthProgress = farthest;
+        this.data.last = pp;
+
+        if (this.data.notReset.rebuy && old) {
+            if (old[0]) this.jobSpeed.buyN(old[0]);
+            if (old[1]) this.jobSpeedMult.buyN(old[1]);
+            if (old[2]) this.jobResistance.buyN(old[2]);
+        }
 
         //setup memory
         this.setSeedGainSpeedMulti();
@@ -332,11 +350,13 @@ export interface JobsData {
     converted: boolean,
     jobProgress: Decimal,
     farthesthProgress: Decimal,
+    last: Decimal,
     jobGoalMet: boolean,
     jobID: number,
     notReset: {
         mechancProgession: number,
         xp: Decimal,
+        rebuy: boolean,
         upgrades: {
             job: number
             garden: number
@@ -360,10 +380,12 @@ export function JobsData_Init(): JobsData {
         converted: false,
         jobProgress: ZERO,
         jobID: 0,
+        last: ZERO,
         farthesthProgress: ZERO,
         notReset: {
             mechancProgession: 0,
             xp: ZERO,
+            rebuy: false,
             upgrades: {
                 doom: 0,
                 energy: 0,
@@ -384,6 +406,7 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.jobspeedmult = new Decimal(data.jobs.jobspeedmult);
     data.jobs.jobspeedplus = new Decimal(data.jobs.jobspeedplus);
     data.jobs.jobProgress = new Decimal(data.jobs.jobProgress);
+    data.jobs.last = new Decimal(data.jobs.last);
     data.jobs.farthesthProgress = new Decimal(data.jobs.farthesthProgress);
     data.jobs.notReset.xp = new Decimal(data.jobs.notReset.xp);
     data.jobs.notReset.upgrades.jobSpeed = new Decimal(data.jobs.notReset.upgrades.jobSpeed)

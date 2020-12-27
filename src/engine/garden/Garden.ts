@@ -79,7 +79,11 @@ export default class Garden {
             return;
         }
 
-        if (this.data.researches.doomedSeeds2) {
+        if (seed.type === SeedType.doom) {
+
+        }
+
+        else if (this.data.researches.doomedSeeds2) {
             this.data.bag.splice(bagIndex, 1);
             this.engine.doom.gainResource(1);
 
@@ -428,7 +432,7 @@ export default class Garden {
     waterTimeMulti = new Decimal(1);
     waterTimeBase = new Decimal(1);
     setWaterTime = () => {
-        let mult = this.data.fruits.triangular.add(1);
+        let mult = this.data.fruits.triangular.divideBy(5).add(1);
         if (this.engine.datamap.jobs.notReset.upgrades.garden >= 1) {
             mult = mult.times(2)
         }
@@ -437,7 +441,7 @@ export default class Garden {
         }
         this.waterTimeMulti = mult;
 
-        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS).add(this.equipment.waterTimeBase);
+        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*5).add(this.equipment.waterTimeBase);
         this.waterTimeBase = base;
     }
 
