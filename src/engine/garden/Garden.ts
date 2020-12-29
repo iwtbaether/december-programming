@@ -32,12 +32,15 @@ export default class Garden {
     }
 
     calcBagSlots = () => {
-        return 1 + this.data.researches.expansion + this.data.researches.bagExpansion + this.equipment.bagSlots;
+        let base = 1 + this.data.researches.expansion + this.data.researches.bagExpansion + this.equipment.bagSlots;
+        if (this.engine.datamap.jobs.notReset.upgrades.garden >= 4) base ++;
+        return base
     }
 
     calcGardenPlots = () => {
         let base = 1 + this.data.researches.expansion + this.equipment.gardenPlots;
         if (this.engine.datamap.unlocksStates.one >= 6) base ++;
+        if (this.engine.datamap.jobs.notReset.upgrades.garden >= 3) base ++;
         return base
     }
 
@@ -441,7 +444,7 @@ export default class Garden {
         }
         this.waterTimeMulti = mult;
 
-        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*5).add(this.equipment.waterTimeBase);
+        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*2).add(this.equipment.waterTimeBase);
         this.waterTimeBase = base;
     }
 
@@ -484,6 +487,8 @@ export default class Garden {
 
     resetGarden = () => {
         this.engine.datamap.garden = GardenData_Init();
+        this.engine.datamap.cell.rebirth = new Decimal(0);
+        this.setTempData();
     }
 
     rebirth: SingleBuilding = new SingleBuilding({
