@@ -26,6 +26,15 @@ export default class Engine extends CoreEngine {
         }
     })
 
+    gloom: SingleResource = new SingleResource({
+        name: 'Gloom',
+        get: () => this.datamap.cell.gloom,
+        setDecimal: (d) => {
+            this.datamap.cell.gloom = d;
+        },
+        calculateGain: ()=>this.datamap.cell.gloomGen1.add(this.datamap.cell.gloomGen1E).times(this.datamap.cell.aewf)
+    })
+
     crafting: Crafting = new Crafting(this);
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
@@ -44,6 +53,14 @@ export default class Engine extends CoreEngine {
         this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
         this.antiEnergyResource.gainResource(this.antiEnergyResource.gainPS.times(deltaS))
         if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta)
+        if (this.datamap.unlocksStates.two > 2) {
+            this.gloom.gainResource(this.gloom.gainPS.times(deltaS));
+            this.datamap.cell.gloomGen1E = this.datamap.cell.gloomGen1E.add( this.gloomGen1.info.building.gainPS.times(deltaS))
+            this.datamap.cell.gloomGen2E = this.datamap.cell.gloomGen2E.add( this.gloomGen2.info.building.gainPS.times(deltaS))
+            this.datamap.cell.gloomGen3E = this.datamap.cell.gloomGen3E.add( this.gloomGen3.info.building.gainPS.times(deltaS))
+            this.datamap.cell.gloomGen4E = this.datamap.cell.gloomGen4E.add( this.gloomGen4.info.building.gainPS.times(deltaS))
+            this.calcGloom();
+        }
 
         //console.log(deltaS);
         //console.log(this.datamap.last)
@@ -129,6 +146,26 @@ export default class Engine extends CoreEngine {
         outcome: () => `+1x Increased Energy Gain\nCurrent: ${this.energyModule.totalEnergyGainIncreased}x`,
     })
 
+    momentum: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Momentum',
+            get: () => this.datamap.cell.momentum,
+            setDecimal: (dec) => {
+                this.datamap.cell.momentum = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1e5, coefficient: 2.1 }, resource: this.energyResource },
+        ],
+        description: 'More Energy Gain',
+        hidden: () => this.datamap.unlocksStates.two < 3,
+        outcome: () => {
+            let now = this.momentum.count.add(1);
+            return `x${now} -> x${now.add(1)} Energy Gain`
+        },
+    })
+
     setNav = (num: number) => {
         this.datamap.nav = num;
         this.notify();
@@ -169,6 +206,7 @@ export default class Engine extends CoreEngine {
                 this.datamap.unlocksStates.one++;
                 this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
                 this.calcEnergy();
+                this.resetGloom();
                 this.notify();
             }
         },
@@ -182,9 +220,11 @@ export default class Engine extends CoreEngine {
                 if (this.datamap.unlocksStates.two === 0) {
                     this.datamap.unlocksStates.two = 1
                 }
+
                 this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
                 this.crafting.getRandomCurrencyCount(5);
-
+                this.datamap.cell.gloom = new Decimal(1);
+                this.resetGloom();
                 this.clearEnergy();
                 this.calcEnergy();
                 this.notify();
@@ -194,9 +234,29 @@ export default class Engine extends CoreEngine {
 
     }
 
+    resetGloom = () => {
+        const ZERO = new Decimal(0);
+        if (this.datamap.cell.gloom.greaterThan(0)) this.datamap.cell.gloom = new Decimal(1)
+        else this.datamap.cell.gloom = ZERO;
+        this.datamap.cell.gloomGen1 = ZERO;
+        this.datamap.cell.gloomGen2 = ZERO;
+        this.datamap.cell.gloomGen3 = ZERO;
+        this.datamap.cell.gloomGen4 = ZERO;
+        this.datamap.cell.gloomGen1E = ZERO;
+        this.datamap.cell.gloomGen2E = ZERO;
+        this.datamap.cell.gloomGen3E = ZERO;
+        this.datamap.cell.gloomGen4E = ZERO;
+        this.calcGloom();
+    }
+
     doomGain = () => {
         let gainedDoom = Decimal.floor(this.energyResource.count.divideBy(this.energy.giveUpLevel2Cost))
         gainedDoom = gainedDoom.add(gainedDoom.times(this.doomUpgrade2.count));
+        const incDoomGain = this.datamap.cell.d5.add(this.datamap.cell.d6);
+        if (incDoomGain.greaterThan(0)) {
+            gainedDoom = gainedDoom.times(incDoomGain.add(1));
+        }
+
         if (this.datamap.garden.fruits.doom.greaterThan(0)) {
             gainedDoom = gainedDoom.times(this.datamap.garden.fruits.doom.add(1))
         }
@@ -208,6 +268,11 @@ export default class Engine extends CoreEngine {
         this.doomUpgrade1.reset();
         this.doomUpgrade2.reset();
         this.doomUpgrade3.reset();
+        this.doomUpgrade4.reset();
+        this.doomUpgrade5.reset();
+        this.doomUpgrade6.reset();
+        this.doomUpgrade7.reset();
+        this.doomUpgrade8.reset();
     }
     clearEnergy = () =>{
         this.energyResource.info.setDecimal(new Decimal(0))
@@ -227,6 +292,32 @@ export default class Engine extends CoreEngine {
         able: () => this.energyResource.count.greaterThanOrEqualTo(this.energy.giveUpLevel2Cost),
         description: 'wy?'
     }
+
+    //an even worse fate
+
+    aewf = () => {
+        if (this.datamap.unlocksStates.two === 2) {
+            this.datamap.unlocksStates.two = 3;
+        }
+        this.datamap.cell.aewf = this.datamap.cell.aewf.add(1);
+        this.crafting.reset();
+        this.garden.resetGarden();
+        this.jobs.realReset();
+        this.clearDoom();
+        this.clearEnergy();
+
+        this.datamap.cell.gloom = this.datamap.cell.aewf.pow(3);
+
+        this.notify();
+    }
+
+    gUL3: BasicCommand = {
+        command: this.aewf,
+        label: 'Give Up, accept +1 Base Gloom',
+        hidden: () => this.datamap.jobs.notReset.upgrades.energy < 1 && this.datamap.cell.aewf.eq(0),
+        able: ()=> this.datamap.jobs.notReset.xp.greaterThan(9) && this.datamap.jobs.notReset.upgrades.energy > 0,
+    }
+
 
     
 
@@ -307,6 +398,168 @@ export default class Engine extends CoreEngine {
         },
     })
 
+    doomUpgrade4: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Cursed Clicking',
+            get: () => this.datamap.cell.d4,
+            setDecimal: (dec) => {
+                this.datamap.cell.d4 = dec
+                this.calcEnergy();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1e6, coefficient: 1.7 }, resource: this.doom },
+        ],
+        description: `Provides 1 click worth of energy each second`,
+        hidden: () => this.datamap.jobs.notReset.upgrades.doom < 1,
+        outcome: () => `+1 Autoclickers`
+    })
+
+    doomUpgrade5: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Replicating Doom',
+            get: () => this.datamap.cell.d5,
+            setDecimal: (dec) => {
+                this.datamap.cell.d5 = dec;
+            },
+        }),
+        costs: [
+            { expo: { initial: 1e9, coefficient: 1.7 }, resource: this.doom },
+        ],
+        description: `Increased Doom Gain`,
+        hidden: () => this.datamap.jobs.notReset.upgrades.doom < 2,
+        outcome: () => '+1x Increased Doom Gain',
+    })
+
+    doomUpgrade6: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Gloom & Doom',
+            get: () => this.datamap.cell.d6,
+            setDecimal: (dec) => {
+                this.datamap.cell.d6 = dec
+            },
+        }),
+        costs: [
+            { expo: { initial: 1052, coefficient: 1.3 }, resource: this.doom },
+            { expo: { initial: 1052, coefficient: 1.3 }, resource: this.gloom },
+        ],
+        description: `Increased Doom Gain`,
+        hidden: () => this.datamap.unlocksStates.two < 3,
+        outcome: () => '+1x Increased Doom Gain',
+    })
+
+    doomUpgrade7: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'd7',
+            get: () => this.datamap.cell.d7,
+            setDecimal: (dec) => {
+                this.datamap.cell.d7 = dec
+            },
+        }),
+        costs: [
+            { expo: { initial: 200, coefficient: 1.3 }, resource: this.doom },
+        ],
+        description: `d7`,
+        hidden: () => this.datamap.jobs.notReset.upgrades.doom < 3,
+        outcome: () => 'd7',
+    })
+
+    doomUpgrade8: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'd8',
+            get: () => this.datamap.cell.d8,
+            setDecimal: (dec) => {
+                this.datamap.cell.d8 = dec
+            },
+        }),
+        costs: [
+            { expo: { initial: 200, coefficient: 1.3 }, resource: this.doom },
+        ],
+        description: `d8`,
+        hidden: () => this.datamap.jobs.notReset.upgrades.doom < 4,
+        outcome: () => 'd8',
+    })
+
+    gloomGen1: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Gloom Production',
+            get: () => this.datamap.cell.gloomGen1,
+            setDecimal: (dec) => {
+                this.datamap.cell.gloomGen1 = dec
+                this.calcGloom();
+            },
+            calculateGain: ()=>this.datamap.cell.gloomGen2.add(this.datamap.cell.gloomGen2E)
+        }),
+        costs: [
+            { expo: { initial: 1, coefficient: 2 }, resource: this.gloom },
+        ],
+        description: `Generates Gloom`,
+        hidden: () => this.datamap.unlocksStates.two < 3,
+        outcome: () => `+1 Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()}`,
+    })
+
+    gloomGen2: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Gloom Generator Production',
+            get: () => this.datamap.cell.gloomGen2,
+            setDecimal: (dec) => {
+                this.datamap.cell.gloomGen2 = dec
+                this.calcGloom();
+            },
+        calculateGain: ()=>this.datamap.cell.gloomGen3.add(this.datamap.cell.gloomGen3E)
+    }),
+        costs: [
+            { expo: { initial: 10000, coefficient: 3 }, resource: this.gloom },
+        ],
+        description: `Generates Gloom Generators`,
+        hidden: () => this.datamap.cell.gloomGen1.lessThan(1),
+        outcome: () => `+1 Gloom Generator Per Second\nExtra: ${this.datamap.cell.gloomGen2E.floor()}`,
+    })
+
+    gloomGen3: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'GG Generator Production',
+            get: () => this.datamap.cell.gloomGen3,
+            setDecimal: (dec) => {
+                this.datamap.cell.gloomGen3 = dec
+                this.calcGloom();
+            },
+        calculateGain: ()=>this.datamap.cell.gloomGen4.add(this.datamap.cell.gloomGen4E)
+    }),
+        costs: [
+            { expo: { initial: 100000000, coefficient: 4 }, resource: this.gloom },
+        ],
+        description: `Generates Gloom Generator Generators`,
+        hidden: () => this.datamap.cell.gloomGen2.lessThan(1),
+        outcome: () => `+1 GG Generator Per Second\nExtra: ${this.datamap.cell.gloomGen3E.floor()}`,
+    })
+
+    gloomGen4: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'GGG Generator Production',
+            get: () => this.datamap.cell.gloomGen4,
+            setDecimal: (dec) => {
+                this.datamap.cell.gloomGen4 = dec
+                this.calcGloom();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1000000000000, coefficient: 5 }, resource: this.gloom },
+        ],
+        description: `Generates Gloom Generator Generator Generators`,
+        hidden: () => this.datamap.cell.gloomGen3.lessThan(1),
+        outcome: () => `+1 GGG Generator Per Second\nExtra: ${this.datamap.cell.gloomGen4E.floor()}`,
+    })
+
+    calcGloom = () => {
+        this.gloom.calculate();
+        this.gloomGen1.info.building.calculate();
+        this.gloomGen2.info.building.calculate();
+        this.gloomGen3.info.building.calculate();
+        this.gloomGen4.info.building.calculate();
+    }
+
+
     determination: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
             name: 'Determination',
@@ -356,6 +609,7 @@ export default class Engine extends CoreEngine {
         this.energyResource.calculate();
     }
 
+
     extraLoad = () => {
         //this.datamap.crafting = CraftingData_Init();
         //console.log('i fixed the bug');
@@ -363,6 +617,7 @@ export default class Engine extends CoreEngine {
         this.crafting.calc();
         //console.log('EXTRALOAD');
         this.calcEnergy();
+        this.calcGloom();
         this.antiEnergyResource.calculate();
         this.garden.setTempData();
         this.jobs.setTempData();

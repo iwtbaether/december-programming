@@ -136,6 +136,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />
       <SingleBuildingUI building={gEngine.antiDrive} />
+      <SingleBuildingUI building={gEngine.momentum} />
       <SingleBuildingUI building={gEngine.determination} />
       </div>
       <span>
@@ -148,6 +149,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <button disabled={!reached} onClick={gEngine.energy.giveUp}>
         Give Up
       </button>
+      <BasicCommandButton cmd={gEngine.gUL3} />
       <BasicCommandButton cmd={gEngine.gUL2} />
     </div>
   )
@@ -157,14 +159,30 @@ const DoomRow = (props: { data: Datamap }) => {
   const data = props.data;
   const engine = gEngine;
 
-
   return (
     <div>
       <ListedResourceClass resource={engine.doom} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
+      {data.unlocksStates.two > 2 && <ListedResourceClass resource={gEngine.gloom} />}
+      
       <SingleBuildingUI building={engine.doomUpgrade1} />
       <SingleBuildingUI building={engine.doomUpgrade2} />
       <SingleBuildingUI building={engine.doomUpgrade3} />
+      <br/>
+      <SingleBuildingUI building={engine.doomUpgrade4} />
+      <SingleBuildingUI building={engine.doomUpgrade5} />
+      <SingleBuildingUI building={engine.doomUpgrade7} />
+      <SingleBuildingUI building={engine.doomUpgrade8} />
+      {data.unlocksStates.two > 2 && <React.Fragment>
+        
+      <SingleBuildingUI building={engine.doomUpgrade6} />
+      <SingleBuildingUI building={engine.gloomGen1} />
+      <SingleBuildingUI building={engine.gloomGen2} />
+      <SingleBuildingUI building={engine.gloomGen3} />
+      <SingleBuildingUI building={engine.gloomGen4} />
+
+        </React.Fragment>
+        }
     </div>
   )
 }

@@ -121,7 +121,7 @@ function EnergyModAndValueToString  (mod: EnergyItemModList, value: number):stri
             break;
             
             case EnergyItemModList.IncreasedGain:
-              return `+${value.toFixed(1)} Increased Energy Gain`
+              return `+${value.toFixed(1)}x Increased Energy Gain`
               break;
               
               case EnergyItemModList.MoreGain:

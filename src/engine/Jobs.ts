@@ -20,6 +20,11 @@ export default class Jobs {
 
     }
 
+    realReset = () => {
+        this.engine.datamap.jobs = JobsData_Init();
+        this.setTempData();
+    }
+
     get data(): JobsData {
         return this.engine.datamap.jobs;
     }
@@ -112,10 +117,11 @@ export default class Jobs {
         const farthest = Decimal.max(this.data.farthesthProgress, pp);
         const reward = this.getWorkReward();
 
-        let rng = 0;
         if (pp.greaterThan(10000)) {
             if (this.data.notReset.mechancProgession === 0) this.data.notReset.mechancProgession = 1;
-            rng = getRandomInt(1, 3)
+            let rng = getRandomInt(1, 3)
+            if (this.data.notReset.upgrades.job >= 1) rng = rng + Math.floor(pp.div(100000).toNumber())
+            this.xpResource.gainResource(rng)
         }
 
         let old;
@@ -128,7 +134,6 @@ export default class Jobs {
 
         //set new values
         this.workResource.gainResource(reward);
-        this.xpResource.gainResource(rng)
         this.data.farthesthProgress = farthest;
         this.data.last = pp;
 
@@ -207,7 +212,7 @@ export default class Jobs {
         const saved = this.engine.datamap.jobs.notReset;
         this.engine.datamap.jobs = JobsData_Init();
         this.engine.datamap.jobs.notReset = saved;
-        this.calcJobSpeed();
+        this.setTempData();
     }
 
     workRewardBuilding: SingleBuilding = new SingleBuilding({
@@ -259,7 +264,7 @@ export default class Jobs {
         costs: [
             { expo: { initial: 30, coefficient: 1.5 }, resource: this.xpResource },
         ],
-        description: `Increases effectives resistance`,
+        description: `Increases environment resistance`,
         hidden: () => this.data.notReset.upgrades.workFromPrestige.lessThan(1),
         outcome: () => {
             return `+0.1x Effective Resistance`
@@ -288,10 +293,32 @@ export default class Jobs {
         ]
     })
 
+    res_g3_plusPlot: SingleResearch = new SingleResearch({
+        name: "+1 Garden Plot",
+        hidden: () => this.data.notReset.upgrades.garden < 2,
+        description: "More Plot!",
+        get: () => this.data.notReset.upgrades.garden > 2,
+        makeTrue: () => { this.data.notReset.upgrades.garden = 3 },
+        costs: [
+            { resource: this.xpResource, count: new Decimal(32) }
+        ]
+    })
+
+    res_g4_plusSlot: SingleResearch = new SingleResearch({
+        name: "+1 Bag Slot",
+        hidden: () => this.data.notReset.upgrades.garden < 3,
+        description: "More Slot!",
+        get: () => this.data.notReset.upgrades.garden > 3,
+        makeTrue: () => { this.data.notReset.upgrades.garden = 4 },
+        costs: [
+            { resource: this.xpResource, count: new Decimal(64) }
+        ]
+    })
+
     res_doom1_autoclickers: SingleResearch = new SingleResearch({
         name: "Cursed Clicking",
-        hidden: () => this.data.notReset.upgrades.garden === 0,
-        description: "Unlocks a new Doom upgrade\n ps this doesn't work yet",
+        hidden: () => this.data.notReset.upgrades.garden < 1,
+        description: "Unlocks a new Doom upgrade",
         get: () => this.data.notReset.upgrades.doom > 0,
         makeTrue: () => { this.data.notReset.upgrades.doom = 1 },
         costs: [
@@ -299,14 +326,36 @@ export default class Jobs {
         ]
     })
 
+    res_doom2_letsPrestige: SingleResearch = new SingleResearch({
+        name: "Replicating Doom",
+        hidden: () => this.data.notReset.upgrades.doom < 1,
+        description: "Unlocks another Doom upgrade",
+        get: () => this.data.notReset.upgrades.doom > 1,
+        makeTrue: () => { this.data.notReset.upgrades.doom = 2 },
+        costs: [
+            { resource: this.xpResource, count: new Decimal(32) }
+        ]
+    })
+
     res_jobs1_morexp: SingleResearch = new SingleResearch({
         name: "Distance -> XP",
         hidden: () => this.data.notReset.upgrades.effectiveResistance.eq(0),
-        description: "Get 1XP per 100k distance on prestige.\n ps this doesn't work yet",
+        description: "Get 1XP per 100k distance on prestige",
         get: () => this.data.notReset.upgrades.job > 0,
         makeTrue: () => { this.data.notReset.upgrades.job = 1 },
         costs: [
-            { resource: this.xpResource, count: new Decimal(33) }
+            { resource: this.xpResource, count: new Decimal(32) }
+        ]
+    })
+
+    res_energy1_nextReset: SingleResearch = new SingleResearch({
+        name: "An Even Worse Fate",
+        hidden: () => this.data.notReset.upgrades.doom < 1 || this.engine.datamap.unlocksStates.one < 7,
+        description: "Unlocks another reset",
+        get: () => this.data.notReset.upgrades.energy > 0,
+        makeTrue: () => { this.data.notReset.upgrades.energy = 1 },
+        costs: [
+            { resource: this.xpResource, count: new Decimal(32) }
         ]
     })
 
@@ -336,7 +385,7 @@ export const FULL_JOBS_LIST: JobsListInfo[] = [
         speedMultLabel: 'Swim Speed x',
         unitsLabel: 'Distance',
         resistanceLabel: 'pH Resistance',
-        slowReason: 'The toxicity of the environtment',
+        slowReason: 'The toxicity of the environment',
         progressLabel: 'Speed'
 
     }
@@ -359,6 +408,7 @@ export interface JobsData {
         rebuy: boolean,
         upgrades: {
             job: number
+            cubiclePower: Decimal,
             garden: number
             doom: number
             energy: number
@@ -388,6 +438,7 @@ export function JobsData_Init(): JobsData {
             rebuy: false,
             upgrades: {
                 doom: 0,
+                cubiclePower: ZERO,
                 energy: 0,
                 garden: 0,
                 job: 0,
@@ -410,6 +461,7 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.farthesthProgress = new Decimal(data.jobs.farthesthProgress);
     data.jobs.notReset.xp = new Decimal(data.jobs.notReset.xp);
     data.jobs.notReset.upgrades.jobSpeed = new Decimal(data.jobs.notReset.upgrades.jobSpeed)
+    data.jobs.notReset.upgrades.cubiclePower = new Decimal(data.jobs.notReset.upgrades.cubiclePower)
     data.jobs.notReset.upgrades.workFromPrestige = new Decimal(data.jobs.notReset.upgrades.workFromPrestige)
     data.jobs.notReset.upgrades.effectiveResistance = new Decimal(data.jobs.notReset.upgrades.effectiveResistance)
 }

@@ -31,6 +31,8 @@ const JobXPPopup = (props: { data: Datamap }) => {
                 </div>
                 <NewSingleResearchUI research={gEngine.jobs.res_doubleWatering} />
                 <NewSingleResearchUI research={gEngine.jobs.res_doubleWateringAgain} />
+                <NewSingleResearchUI research={gEngine.jobs.res_g3_plusPlot} />
+                <NewSingleResearchUI research={gEngine.jobs.res_g4_plusSlot} />
             </div>
 
             <div style={{display:'flex'}}>
@@ -38,12 +40,14 @@ const JobXPPopup = (props: { data: Datamap }) => {
                     Doom Upgrades
                 </div>
             <NewSingleResearchUI research={gEngine.jobs.res_doom1_autoclickers} />
+            <NewSingleResearchUI research={gEngine.jobs.res_doom2_letsPrestige} />
             </div>
 
             <div style={{display:'flex'}}>
                 <div>
                     Energy Upgrades
                 </div>
+            <NewSingleResearchUI research={gEngine.jobs.res_energy1_nextReset} />
             </div>
             <span>
 

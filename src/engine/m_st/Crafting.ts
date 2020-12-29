@@ -14,6 +14,11 @@ export default class Crafting {
         return this.engine.datamap.crafting;
     }
 
+    reset = () => {
+        this.engine.datamap.crafting = CraftingData_Init();
+        this.calc();
+    }
+
     makeCatalyst = (size: number) => {
         if (this.data.currency.transmutes < 1) return;
 
@@ -577,3 +582,11 @@ function getPossibleEnergyMods(modList: EnergyItemMod[]) {
  *  Increased Energy Gain
  *  More Energy Gain
  */
+
+ enum DoomStoneModList {
+     MoreDoomGain,
+     BaseDoomGain,
+     IncreasedDoomGain,
+     DoomPerSecond,
+     GloomPerSecond,
+ }

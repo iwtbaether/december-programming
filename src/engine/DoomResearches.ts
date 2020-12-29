@@ -1,5 +1,7 @@
 import Decimal from "break_infinity.js";
 import Engine from "./Engine";
+import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
+import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
 import { SingleResearch } from "./Research";
 
 export default class DoomResearches {
@@ -33,6 +35,8 @@ export default class DoomResearches {
             { resource: this.engine.doom, count: new Decimal(100000) },
         ]
     })
+
+    
 }
 
 

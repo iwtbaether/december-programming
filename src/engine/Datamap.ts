@@ -57,6 +57,27 @@ export function newDefaultMap() {
             rebirth: ZERO,
             autoclicker: ZERO,
 
+            d4: ZERO,
+            d5: ZERO,
+            d6: ZERO,
+            d7: ZERO,
+            d8: ZERO,
+
+            momentum: ZERO,
+
+            gloomGen1: ZERO,
+            gloomGen2: ZERO,
+            gloomGen3: ZERO,
+            gloomGen4: ZERO,
+
+            gloomGen1E: ZERO,
+            gloomGen2E: ZERO,
+            gloomGen3E: ZERO,
+            gloomGen4E: ZERO,
+
+            aewf: ZERO,
+
+
         },
         unlocksStates: {
             five: 0,
@@ -92,6 +113,25 @@ interface I_HoldDecimals {
     rebirth: Decimal,
     autoclicker: Decimal,
 
+    d4: Decimal,
+    d5: Decimal,
+    d6: Decimal,
+    d7: Decimal,
+    d8: Decimal,
+
+    momentum: Decimal,
+
+    gloomGen1: Decimal,
+    gloomGen2: Decimal,
+    gloomGen3: Decimal,
+    gloomGen4: Decimal,
+
+    gloomGen1E: Decimal,
+    gloomGen2E: Decimal,
+    gloomGen3E: Decimal,
+    gloomGen4E: Decimal,
+
+    aewf: Decimal,
 
 
     [key: string]: Decimal

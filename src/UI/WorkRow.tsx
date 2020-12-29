@@ -48,7 +48,7 @@ const JobsRow = (props: { data: Datamap }) => {
     </span>
 
     <span>
-      {selectedJob.slowReason} slows progress by: x<DisplayDecimal decimal={Decimal.div(1,jobs.calced.finalResitanceDiv)}/>
+      {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv}/>
     </span>
     {jobs.seedGainSpeedMult > 1 && <span style={{display:'flex'}}>
       Seed Gain Speed Multi: x<DisplayNumber num={jobs.seedGainSpeedMult} />
