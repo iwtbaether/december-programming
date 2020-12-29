@@ -35,6 +35,7 @@ export default class EnergyModule {
     setEnergyGainFromAutoClickers = () => {
         let base = this.energyPerClick;
         let mult = this.energyEquipmentMods.clicksPerSecond;
+        mult = mult + this.engine.datamap.cell.d4.toNumber();
         this.energyGainFromAutoClickers = Decimal.times(mult,base);
     }
 
@@ -62,7 +63,8 @@ export default class EnergyModule {
         this.totalEnergyGainIncreased = this.engine.drive.count.add(this.engine.antiDrive.count).add(1).add(this.energyEquipmentMods.increasedGain);
         const mult2 = this.engine.doomUpgrade3.count.add(1)
         const mult3 = this.engine.datamap.cell.determination.add(1)
-        this.totalEnergyGainMore = mult2.times(mult3).times(this.energyEquipmentMods.moreGain);
+        const mult4 = this.engine.datamap.cell.momentum.add(1)
+        this.totalEnergyGainMore = mult4.times(mult2).times(mult3).times(this.energyEquipmentMods.moreGain);
         this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);
     }
 
