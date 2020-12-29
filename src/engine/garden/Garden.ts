@@ -29,6 +29,7 @@ export default class Garden {
         this.setDoomFruitMult();
         this.setFruitGainMulti();
         this.setJobSpeedMult();
+
     }
 
     calcBagSlots = () => {
@@ -141,6 +142,7 @@ export default class Garden {
                     
                     plot.plantTimer += extra;
                     if (this.engine.datamap.jobs.notReset.upgrades.garden >= 2) plot.plantTimer += extra
+                    if (this.denseWater.count.greaterThan(0)) plot.plantTimer += this.denseWater.count.times(extra).toNumber()
                     
                     plot.water -= extra;
                 } else if (this.equipment.autoWater) {
@@ -301,7 +303,7 @@ export default class Garden {
     res_seedtype_circle: SingleResearch = new SingleResearch({
         name: "Circular Seeds",
         hidden: () => this.data.researches.expansion === 0,
-        description: "You can generate circular seeds now",
+        description: "You can generate circular seeds now\nCircular Fruits speed up plant growth",
         get: () => this.data.researches.typeCircle,
         makeTrue: () => { this.data.researches.typeCircle = true },
         costs: [
@@ -312,7 +314,7 @@ export default class Garden {
     res_seedtype_squre: SingleResearch = new SingleResearch({
         name: "Square Seeds",
         hidden: () => this.data.researches.expansion === 0,
-        description: "You can generate square seeds now",
+        description: "You can generate square seeds now\n Square fruits are used for garden expansion",
         get: () => this.data.researches.typeSquare,
         makeTrue: () => { this.data.researches.typeSquare = true },
         costs: [
@@ -323,7 +325,7 @@ export default class Garden {
     res_seedtype_bunch: SingleResearch = new SingleResearch({
         name: "Bunched Seeds",
         hidden: () => this.data.researches.expansion === 0,
-        description: "You can generate bunched seeds now",
+        description: "You can generate bunched seeds now\nBunched fruits make all plants provide more fruit",
         get: () => this.data.researches.typeBunch,
         makeTrue: () => { this.data.researches.typeBunch = true },
         costs: [
@@ -334,7 +336,7 @@ export default class Garden {
     res_seedtype_triangle: SingleResearch = new SingleResearch({
         name: "Trianglular Seeds",
         hidden: () => this.data.researches.expansion === 0,
-        description: "You can generate triangular seeds now",
+        description: "You can generate triangular seeds now\nTriangular fruits give more watering duration",
         get: () => this.data.researches.typeTriangle,
         makeTrue: () => { this.data.researches.typeTriangle = true },
         costs: [
@@ -345,7 +347,7 @@ export default class Garden {
     res_seedtype_egg: SingleResearch = new SingleResearch({
         name: "Egg Shaped Seeds",
         hidden: () => this.data.researches.expansion === 0 || this.engine.datamap.unlocksStates.one < 6,
-        description: "You can generate egg seeds now",
+        description: "You can generate egg seeds now\n Egg fruits provide more job speed",
         get: () => this.data.researches.typeEgg,
         makeTrue: () => { this.data.researches.typeEgg = true },
         costs: [
@@ -442,6 +444,9 @@ export default class Garden {
         if (this.equipment.waterTimeMulti !== 1) {
             mult = mult.times(this.equipment.waterTimeMulti);
         }
+        if (this.data.buildings.denseWater.greaterThan(0)) {
+            mult = mult.divideBy(this.data.buildings.denseWater.add(1))
+        }
         this.waterTimeMulti = mult;
 
         const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*2).add(this.equipment.waterTimeBase);
@@ -451,7 +456,11 @@ export default class Garden {
     fruitGainMult = 1;
     setFruitGainMulti = () => {
         const mult = this.data.fruits.bunched.times(.01).add(1);
-        let scaled = Decimal.ln(mult) + 1;
+        let scaled = Decimal.ln(mult);
+        if (this.bunchPower.count.greaterThan(0)) {
+            scaled += scaled * this.bunchPower.count.toNumber();
+        }
+        scaled += 1;
         if (this.equipment.fruitGainMulti !== 1) {
             scaled = scaled * this.equipment.fruitGainMulti;
         }
@@ -480,9 +489,25 @@ export default class Garden {
             this.setTempData();
         },
         costs: [
-            { resource: this.squareFruit, count: new Decimal(25) },
-            { resource: this.hopeFruit, count: new Decimal(25) },
+            { resource: this.squareFruit, count: new Decimal(6) },
+            { resource: this.hopeFruit, count: new Decimal(6) },
         ]
+    })
+
+    res_expansion_three: SingleResearch = new SingleResearch({
+        name: "Square Expansion 2",
+        hidden: () => this.data.researches.expansion < 2,
+        description: "+1 Bag Slot / +1 Plot",
+        get: () => this.data.researches.expansion > 2,
+        makeTrue: () => {
+            this.data.researches.expansion = 3
+            this.setTempData();
+        },
+        costs: [
+            { resource: this.squareFruit, count: new Decimal(19) },
+            { resource: this.hopeFruit, count: new Decimal(19) },
+        ],
+
     })
 
     resetGarden = () => {
@@ -526,7 +551,10 @@ export default class Garden {
     
 
     rebirthReset = () => {
-        this.resetGarden();
+        this.engine.datamap.garden = GardenData_Init();
+        this.data.researches.progression = 1
+        this.data.seeds = this.engine.datamap.cell.rebirth.times(24).floor();
+        this.setTempData();
     }
 
     wateringCan: SingleBuilding = new SingleBuilding({
@@ -544,7 +572,48 @@ export default class Garden {
         description: `Base Watering Duration`,
         hidden: () => this.data.researches.watering === false,
         outcome: () => {
-            return `+1s base watering duration\nCurrent: ${this.waterTimeBase.div(1000)}s`
+            return `+1s base watering duration\nCurrent: ${this.waterTimeBase.div(1000).floor()}s`
+        },
+    })
+
+    denseWater: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Dense Water',
+            get: () => this.data.buildings.denseWater,
+            setDecimal: (dec) => {
+                this.data.buildings.denseWater = dec;
+                this.setWaterTime();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1000, coefficient: 1.3 }, resource: this.engine.gloom },
+            { expo: { initial: 10, coefficient: 1.45 }, resource: this.doomedFruits },
+        ],
+        description: `Water dries up faster, but gives more plant growth`,
+        hidden: () => this.engine.datamap.unlocksStates.two < 3,
+        outcome: () => {
+            const now = this.data.buildings.denseWater.add(1);
+            return `${now.floor()}x -> ${now.add(1).floor()}x more plant growth and less watering time`
+        },
+    })
+
+    bunchPower: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Bunched Fruit Power',
+            get: () => this.data.buildings.bunchPower,
+            setDecimal: (dec) => {
+                this.data.buildings.bunchPower = dec;
+                this.setFruitGainMulti();
+            },
+        }),
+        costs: [
+            { expo: { initial: 5, coefficient: 1.42 }, resource: this.squareFruit },
+        ],
+        description: `Bunched Fruit provide more Fruit Gain Multiplier`,
+        hidden: () => this.engine.datamap.cell.rebirth.lessThan(1),
+        outcome: () => {
+            const now = this.data.buildings.bunchPower.add(1);
+            return `${now.floor()}x -> ${now.add(1).floor()}x more multi`
         },
     })
 
@@ -589,6 +658,8 @@ export interface GardenData {
     }
     buildings: {
         wateringCan: Decimal;
+        denseWater: Decimal;
+        bunchPower: Decimal;
     }
     researches: {
         progression: number;
@@ -650,7 +721,9 @@ export function GardenData_Init(): GardenData {
             doom: new Decimal(0),
         },
         buildings: {
-            wateringCan: new Decimal(0)
+            wateringCan: new Decimal(0),
+            denseWater: new Decimal(0),
+            bunchPower: new Decimal(0)
         },
         researches: {
             progression: 0,
@@ -683,6 +756,8 @@ export function GardenData_SetDecimals(data: Datamap) {
     data.garden.fruits.egg = new Decimal(data.garden.fruits.egg)
 
     data.garden.buildings.wateringCan = new Decimal(data.garden.buildings.wateringCan);
+    data.garden.buildings.denseWater = new Decimal(data.garden.buildings.denseWater);
+    data.garden.buildings.bunchPower = new Decimal(data.garden.buildings.bunchPower);
 }
 
 

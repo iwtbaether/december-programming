@@ -139,7 +139,7 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 100, coefficient: 1.2 }, resource: this.antiEnergyResource },
+            { expo: { initial: 10, coefficient: 1.2 }, resource: this.antiEnergyResource },
         ],
         description: 'Increased Energy Gain',
         hidden: () => this.datamap.unlocksStates.one < 4,
@@ -157,6 +157,7 @@ export default class Engine extends CoreEngine {
         }),
         costs: [
             { expo: { initial: 1e5, coefficient: 2.1 }, resource: this.energyResource },
+            { expo: { initial: 7, coefficient: 6.9 }, resource: this.gloom },
         ],
         description: 'More Energy Gain',
         hidden: () => this.datamap.unlocksStates.two < 3,
@@ -203,6 +204,9 @@ export default class Engine extends CoreEngine {
             if (this.energy.canGiveUp()) {
                 this.clearDoom();
                 this.clearEnergy();
+                this.crafting.reset();
+        this.garden.resetGarden();
+        this.jobs.realReset();
                 this.datamap.unlocksStates.one++;
                 this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
                 this.calcEnergy();
@@ -281,6 +285,7 @@ export default class Engine extends CoreEngine {
         this.drive.reset()
         this.antiDrive.reset();
         this.autoclickerBuilding.reset();
+        this.momentum.reset();
         this.calcEnergy();
     }
     
@@ -305,6 +310,9 @@ export default class Engine extends CoreEngine {
         this.jobs.realReset();
         this.clearDoom();
         this.clearEnergy();
+
+        this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
+
 
         this.datamap.cell.gloom = this.datamap.cell.aewf.pow(3);
 
@@ -348,7 +356,7 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 5, coefficient: 2 }, resource: this.doom },
+            { expo: { initial: 2, coefficient: 2 }, resource: this.doom },
         ],
         description: 'Makes clicking better[!/?]',
         hidden: () => this.datamap.unlocksStates.two < 1,

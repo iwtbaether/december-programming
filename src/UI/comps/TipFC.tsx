@@ -1,3 +1,4 @@
+import { relative } from "path"
 import React from "react"
 import './TipFC.scss'
 
@@ -12,3 +13,15 @@ const TipFC: React.FC<{ tip?: React.ReactNode }> = (props) => {
 }
 
 export default TipFC;
+
+export const ChildTip: React.FC<{}> = (props) => {
+    return (
+        <span style={{position:'relative'}}>
+
+        <div className='TipFC'>
+            {props.children}
+        </div>
+        </span>
+    )
+
+}

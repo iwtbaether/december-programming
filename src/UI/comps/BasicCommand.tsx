@@ -1,4 +1,5 @@
 import React from "react"
+import TipFC, { ChildTip } from "./TipFC";
 
 export interface BasicCommand {
     label: string;
@@ -21,7 +22,8 @@ export class BasicCommandButton extends React.Component<{cmd: BasicCommand},{}> 
         if (hidden) return null;
         const able = this.props.cmd.able?this.props.cmd.able():true;
         return (
-            <button disabled={!able} onClick={this.props.cmd.command}>
+            <button disabled={!able} onClick={this.props.cmd.command} style={{position:"relative"}}>
+                {this.props.children && <TipFC tip={this.props.children}/>}
                 {this.props.cmd.label}
             </button>
         )

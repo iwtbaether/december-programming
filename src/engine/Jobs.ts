@@ -265,7 +265,7 @@ export default class Jobs {
             { expo: { initial: 30, coefficient: 1.5 }, resource: this.xpResource },
         ],
         description: `Increases environment resistance`,
-        hidden: () => this.data.notReset.upgrades.workFromPrestige.lessThan(1),
+        hidden: () => this.data.notReset.upgrades.jobSpeed.eq(0),
         outcome: () => {
             return `+0.1x Effective Resistance`
         },

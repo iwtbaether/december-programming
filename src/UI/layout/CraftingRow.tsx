@@ -3,6 +3,7 @@ import { gEngine } from "../..";
 import { Datamap } from "../../engine/Datamap";
 import { canCheat } from "../../engine/externalfns/util";
 import { EnergyItem, EnergyItemMod, EnergyItemModList, GardeningItem, GardeningItemMod, GardeningItemModList, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
+import TipFC from "../comps/TipFC";
 import DisplayDecimal from "../DisplayDecimal";
 import DisplayNumber from "../DisplayNumber";
 import { ListedNumber } from "../ListedResourceClass";
@@ -11,15 +12,12 @@ const CraftingRow = (props: { data: Datamap }) => {
   const data = props.data;
   const crafting = gEngine.crafting;
   return (<div>
-    <span style={{color:'red'}}>
-      BETA FEATURE: Freshly added to speedup progress after Progression Reset #4. You get currency from doom resets and use it to make different items that modify your energy gain.<br/>
-      Better UI and explinations incoming. Come to discord if you need help, and please report bugs! You can ignore this and still beat the game (Progress |7), when the final 3 item types are unlocked.
-    </span><br/>
     <div style={{display:'flex',flexDirection:'row'}}>
       <div style={{display:'flex',flexDirection:'column', flexShrink:0, flexBasis:'240px'}}>
         Currency:
         <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'}/>
         <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'}/>
+        <span>Get 5 random currency each time you accept Doom</span>
       </div>
     {!data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'column'}}>
       {data.unlocksStates.one >=  6 && <button onClick={()=>crafting.makeCatalyst(2)}>
@@ -48,6 +46,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     </button>
     <button onClick={crafting.clearCraft}>
       Clear Current Craft
+      <TipFC tip={'Get 1 random currency'}/>
     </button>
       </div>
       <ItemDisplay item={data.crafting.currentCraft} />
@@ -62,6 +61,9 @@ const CraftingRow = (props: { data: Datamap }) => {
     {data.crafting.equipped.gardeningCap && <ItemDisplay item={data.crafting.equipped.gardeningCap} />}<br/>
     {data.crafting.equipped.seceteurs && <ItemDisplay item={data.crafting.equipped.seceteurs} />}<br/>
     {data.crafting.equipped.wateringCan && <ItemDisplay item={data.crafting.equipped.wateringCan} />}<br/>
+    </div>
+    <div style={{display:'flex', flexDirection:'row'}}>
+      
     </div>
     Final Stats From Equipment:<br/>
     {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}

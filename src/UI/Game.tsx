@@ -1,4 +1,5 @@
 import Decimal from 'break_infinity.js';
+import { relative } from 'path';
 import React from 'react';
 import { gEngine } from '..';
 import { Datamap } from '../engine/Datamap';
@@ -6,7 +7,7 @@ import { canCheat, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
 import ConfirmCommandButton from './comps/ConfirmCommandButton';
-import TipFC from './comps/TipFC';
+import TipFC, { ChildTip } from './comps/TipFC';
 import DisplayDecimal from './DisplayDecimal';
 import FancySaveButton from './FancySaveButton';
 import GardenRow from './GardenRow';
@@ -103,7 +104,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         cheat</button>}
       <br />
-        v.6.4
+        v.7
     </div>
   )
 }
@@ -126,13 +127,21 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       Hover Energy Gain: <DisplayDecimal decimal={activityGain} />, <span className={cn}>Click Energy Gain: <DisplayDecimal decimal={clickGain} /></span>
       <br />
       <div style={{display:'flex',gap:'5px'}}>
-
-      <button onMouseEnter={() => gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity}>
+      <span style={{position:'relative'}}>
+        <ChildTip>
+          Hover for energy gain
+        </ChildTip>
+      <button onMouseEnter={() => gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity} style={{position:'relative'}}>
         Gather Energy /s
       </button>
+      </span>
+      <span>
+
       <button className={cn} onClick={gEngine.energy.gatherEnergy} onSubmit={(ev) => { ev.preventDefault() }}>
         Gather Energy
+        
       </button>
+      </span>
       <SingleBuildingUI building={gEngine.effort} />
       <SingleBuildingUI building={gEngine.drive} />
       <SingleBuildingUI building={gEngine.antiDrive} />
@@ -146,11 +155,27 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
         Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
       </span>}
       <br />
-      <button disabled={!reached} onClick={gEngine.energy.giveUp}>
+      <span className='flexRow'>
+        <span style={{position:'relative'}}>
+
+
+        <TipFC tip={'Resets Everything'} />
+      <button disabled={!reached} onClick={gEngine.energy.giveUp} style={{position:'relative'}}>
         Give Up
       </button>
-      <BasicCommandButton cmd={gEngine.gUL3} />
-      <BasicCommandButton cmd={gEngine.gUL2} />
+        </span>
+        <span>
+
+      <BasicCommandButton cmd={gEngine.gUL3} >
+        Resets Energy, Doom, Crafting, Garden, Jobs
+      </BasicCommandButton>
+        </span>
+        <span>
+      <BasicCommandButton cmd={gEngine.gUL2} >
+        Resets Energy {data.unlocksStates.two > 2 &&', Gloom'}
+         </BasicCommandButton>
+        </span>
+      </span>
     </div>
   )
 }

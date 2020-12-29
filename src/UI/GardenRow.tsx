@@ -14,6 +14,8 @@ import { SingleResearchUI } from "./ResearchUI";
 const GardenRow = (props: { data: Datamap }) => {
     const data = props.data;
     const engine = gEngine;
+    const garden = gEngine.garden;
+    const wt = garden.waterTimeBase.times(garden.waterTimeMulti).div(1000)
     return (
         <div>
             Spiritual Garden<br />
@@ -30,6 +32,9 @@ const GardenRow = (props: { data: Datamap }) => {
                             Garden Speed:   x<DisplayDecimal decimal={data.cell.rebirth.add(1)} />
                         </div>
                     }
+                    {data.garden.researches.watering && <span>
+                        Watering Time: <DisplayDecimal decimal={wt} /> seconds
+                    </span>}
                     {data.jobs.farthesthProgress.greaterThan(0) && <span style={{display:'flex'}}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult}/></span>}
                     Seed Generation: {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}
                     {data.garden.researches.progression > 0 && <div>
@@ -58,9 +63,12 @@ const GardenRow = (props: { data: Datamap }) => {
                         </span>
                         <SingleBuildingUI building={engine.garden.rebirth} />
                         <SingleBuildingUI building={engine.garden.wateringCan} />
+                        <SingleBuildingUI building={engine.garden.denseWater} />
+                        <SingleBuildingUI building={engine.garden.bunchPower} />
                         <SingleResearchUI research={engine.garden.res_watering} active={0} />
                         <SingleResearchUI research={engine.garden.res_expansion_one} active={0} />
                         <SingleResearchUI research={engine.garden.res_expansion_two} active={0} />
+                        <SingleResearchUI research={engine.garden.res_expansion_three} active={0} />
                         <SingleResearchUI research={engine.garden.res_bag_expansion} active={0} />
                         <SingleResearchUI research={engine.garden.res_seedtype_circle} active={0} />
                         <SingleResearchUI research={engine.garden.res_seedtype_squre} active={0} />
@@ -87,8 +95,8 @@ const GardenRow = (props: { data: Datamap }) => {
                         {data.garden.researches.doomedSeeds && <ListedResourceClass resource={engine.garden.doomedFruits} />}
                         {data.garden.researches.typeEgg && <ListedResourceClass resource={engine.garden.eggFruit} />}
                         <hr />
-                        {data.garden.researches.typeCircle && <ListedNumber resource={engine.garden.plantSpeedMult} name="Plant Growth Multi:" />}
-                        {data.garden.researches.typeBunch && <ListedNumber resource={engine.garden.fruitGainMult} name="Fruit Gain Multi:" />}
+                        {data.garden.researches.typeCircle && <ListedNumber resource={engine.garden.plantSpeedMult} name="Plant Growth Multi" />}
+                        {data.garden.researches.typeBunch && <ListedNumber resource={engine.garden.fruitGainMult} name="Fruit Gain Multi" />}
                         {data.garden.researches.typeTriangle && <ListedDecimal resource={engine.garden.waterTimeMulti} name='Water Time Multi'/>}
                         {data.garden.researches.doomedSeeds && <ListedDecimal resource={engine.garden.doomFruitMult} name='Doom Gain Multi'/>}
                         {data.garden.researches.typeEgg && <ListedDecimal resource={engine.garden.jobSpeedMult} name='Job Speed Multi'/>}
