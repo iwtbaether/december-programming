@@ -23,6 +23,7 @@ const JobXPPopup = (props: { data: Datamap }) => {
                     <SingleBuildingUI building={gEngine.jobs.jobSpeedXPBuilding}/>
                 <SingleBuildingUI building={gEngine.jobs.resistanceUpgradeBuilding} />
                 <NewSingleResearchUI research={gEngine.jobs.res_jobs1_morexp} />
+                {/*<NewSingleResearchUI research={gEngine.jobs.res_jobs2_levels} />*/}
             </div>
 
             <div style={{display:'flex'}}>
@@ -55,9 +56,7 @@ const JobXPPopup = (props: { data: Datamap }) => {
                 close
             </button>
             </span>
-            <span>
-                If you're here, you've pretty much beat the game so far. Come by Discord and make a suggestion on what to add next!
-            </span>
+            
         </div>)
 }
 

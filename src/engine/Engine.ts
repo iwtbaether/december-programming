@@ -44,9 +44,10 @@ export default class Engine extends CoreEngine {
     processDelta = (delta: number) => {
 
 
+        
         this.garden.processDelta(delta)
-
         if (delta < 0) delta = 0;
+        
 
         const deltaS = delta / 1000;
 
@@ -304,12 +305,16 @@ export default class Engine extends CoreEngine {
         if (this.datamap.unlocksStates.two === 2) {
             this.datamap.unlocksStates.two = 3;
         }
+
         this.datamap.cell.aewf = this.datamap.cell.aewf.add(1);
+
         this.crafting.reset();
         this.garden.resetGarden();
         this.jobs.realReset();
         this.clearDoom();
         this.clearEnergy();
+
+        this.jobs.data.notReset.upgrades.energy = 1;
 
         this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
 
@@ -323,7 +328,7 @@ export default class Engine extends CoreEngine {
         command: this.aewf,
         label: 'Give Up, accept +1 Base Gloom',
         hidden: () => this.datamap.jobs.notReset.upgrades.energy < 1 && this.datamap.cell.aewf.eq(0),
-        able: ()=> this.datamap.jobs.notReset.xp.greaterThan(9) && this.datamap.jobs.notReset.upgrades.energy > 0,
+        able: ()=> this.datamap.jobs.notReset.upgrades.energy > 0,
     }
 
 
@@ -597,7 +602,7 @@ export default class Engine extends CoreEngine {
             name: 'Autoclickers',
             get: () => this.datamap.cell.autoclicker,
             setDecimal: (dec) => {
-                this.datamap.cell.determination = dec
+                this.datamap.cell.autoclicker = dec
                 this.calcEnergy();
             },
         }),

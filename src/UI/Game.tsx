@@ -102,7 +102,9 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
           <ConfirmCommandButton do={gEngine.reset} label={'Reset All Data'} warning={'This does nothing good. It is just a data wipe.'} />
       
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
-        cheat</button>}
+        10M</button>}
+        {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 60)}>
+        60M</button>}
       <br />
         v.7
     </div>

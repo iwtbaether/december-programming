@@ -28,7 +28,7 @@ export default class Garden {
         this.setWaterTime();
         this.setDoomFruitMult();
         this.setFruitGainMulti();
-        this.setJobSpeedMult();
+        this.setGardenJobSpeedMult();
 
     }
 
@@ -473,10 +473,10 @@ export default class Garden {
         this.doomFruitMult = mult;
     }
 
-    jobSpeedMult = new Decimal(1);
-    setJobSpeedMult = () => {
+    gardenJobSpeedMult = new Decimal(1);
+    setGardenJobSpeedMult = () => {
         const mult = this.data.fruits.egg.div(1).add(1);
-        this.jobSpeedMult = Decimal.add(1,Decimal.ln(mult));
+        this.gardenJobSpeedMult = Decimal.add(1,Decimal.ln(mult));
     }
 
     res_expansion_two: SingleResearch = new SingleResearch({
@@ -613,7 +613,26 @@ export default class Garden {
         hidden: () => this.engine.datamap.cell.rebirth.lessThan(1),
         outcome: () => {
             const now = this.data.buildings.bunchPower.add(1);
-            return `${now.floor()}x -> ${now.add(1).floor()}x more multi`
+            return `${now.floor()}x -> ${now.add(1).floor()}x more multi from Bunched Fruit`
+        },
+    })
+
+    seedGeneration: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Make Some Seeds',
+            get: () => this.data.buildings.seedGeneration,
+            setDecimal: (dec) => {
+                this.data.buildings.seedGeneration = dec;
+                this.data.seeds = this.data.seeds.add(dec)
+            },
+        }),
+        costs: [
+            { expo: { initial: 5000, coefficient: 2 }, resource: this.engine.gloom },
+        ],
+        description: `Add seeds to your stockpile`,
+        hidden: () => this.engine.datamap.unlocksStates.two < 3,
+        outcome: () => {
+            return `+${this.data.buildings.seedGeneration.add(1)} seeds `
         },
     })
 
@@ -660,6 +679,7 @@ export interface GardenData {
         wateringCan: Decimal;
         denseWater: Decimal;
         bunchPower: Decimal;
+        seedGeneration: Decimal;
     }
     researches: {
         progression: number;
@@ -723,7 +743,8 @@ export function GardenData_Init(): GardenData {
         buildings: {
             wateringCan: new Decimal(0),
             denseWater: new Decimal(0),
-            bunchPower: new Decimal(0)
+            bunchPower: new Decimal(0),
+            seedGeneration: new Decimal(0),
         },
         researches: {
             progression: 0,
@@ -758,6 +779,7 @@ export function GardenData_SetDecimals(data: Datamap) {
     data.garden.buildings.wateringCan = new Decimal(data.garden.buildings.wateringCan);
     data.garden.buildings.denseWater = new Decimal(data.garden.buildings.denseWater);
     data.garden.buildings.bunchPower = new Decimal(data.garden.buildings.bunchPower);
+    data.garden.buildings.seedGeneration = new Decimal(data.garden.buildings.seedGeneration);
 }
 
 

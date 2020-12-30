@@ -1,15 +1,13 @@
-import { isPlainObject } from "lodash";
 import React from "react";
 import { gEngine } from "..";
 import { Datamap } from "../engine/Datamap";
-import Engine from "../engine/Engine";
-import { canCheat, MINUTE_MS, percentOf } from "../engine/externalfns/util";
+import { percentOf } from "../engine/externalfns/util";
 import { TimeRequiredForSeed, SeedType, GardenPlant, SeedGrowthTimeRequired, GardenSeed } from "../engine/garden/Garden";
 import {  SingleBuildingUI } from "./BuildingsUI";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass, { ListedDecimal, ListedNumber } from "./ListedResourceClass";
-import { SingleResearchUI } from "./ResearchUI";
+import { NewSingleResearchUI, SingleResearchUI } from "./ResearchUI";
 
 const GardenRow = (props: { data: Datamap }) => {
     const data = props.data;
@@ -19,14 +17,9 @@ const GardenRow = (props: { data: Datamap }) => {
     return (
         <div>
             Spiritual Garden<br />
-            {canCheat && <div>
-                <button onClick={engine.garden.resetGarden}>
-                    Reset Garden
-          </button>
-            </div>}
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ flexBasis: '500px', flexShrink: 0 }}>
+                <div style={{ flexBasis: '500px', flexShrink: 0, display: "flex", flexDirection: 'column' }}>
                     {data.cell.rebirth.greaterThan(0) &&
                         <div>
                             Garden Speed:   x<DisplayDecimal decimal={data.cell.rebirth.add(1)} />
@@ -57,27 +50,27 @@ const GardenRow = (props: { data: Datamap }) => {
                         </div>
                     </div>}
                 </div>
-                <div>
-                    {data.garden.researches.progression > 2 && <div>
-                        <span>
-                        </span>
+                    <div style={{display:'flex',flexWrap:'wrap', alignContent:'flex-start'}}>
+                    {data.garden.researches.progression > 2 && <React.Fragment>
+
                         <SingleBuildingUI building={engine.garden.rebirth} />
                         <SingleBuildingUI building={engine.garden.wateringCan} />
                         <SingleBuildingUI building={engine.garden.denseWater} />
                         <SingleBuildingUI building={engine.garden.bunchPower} />
-                        <SingleResearchUI research={engine.garden.res_watering} active={0} />
-                        <SingleResearchUI research={engine.garden.res_expansion_one} active={0} />
-                        <SingleResearchUI research={engine.garden.res_expansion_two} active={0} />
-                        <SingleResearchUI research={engine.garden.res_expansion_three} active={0} />
-                        <SingleResearchUI research={engine.garden.res_bag_expansion} active={0} />
-                        <SingleResearchUI research={engine.garden.res_seedtype_circle} active={0} />
-                        <SingleResearchUI research={engine.garden.res_seedtype_squre} active={0} />
-                        <SingleResearchUI research={engine.garden.res_seedtype_bunch} active={0} />
-                        <SingleResearchUI research={engine.garden.res_seedtype_triangle} active={0} />
-                        <SingleResearchUI research={engine.garden.res_doomfromhope} active={0} />
-                        <SingleResearchUI research={engine.garden.res_seedtype_egg} active={0} />
-                        <SingleResearchUI research={engine.garden.res_doomedDiscard} active={0} />
-                    </div>}
+                        <NewSingleResearchUI research={engine.garden.res_watering}  />
+                        <NewSingleResearchUI research={engine.garden.res_expansion_one}  />
+                        <NewSingleResearchUI research={engine.garden.res_expansion_two}  />
+                        <NewSingleResearchUI research={engine.garden.res_expansion_three}  />
+                        <NewSingleResearchUI research={engine.garden.res_bag_expansion}  />
+                        <NewSingleResearchUI research={engine.garden.res_seedtype_circle}  />
+                        <NewSingleResearchUI research={engine.garden.res_seedtype_squre}  />
+                        <NewSingleResearchUI research={engine.garden.res_seedtype_bunch}  />
+                        <NewSingleResearchUI research={engine.garden.res_seedtype_triangle}  />
+                        <NewSingleResearchUI research={engine.garden.res_doomfromhope}  />
+                        <NewSingleResearchUI research={engine.garden.res_seedtype_egg}  />
+                        <NewSingleResearchUI research={engine.garden.res_doomedDiscard}  />
+                    </React.Fragment>}
+                        <SingleBuildingUI building={engine.garden.seedGeneration} />
                 </div>
                 <div>
                     {data.garden.researches.progression > 2 && <div style={{ display: "flex", flexDirection: 'column' }}>
@@ -99,7 +92,7 @@ const GardenRow = (props: { data: Datamap }) => {
                         {data.garden.researches.typeBunch && <ListedNumber resource={engine.garden.fruitGainMult} name="Fruit Gain Multi" />}
                         {data.garden.researches.typeTriangle && <ListedDecimal resource={engine.garden.waterTimeMulti} name='Water Time Multi'/>}
                         {data.garden.researches.doomedSeeds && <ListedDecimal resource={engine.garden.doomFruitMult} name='Doom Gain Multi'/>}
-                        {data.garden.researches.typeEgg && <ListedDecimal resource={engine.garden.jobSpeedMult} name='Job Speed Multi'/>}
+                        {data.garden.researches.typeEgg && <ListedDecimal resource={engine.garden.gardenJobSpeedMult} name='Job Speed Multi'/>}
 
                     </div>}
 
@@ -114,27 +107,6 @@ export default GardenRow;
 
 
 
-const PlotDisplay = (props: { plant: GardenPlant, index: number }) => {
-    const req = SeedGrowthTimeRequired(props.plant.seed);
-    const engine = gEngine;
-    return (
-        <div>
-            {SeedType[props.plant.seed.type]} Plant -
-            Growth: {percentOf(props.plant.plantTimer, req)}
-            {req < props.plant.plantTimer && <button onClick={() => {
-                engine.garden.harvest(props.index);
-            }}>
-                Harvest
-            </button>}
-            {engine.datamap.garden.researches.watering && <button onClick={() => {
-                engine.garden.waterPlant(props.index);
-            }}>
-                Water
-            </button>}
-            {props.plant.water > 0 && Math.floor(props.plant.water / 1000)}
-        </div>
-    )
-}
 
 const BagDisplay = () => {
     const engine = gEngine;
@@ -142,11 +114,12 @@ const BagDisplay = () => {
     const cps = engine.garden.canPlantSeed();
     return (
         <div>
+            <span>
             Bag: {engine.garden.data.bag.length}/{engine.garden.maxBagSlots} seeds<br />
+            </span>
             <div style={{ display: "flex", flexDirection: 'row' }}>
             <div style={{height:'50px', flexBasis:'20px'}}/>
                 {data.garden.bag.map((seed, index) => {
-                    const vk = seed.type + index;
                     return <NewSeedDisplay seed={seed} index={index} key={'bag'+index} canPlantSeed={cps} />
                 })}
             </div>
@@ -158,7 +131,7 @@ const BagDisplay = () => {
 
 const NewSeedDisplay = (props: { seed: GardenSeed, index: number, canPlantSeed: boolean }) => {
 
-    return <div style={{display: 'flex', flexDirection: "column", flexBasis:'150px' }}>
+    return <div style={{display: 'flex', flexDirection: "column", flexBasis:'150px' }} className='NewSeedDisplay'>
         <span>
             {SeedType[props.seed.type].toUpperCase()} SEED
         </span>
@@ -181,7 +154,7 @@ const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
     const waterTime = engine.garden.waterTimeBase.times(engine.garden.waterTimeMulti).toNumber();
     const waterPercent = percentOf(props.plant.water, waterTime);
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px', flexShrink:0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px', flexShrink:0 }} className='NewPlotDisplay'>
 
             <span>
                 {SeedType[props.plant.seed.type].toUpperCase()} PLANT

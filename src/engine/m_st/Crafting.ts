@@ -537,6 +537,7 @@ export enum GardeningItemModList {
 
     PlantGrowthSpeed, //implemented
     DoomRate, //implemented
+
 }
 
 interface EnergyItemValues {

@@ -41,6 +41,10 @@ const JobsRow = (props: { data: Datamap }) => {
     {data.jobs.notReset.mechancProgession >= 1 && <button className={data.jobs.notReset.rebuy?"AutoOn":'AutoOff'} onClick={jobs.toggleRebuy}>
       Rebuy After Prestige
     </button>}
+    <div style={{display:'flex'}}>
+      <SingleBuildingUI building={jobs.jobResistanceMult} />
+    </div>
+
     </div>
     <span>
       Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
