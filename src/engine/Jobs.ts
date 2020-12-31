@@ -64,10 +64,23 @@ export default class Jobs {
         this.calced.finalJobSpeed = precap;
     }
 
+    addJobProgress = (decimal: Decimal) => {
+        this.data.jobProgress = this.data.jobProgress.add(decimal);
+    }
+
     progress = (deltaS: Decimal) => {
+        if (this.chargeCurrent.count.greaterThan(0)) {
+            const trans = this.getChargeSpeed().times(deltaS);
+            this.addJobProgress(trans);
+            this.chargeCurrent.loseResource(trans)
+        }
+        
         const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.calced.finalResitanceDiv);
+        
         const capped = Decimal.min(1000, progressPerSecondAfterResistance);
-        this.data.jobProgress = this.data.jobProgress.add(capped.times(deltaS));
+        
+        this.addJobProgress(capped.times(deltaS));
+
         this.setResistanceDiv();
     }
 
@@ -257,9 +270,9 @@ export default class Jobs {
         costs: [
             { expo: { initial: 7, coefficient: 1.169 }, resource: this.engine.garden.triangularFruit },
         ],
-        description: 'Charge Storage',
+        description: 'Provides base Charge storage',
         hidden: () => this.data.notReset.mechancProgession === 0,
-        outcome: () => 'Charge Storage',
+        outcome: () => '+100 Charge storage',
     })
 
     chargeCurrent = new SingleResource({
@@ -280,6 +293,10 @@ export default class Jobs {
         this.chargeCurrent.info.setDecimal(this.chargeCurrent.cap);
     }
 
+    getChargeSpeed = () => {
+        return this.data.notReset.chargeCurrent.times(this.data.notReset.chargePower.add(1).times(.01))
+    }
+
     chargePower: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
             name: 'Charge Power',
@@ -290,11 +307,11 @@ export default class Jobs {
             },
         }),
         costs: [
-            { expo: { initial: 7, coefficient: 1.169 }, resource: this.engine.garden.triangularFruit },
+            { expo: { initial: 1, coefficient: 4.2 }, resource: this.xpResource },
         ],
-        description: 'Charge Power',
+        description: 'More usage and effect from charge',
         hidden: () => this.data.notReset.chargeStorage.eq(0),
-        outcome: () => 'Charge Power',
+        outcome: () => '+1x Charge Power',
     })
 
     reset = () => {

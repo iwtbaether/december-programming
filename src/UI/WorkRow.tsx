@@ -58,7 +58,9 @@ const JobsRow = (props: { data: Datamap }) => {
       Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
       {postResistance.greaterThan(1000) && <span> Capped at 1000/s </span>}
     </span>
-
+    {jobs.chargeStorage.count.greaterThan(0) && <span>
+      Charging at <DisplayDecimal decimal={jobs.getChargeSpeed()} /> /s
+    </span>}
     <span>
       {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv} />
     </span>
