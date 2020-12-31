@@ -270,3 +270,14 @@ body {
     margin: 3px;
     padding: 3px;
 }
+
+.DoomedMod {
+    text-decoration: underline;
+    text-decoration-color: $red;
+    margin-bottom: 3px;
+}
+
+.DoomedText {
+    color: $red;
+    text-shadow: 1px 1px black;
+}

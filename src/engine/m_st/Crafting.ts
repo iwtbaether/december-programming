@@ -123,9 +123,27 @@ export default class Crafting {
         if (this.cannotCraft()) return;
         if (this.data.currency.doomOrbs < 1) return;
         if (!canCheat) this.engine.save();
-        let rng = getRandomInt(0,1);
+        let rng = getRandomInt(0,2);
         if (rng === 0) this.data.currentCraft = null;
         if (rng === 1) if (this.data.currentCraft) {
+            this.data.currentCraft.doomed = true;
+            let type = this.data.currentCraft.itemType;
+            if ([1, 2, 3].includes(type)) {
+                let item = this.data.currentCraft as EnergyItem;
+                item = addRandomEnergyMod(item, true);
+                item.mods[item.mods.length - 1].doomed = true;       
+                this.data.currentCraft = item;
+
+            } else if ([5, 6, 7].includes(type)) {
+                let item = this.data.currentCraft as GardeningItem;
+                item = addRandomGardeningMod(item, true);
+                item.mods[item.mods.length - 1].doomed = true;       
+                this.data.currentCraft = item;
+            
+            }
+    
+        }
+        if (rng === 2) if (this.data.currentCraft) {
             this.data.currentCraft.doomed = true;
         }
         this.data.currency.doomOrbs -= 1;
@@ -481,8 +499,8 @@ function getEnergyModMaxValue(mod: EnergyItemModList): number {
     }
 }
 
-function addRandomEnergyMod(item: EnergyItem): EnergyItem {
-    if (item.mods.length >= maxMods(item)) return item;
+function addRandomEnergyMod(item: EnergyItem, bypass?: boolean): EnergyItem {
+    if (!bypass) if (item.mods.length >= maxMods(item)) return item;
 
     let exclusions = getEnergyModExclusions(item)
     let chosen = randomEnumWithExclusion(EnergyItemModList, exclusions)
@@ -519,8 +537,8 @@ function getGardenModMaxValue(mod: GardeningItemModList): number {
     }
 }
 
-function addRandomGardeningMod(item: GardeningItem): GardeningItem {
-    if (item.mods.length >= maxMods(item)) return item;
+function addRandomGardeningMod(item: GardeningItem, bypass?: boolean): GardeningItem {
+    if (!bypass) if (item.mods.length >= maxMods(item)) return item;
 
     let baseList = [
         GardeningItemModList.BiggerBag,

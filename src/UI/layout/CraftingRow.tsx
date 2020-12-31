@@ -45,7 +45,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     {data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'row'}}>
     <div style={{display:'flex',flexDirection:"column"}}>
     <button onClick={crafting.addModToCurrentCraft}>
-      Enchant Current Craft 
+      Enchant Current Craft {craftToModCount(crafting.data.currentCraft)}
     </button>
     <button onClick={crafting.equipCurrentCraft}>
       Equip Current Craft
@@ -101,7 +101,7 @@ export default CraftingRow;
 const EnergyItemDisplay = (props: {item: EnergyItem}) => {
   return (<div className={'EnergyItemDisplay'}>
     <div className='ItemTitle'>
-    <span className={props.item.doomed?'red-text':""}>Energy Catalyst</span><br/>
+    <span className={props.item.doomed?'DoomedText':""}>Energy Catalyst</span><br/>
     Size {maxMods(props.item)}
     </div>
     <div className='EnergyModList'>
@@ -119,7 +119,10 @@ const ItemDisplay = (props: {item: ItemData}) => {
 }
 
 const EnergyModDisplay = (props: {mod: EnergyItemMod}) => {
-  return (<div className='EnergyModDisplay'>
+  const base = 'Energy';
+  const rest = 'ModDisplay';
+  const extra = props.mod.doomed?' DoomedMod':''
+  return (<div className={base+rest+extra}>
     {EnergyModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
 }
@@ -163,7 +166,7 @@ function EnergyModAndValueToString  (mod: EnergyItemModList, value: number):stri
 const GardeningItemDisplay = (props: {item: GardeningItem}) => {
   return (<div className='GardeningItemDisplay'>
     <div className='ItemTitle'>
-      <span className={props.item.doomed?'red-text':""}>
+      <span className={props.item.doomed?'DoomedText':""}>
       {gItemName(props.item.itemType)}
       </span>
     </div>
@@ -194,7 +197,20 @@ function gItemName (it: ItemTypes): string {
 }
 
 const GardeningModDisplay = (props: {mod: GardeningItemMod}) => {
-  return (<div className='GardeningModDisplay'>
+  const base = 'Gardening';
+  const rest = 'ModDisplay';
+  const extra = props.mod.doomed?' DoomedMod':''
+  return (<div className={base+rest+extra}>
     {IITEM_STRINGS.GardeningModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
+}
+
+function craftToModCount (item: ItemData | null ) {
+  if (item) {
+    let max = maxMods(item);
+    if ((item as any).mods) {
+      let min = (item as any).mods.length;
+      return `${min}/${max}`
+    }
+  } else return ''
 }

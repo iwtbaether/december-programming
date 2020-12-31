@@ -75,8 +75,8 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
         60M</button>}
 
         </span>
-        <span>
-        v.7
+        <span className='orange-text'>
+        v.7beta
         </span>
     </div>
   )
