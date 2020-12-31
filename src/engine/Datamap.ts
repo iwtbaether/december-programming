@@ -57,6 +57,9 @@ export function newDefaultMap() {
             rebirth: ZERO,
             autoclicker: ZERO,
 
+            doomGardenSpeed: ZERO,
+            doomJobSpeed: ZERO,
+
             d4: ZERO,
             d5: ZERO,
             d6: ZERO,
@@ -112,6 +115,8 @@ interface I_HoldDecimals {
     determination: Decimal,
     rebirth: Decimal,
     autoclicker: Decimal,
+    doomGardenSpeed: Decimal,
+    doomJobSpeed: Decimal,
 
     d4: Decimal,
     d5: Decimal,

@@ -7,6 +7,7 @@ import TipFC from "../comps/TipFC";
 import DisplayDecimal from "../DisplayDecimal";
 import DisplayNumber from "../DisplayNumber";
 import { ListedNumber } from "../ListedResourceClass";
+import IITEM_STRINGS from "./ItemStrings";
 
 const CraftingRow = (props: { data: Datamap }) => {
   const data = props.data;
@@ -30,7 +31,7 @@ const CraftingRow = (props: { data: Datamap }) => {
       Create Small Catalyst (Energy)
     </button>}
     {data.unlocksStates.one >= 7 &&<React.Fragment>
-      <button onClick={crafting.makeRandomGardeningEquipment}>Make Randon Garden Equipment</button>  
+      <button onClick={crafting.makeRandomGardeningEquipment}>Make Random Garden Equipment</button>  
     </React.Fragment>}
     {canCheat && <button onClick={crafting.getRandomCurrency}>
       Get Random Currency
@@ -173,6 +174,7 @@ function gItemName (it: ItemTypes): string {
 
 const GardeningModDisplay = (props: {mod: GardeningItemMod}) => {
   return (<div className='GardeningModDisplay'>
-    {GardeningItemModList[props.mod.mod]} - {props.mod.value}
+    {GardeningItemModList[props.mod.mod]} - {props.mod.value}<br/>
+    {IITEM_STRINGS.GardeningModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
 }

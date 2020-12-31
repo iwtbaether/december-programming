@@ -1,3 +1,4 @@
+import { throws } from "assert";
 import Decimal from "break_infinity.js";
 import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
@@ -45,8 +46,8 @@ export default class Engine extends CoreEngine {
 
 
         
-        this.garden.processDelta(delta)
         if (delta < 0) delta = 0;
+        this.garden.processDelta(delta)
         
 
         const deltaS = delta / 1000;
@@ -241,8 +242,7 @@ export default class Engine extends CoreEngine {
 
     resetGloom = () => {
         const ZERO = new Decimal(0);
-        if (this.datamap.cell.gloom.greaterThan(0)) this.datamap.cell.gloom = new Decimal(1)
-        else this.datamap.cell.gloom = ZERO;
+        this.datamap.cell.gloom = this.initialGloom();
         this.datamap.cell.gloomGen1 = ZERO;
         this.datamap.cell.gloomGen2 = ZERO;
         this.datamap.cell.gloomGen3 = ZERO;
@@ -278,6 +278,10 @@ export default class Engine extends CoreEngine {
         this.doomUpgrade6.reset();
         this.doomUpgrade7.reset();
         this.doomUpgrade8.reset();
+
+        this.doomResearch.doomJobSpeed.reset();
+        this.doomResearch.doomGardenSpeed.reset();
+
     }
     clearEnergy = () =>{
         this.energyResource.info.setDecimal(new Decimal(0))
@@ -309,19 +313,23 @@ export default class Engine extends CoreEngine {
         this.datamap.cell.aewf = this.datamap.cell.aewf.add(1);
 
         this.crafting.reset();
-        this.garden.resetGarden();
+        //this.garden.resetGarden();
         this.jobs.realReset();
         this.clearDoom();
+        this.resetGloom()
         this.clearEnergy();
 
-        this.jobs.data.notReset.upgrades.energy = 1;
 
         this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
 
 
-        this.datamap.cell.gloom = this.datamap.cell.aewf.pow(3);
+        this.datamap.cell.gloom = this.initialGloom();
 
         this.notify();
+    }
+
+    initialGloom = () => {
+        return this.datamap.cell.aewf.pow(3);
     }
 
     gUL3: BasicCommand = {

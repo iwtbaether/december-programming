@@ -21,11 +21,13 @@ export class BasicCommandButton extends React.Component<{cmd: BasicCommand},{}> 
         const hidden = this.props.cmd.hidden?this.props.cmd.hidden():false;
         if (hidden) return null;
         const able = this.props.cmd.able?this.props.cmd.able():true;
-        return (
-            <button disabled={!able} onClick={this.props.cmd.command} style={{position:"relative"}}>
+        return (<span style={{position:'relative'}}>
+
                 {this.props.children && <TipFC tip={this.props.children}/>}
+            <button disabled={!able} onClick={this.props.cmd.command} style={{position:"relative"}}>
                 {this.props.cmd.label}
             </button>
+        </span>
         )
     }
 }

@@ -36,6 +36,46 @@ export default class DoomResearches {
         ]
     })
 
+    doomGardenSpeed: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Doomed Garden',
+            get: () => this.engine.datamap.cell.doomGardenSpeed,
+            setDecimal: (dec) => {
+                this.engine.datamap.cell.doomGardenSpeed = dec
+                this.engine.garden.setGardenSpeedMulti();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1e6, coefficient: 10 }, resource: this.engine.doom },
+        ],
+        description: `10% Increased Garden Speed`,
+        hidden: () => this.engine.datamap.unlocksStates.one < 5,
+        outcome: () => {
+            let now = this.engine.datamap.cell.doomGardenSpeed;
+            return `Current: ${now.times(10).floor()}% Increased Garden Speed`
+        },
+    })
+
+    doomJobSpeed: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Doomed Job',
+            get: () => this.engine.datamap.cell.doomJobSpeed,
+            setDecimal: (dec) => {
+                this.engine.datamap.cell.doomJobSpeed = dec
+                this.engine.jobs.calcJobSpeed();
+            },
+        }),
+        costs: [
+            { expo: { initial: 1.5e6, coefficient: 10 }, resource: this.engine.doom },
+        ],
+        description: `10% Increased Job Speed`,
+        hidden: () => this.engine.datamap.unlocksStates.one < 6,
+        outcome: () => {
+            let now = this.engine.datamap.cell.doomJobSpeed;
+            return `Current: ${now.times(10).floor()}% Increased Job Speed`
+        },
+    })
+
     
 }
 

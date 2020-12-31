@@ -24,11 +24,12 @@ export default class Garden {
     setTempData = () => {
         this.maxBagSlots = this.calcBagSlots();
         this.maxgGardenPlots = this.calcGardenPlots();
-        this.setGardenSpeedMult();
+        this.setPlantSpeedMult();
         this.setWaterTime();
         this.setDoomFruitMult();
         this.setFruitGainMulti();
         this.setGardenJobSpeedMult();
+        this.setGardenSpeedMulti();
 
     }
 
@@ -110,10 +111,25 @@ export default class Garden {
         return this.data.plots.length < this.maxgGardenPlots
     }
 
-    processDelta = (delta: number) => {
-        if (this.engine.datamap.cell.rebirth.greaterThan(0)) {
-            delta = delta * this.engine.datamap.cell.rebirth.add(1).toNumber();
+    gardenSpeedMulti = new Decimal(1);
+    setGardenSpeedMulti = () => {
+        let base = new Decimal(1);
+        let incresed = new Decimal(1);
+        let more = new Decimal(1);
+
+        if (this.engine.datamap.cell.doomGardenSpeed.greaterThan(0)) {
+            incresed = incresed.add( this.engine.datamap.cell.doomGardenSpeed.times(.1) )
         }
+        
+        if (this.engine.datamap.cell.rebirth.greaterThan(0)) {
+            more = more.times( this.engine.datamap.cell.rebirth.add(1) )
+        }
+
+        this.gardenSpeedMulti = base.times(more).times(incresed);
+    }
+
+    processDelta = (delta: number) => {
+        delta = delta * this.gardenJobSpeedMult.toNumber();
         if (this.equipment.autoPlant) {
             if (this.data.bag.length > 0) {
                 if (this.canPlantSeed()) {
@@ -359,7 +375,7 @@ export default class Garden {
         get: () => this.data.fruits.circular,
         setDecimal: (dec) => {
             this.data.fruits.circular = dec;
-            this.setGardenSpeedMult();
+            this.setPlantSpeedMult();
         },
         name: 'Circular Fruit'
     })
@@ -424,9 +440,10 @@ export default class Garden {
     })
 
     plantSpeedMult = 1;
-    setGardenSpeedMult = () => {
+    setPlantSpeedMult = () => {
 
         let mult = Decimal.ln(this.data.fruits.circular.add(1)) + 1;
+        
         //console.log('calcing garden speed mult',mult);
         if (this.equipment.plantGrowthMulti !== 1) {
             mult = mult * this.equipment.plantGrowthMulti;

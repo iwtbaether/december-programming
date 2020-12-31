@@ -3,6 +3,7 @@
 .TipFC {
     display: none;
     overflow: visible;
+    z-index: 10;
 }
 
 :hover > .TipFC {

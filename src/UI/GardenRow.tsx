@@ -22,7 +22,7 @@ const GardenRow = (props: { data: Datamap }) => {
                 <div style={{ flexBasis: '500px', flexShrink: 0, display: "flex", flexDirection: 'column' }}>
                     {data.cell.rebirth.greaterThan(0) &&
                         <div>
-                            Garden Speed:   x<DisplayDecimal decimal={data.cell.rebirth.add(1)} />
+                            Garden Speed:   x<DisplayDecimal decimal={garden.gardenSpeedMulti} />
                         </div>
                     }
                     {data.garden.researches.watering && <span>

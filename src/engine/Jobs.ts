@@ -55,7 +55,7 @@ export default class Jobs {
         this.calced.finalBaseJobSpeed = this.data.jobspeedplus;
         this.engine.garden.setGardenJobSpeedMult();
 
-        const jsMult1 = this.data.jobspeedmult.add(1);
+        const jsMult1 = this.data.jobspeedmult.add(1).add(this.engine.datamap.cell.doomJobSpeed.times(.1));
         const jsMult2 = this.data.notReset.upgrades.jobSpeed.add(1);
         const jsMult3 = this.engine.garden.gardenJobSpeedMult;
         

@@ -166,17 +166,17 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
         Give Up
       </button>
         </span>
-        <span>
+        <div>
 
       <BasicCommandButton cmd={gEngine.gUL3} >
-        Resets Energy, Doom, Crafting, Garden, Jobs
+        Resets Energy, Doom, Crafting, Jobs
       </BasicCommandButton>
-        </span>
-        <span>
+        </div>
+        <div>
       <BasicCommandButton cmd={gEngine.gUL2} >
         Resets Energy {data.unlocksStates.two > 2 &&', Gloom'}
          </BasicCommandButton>
-        </span>
+        </div>
       </span>
     </div>
   )
@@ -195,13 +195,15 @@ const DoomRow = (props: { data: Datamap }) => {
       <SingleBuildingUI building={engine.doomUpgrade1} />
       <SingleBuildingUI building={engine.doomUpgrade2} />
       <SingleBuildingUI building={engine.doomUpgrade3} />
+      <SingleBuildingUI building={engine.doomResearch.doomGardenSpeed} />
+      <SingleBuildingUI building={engine.doomResearch.doomJobSpeed} />
       <br/>
       <SingleBuildingUI building={engine.doomUpgrade4} />
       <SingleBuildingUI building={engine.doomUpgrade5} />
       <SingleBuildingUI building={engine.doomUpgrade7} />
       <SingleBuildingUI building={engine.doomUpgrade8} />
       {data.unlocksStates.two > 2 && <React.Fragment>
-        
+      
       <SingleBuildingUI building={engine.doomUpgrade6} />
       <SingleBuildingUI building={engine.gloomGen1} />
       <SingleBuildingUI building={engine.gloomGen2} />

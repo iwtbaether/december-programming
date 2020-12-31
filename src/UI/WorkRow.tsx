@@ -61,10 +61,10 @@ const JobsRow = (props: { data: Datamap }) => {
     Current {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.jobProgress}/>
     </span>
     <span>
-    Best {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.farthesthProgress}/>
+    Last {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.last}/>
     </span>
     <span>
-    Last {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.last}/>
+    Best {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.farthesthProgress}/>
     </span>
     <span>
     Goal {selectedJob.unitsLabel}: 10k
