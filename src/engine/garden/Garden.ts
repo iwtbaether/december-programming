@@ -471,7 +471,7 @@ export default class Garden {
         }
         this.waterTimeMulti = mult;
 
-        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*2).add(this.equipment.waterTimeBase);
+        const base = this.data.buildings.wateringCan.times(1000).add(MINUTE_MS*2).add(this.equipment.waterTimeBase * 1000);
         this.waterTimeBase = base;
     }
 

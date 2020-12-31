@@ -207,10 +207,11 @@ export default class Engine extends CoreEngine {
                 this.clearDoom();
                 this.clearEnergy();
                 this.crafting.reset();
-        this.garden.resetGarden();
-        this.jobs.realReset();
+                this.garden.resetGarden();
+                this.jobs.realReset();
                 this.datamap.unlocksStates.one++;
                 this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);
+                this.determination.reset();
                 this.calcEnergy();
                 this.resetGloom();
                 this.notify();
