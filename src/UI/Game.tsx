@@ -1,13 +1,11 @@
 import Decimal from 'break_infinity.js';
-import { relative } from 'path';
 import React from 'react';
 import { gEngine } from '..';
 import { Datamap } from '../engine/Datamap';
 import { canCheat, MINUTE_MS, percentOf } from '../engine/externalfns/util';
 import { SingleBuildingUI } from './BuildingsUI';
 import { BasicCommandButton } from './comps/BasicCommand';
-import ConfirmCommandButton from './comps/ConfirmCommandButton';
-import TipFC, { ChildTip } from './comps/TipFC';
+import TipFC from './comps/TipFC';
 import DisplayDecimal from './DisplayDecimal';
 import DoomRow from './DoomRow';
 import FancySaveButton from './FancySaveButton';
@@ -16,7 +14,6 @@ import JobXPPopup from './JobXPPopup';
 import CraftingRow from './layout/CraftingRow';
 import ListedResourceClass from './ListedResourceClass';
 import OptionsRow from './OptionsRow';
-import ResearchUI from './ResearchUI';
 import JobsRow from './WorkRow';
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
@@ -75,8 +72,8 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
         60M</button>}
 
         </span>
-        <span className='orange-text'>
-        v.7beta
+        <span className='yellow-text'>
+        v.7fresh
         </span>
     </div>
   )
@@ -89,7 +86,6 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   const clickGain = gEngine.energyModule.energyPerClick;
   const activityGain = gEngine.energyModule.energyGainFromActivity;
   const prize = gEngine.doomGain();
-  const color = clickGain.greaterThanOrEqualTo(0)? 'inherit':'purple'
   const cn = clickGain.greaterThanOrEqualTo(0)? '':'Anti'
 
   return (

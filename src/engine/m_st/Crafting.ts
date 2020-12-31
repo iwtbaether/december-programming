@@ -493,6 +493,10 @@ function getEnergyModMaxValue(mod: EnergyItemModList): number {
         case EnergyItemModList.IncreasedGain:
             return 30;
             break;
+            case EnergyItemModList.BaseGain:
+                return 50;
+                break;
+            
         default:
             return 10;
             break;
@@ -526,7 +530,7 @@ function getGardenModMaxValue(mod: GardeningItemModList): number {
             return 1;
             break;
         case GardeningItemModList.WateringDurationBase:
-            return 240;
+            return 600;
             break;
         case GardeningItemModList.FruitGainBase:
             return 20;

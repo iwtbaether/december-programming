@@ -4,6 +4,7 @@ import { Datamap } from "../engine/Datamap";
 import { percentOf } from "../engine/externalfns/util";
 import { TimeRequiredForSeed, SeedType, GardenPlant, SeedGrowthTimeRequired, GardenSeed } from "../engine/garden/Garden";
 import { SingleBuildingUI } from "./BuildingsUI";
+import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass, { ListedDecimal, ListedNumber } from "./ListedResourceClass";
@@ -30,6 +31,12 @@ const GardenRow = (props: { data: Datamap }) => {
                     </span>}
                     {data.jobs.farthesthProgress.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult} /></span>}
                     Seed Generation: {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}
+                    {garden.equipment.fruitGainBase > 0 && <div style={{position:'relative'}}>
+                        Total Fruit Gain: <DisplayNumber num={garden.getFruitGain()} />  
+                        <TipFC tip={<span>
+                            Base <DisplayNumber num={garden.equipment.fruitGainBase+1} /> * Mult <DisplayNumber num={garden.fruitGainMult} />
+                        </span>}/>
+                    </div>}
                     {data.garden.researches.progression > 0 && <div style={{marginBottom:'5px'}}>
 
                         Seeds: <DisplayDecimal decimal={data.garden.seeds} /><br /><br />
@@ -168,7 +175,7 @@ const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
             }
 
             {req <= props.plant.plantTimer &&
-                <button onClick={() => { engine.garden.harvest(props.index); }}>
+                <button onClick={() => { engine.garden.harvest(props.index); }} className='HarvestButton'>
                     Harvest
                 </button>
             }

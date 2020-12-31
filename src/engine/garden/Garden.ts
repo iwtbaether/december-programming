@@ -190,20 +190,21 @@ export default class Garden {
         }
     }
 
+
+
     harvest = (index: number) => {
         if (index >= this.data.plots.length) return;
         this.quietHarvest(index);
         this.engine.notify();
     }
 
+    getFruitGain = () => {
+        const base = this.equipment.fruitGainBase + 1;
+        return base * this.fruitGainMult;
+    }
+
     getFruit(type: SeedType) {
-        let gain = 1;
-        if (this.equipment.fruitGainBase) {
-            gain = gain + this.equipment.fruitGainBase;
-        }
-        if (this.fruitGainMult !== 1) {
-            gain = gain * this.fruitGainMult
-        }
+        let gain = this.getFruitGain();
 
         switch (type) {
             case SeedType.hope:

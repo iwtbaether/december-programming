@@ -1,5 +1,5 @@
 import React from "react"
-import TipFC, { ChildTip } from "./TipFC";
+import TipFC from "./TipFC";
 
 export interface BasicCommand {
     label: string;

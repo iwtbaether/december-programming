@@ -2,7 +2,6 @@ import React from "react";
 import { gEngine } from "..";
 import { Datamap } from "../engine/Datamap";
 import ConfirmCommandButton from "./comps/ConfirmCommandButton";
-import DisplayDecimal from "./DisplayDecimal";
 
 const OptionsRow = (props: { data: Datamap }) => {
   const data = props.data;

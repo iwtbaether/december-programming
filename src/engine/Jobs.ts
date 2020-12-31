@@ -1,10 +1,8 @@
-import { throws } from "assert";
 import Decimal from "break_infinity.js";
 import { Datamap } from "./Datamap";
 import Engine from "./Engine";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
-import { getRandomInt } from "./externalfns/util";
 import { SingleResearch } from "./Research";
 
 export default class Jobs {
@@ -17,6 +15,7 @@ export default class Jobs {
         this.calcJobSpeed();
         this.setResistanceDiv();
         this.setSeedGainSpeedMulti();
+        this.chargeCurrent.calculate();
 
     }
 
@@ -58,10 +57,10 @@ export default class Jobs {
         const jsMult1 = this.data.jobspeedmult.add(1).add(this.engine.datamap.cell.doomJobSpeed.times(.1));
         const jsMult2 = this.data.notReset.upgrades.jobSpeed.add(1);
         const jsMult3 = this.engine.garden.gardenJobSpeedMult;
-        
+
         this.calced.finalJobSpeedMult = jsMult1.times(jsMult2).times(jsMult3);
         const precap = this.calced.finalBaseJobSpeed.times(this.calced.finalJobSpeedMult)
-        
+
         this.calced.finalJobSpeed = precap;
     }
 
@@ -73,7 +72,7 @@ export default class Jobs {
     }
 
     offlineProgress = (bigDeltaS: Decimal) => {
-        while(bigDeltaS.greaterThan(0)) {
+        while (bigDeltaS.greaterThan(0)) {
             const cappedTickLength = Decimal.min(10, bigDeltaS);
             bigDeltaS = bigDeltaS.minus(cappedTickLength);
             this.progress(cappedTickLength);
@@ -81,14 +80,14 @@ export default class Jobs {
     }
 
     setResistanceDiv = () => {
-                
+
         let resistMulti1 = this.data.notReset.jobResistanceMult.add(1);
         let resistMulti2 = this.data.notReset.upgrades.effectiveResistance.times(.1).add(1);
         let resistMult = resistMulti1.times(resistMulti2);
-        
+
         const baseResist = this.data.jobResistance.add(1);
         const resist = baseResist.times(resistMult);
-        
+
         const baseProgress = this.data.jobProgress.add(1)
         this.calced.finalResitanceDiv = baseProgress.div(resist);
     }
@@ -141,7 +140,7 @@ export default class Jobs {
         if (pp.greaterThan(10000)) {
             if (this.data.notReset.mechancProgession === 0) this.data.notReset.mechancProgession = 1;
             let xpGain = new Decimal(1);
-            if (this.data.notReset.upgrades.job >= 1) xpGain = xpGain.add( pp.div(10000).floor() )
+            if (this.data.notReset.upgrades.job >= 1) xpGain = xpGain.add(pp.div(10000).floor())
             this.xpResource.gainResource(xpGain)
         }
 
@@ -174,7 +173,7 @@ export default class Jobs {
     seedGainSpeedMult = 1;
     setSeedGainSpeedMulti = () => {
         let base = 1;
-        base = base + Decimal.log10(this.data.farthesthProgress.add(1))/10
+        base = base + Decimal.log10(this.data.farthesthProgress.add(1)) / 10
         this.seedGainSpeedMult = base;
     }
 
@@ -244,6 +243,58 @@ export default class Jobs {
         description: 'More Job Resistance',
         hidden: () => this.engine.datamap.unlocksStates.two < 3,
         outcome: () => '+1x More Job Resistance',
+    })
+
+    chargeStorage: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Charge Storage',
+            get: () => this.engine.datamap.jobs.notReset.chargeStorage,
+            setDecimal: (dec) => {
+                this.engine.datamap.jobs.notReset.chargeStorage = dec
+                this.chargeCurrent.calculate();
+            },
+        }),
+        costs: [
+            { expo: { initial: 7, coefficient: 1.169 }, resource: this.engine.garden.triangularFruit },
+        ],
+        description: 'Charge Storage',
+        hidden: () => this.data.notReset.mechancProgession === 0,
+        outcome: () => 'Charge Storage',
+    })
+
+    chargeCurrent = new SingleResource({
+        name: 'Charge Current',
+        get: () => this.engine.datamap.jobs.notReset.chargeCurrent,
+        setDecimal: (dec) => {
+            this.engine.datamap.jobs.notReset.chargeCurrent = dec
+            //this.setResistanceDiv();
+        },
+        calculateCap: () => {
+            console.log('calc cap');
+            
+            return this.data.notReset.chargeStorage.times(100);
+        }
+    })
+
+    fillCharge = () => {
+        this.chargeCurrent.info.setDecimal(this.chargeCurrent.cap);
+    }
+
+    chargePower: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Charge Power',
+            get: () => this.engine.datamap.jobs.notReset.chargePower,
+            setDecimal: (dec) => {
+                this.engine.datamap.jobs.notReset.chargePower = dec
+                //this.setResistanceDiv();
+            },
+        }),
+        costs: [
+            { expo: { initial: 7, coefficient: 1.169 }, resource: this.engine.garden.triangularFruit },
+        ],
+        description: 'Charge Power',
+        hidden: () => this.data.notReset.chargeStorage.eq(0),
+        outcome: () => 'Charge Power',
     })
 
     reset = () => {
@@ -429,7 +480,7 @@ export const FULL_JOBS_LIST: JobsListInfo[] = [
         speedPlusLabel: 'Swim Speed +',
         speedMultLabel: 'Swim Speed x',
         unitsLabel: 'Distance',
-        resistanceLabels: ['pH Resistance','Penetration'],
+        resistanceLabels: ['pH Resistance', 'Penetration'],
         slowReason: 'The toxicity of the environment',
         progressLabel: 'Speed'
 
@@ -452,6 +503,9 @@ export interface JobsData {
         jobResistanceMult: Decimal,
         xp: Decimal,
         rebuy: boolean,
+        chargeStorage: Decimal,
+        chargeCurrent: Decimal,
+        chargePower: Decimal,
         upgrades: {
             job: number
             cubiclePower: Decimal,
@@ -483,6 +537,9 @@ export function JobsData_Init(): JobsData {
             xp: ZERO,
             rebuy: false,
             jobResistanceMult: ZERO,
+            chargeStorage: ZERO,
+            chargeCurrent: ZERO,
+            chargePower: ZERO,
             upgrades: {
                 doom: 0,
                 cubiclePower: ZERO,
@@ -512,4 +569,8 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.notReset.upgrades.cubiclePower = new Decimal(data.jobs.notReset.upgrades.cubiclePower)
     data.jobs.notReset.upgrades.workFromPrestige = new Decimal(data.jobs.notReset.upgrades.workFromPrestige)
     data.jobs.notReset.upgrades.effectiveResistance = new Decimal(data.jobs.notReset.upgrades.effectiveResistance)
+
+    data.jobs.notReset.chargePower = new Decimal(data.jobs.notReset.chargePower);
+    data.jobs.notReset.chargeStorage = new Decimal(data.jobs.notReset.chargeStorage);
+    data.jobs.notReset.chargeCurrent = new Decimal(data.jobs.notReset.chargeCurrent);
 }
