@@ -9,6 +9,7 @@ import { BasicCommandButton } from './comps/BasicCommand';
 import ConfirmCommandButton from './comps/ConfirmCommandButton';
 import TipFC, { ChildTip } from './comps/TipFC';
 import DisplayDecimal from './DisplayDecimal';
+import DoomRow from './DoomRow';
 import FancySaveButton from './FancySaveButton';
 import GardenRow from './GardenRow';
 import JobXPPopup from './JobXPPopup';
@@ -59,54 +60,24 @@ const PopupRow = (props: { data: Datamap }) => {
 
 const FileButtons = (props: { last: number, auto: boolean }) => {
   return (
-    <div>
+    <div style={{display:'flex',justifyContent:'space-between'}}>
+        <span>
       File:
       <FancySaveButton/>
       <button onClick={gEngine.autosaveToggle} className={props.auto?'AutoOn':'AutoOff'}>
-        Autosave
-        <TipFC tip={props.auto?'On':'Off'}/>
+        Autosave ({props.auto?'On':'Off'})
           </button>
-          <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
-      <button onClick={gEngine.export} >
-        Export
-          </button>
-      <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
-        Import
-                                </button>
-      <input id="file-input" type="file" name="name" style={{ display: "none" }}
-        onChange={(e) => {
-          let list = e.target.files;
-          if (list) {
-            let file = list[0];
-            var reader = new FileReader();
 
-            //reader.readAsArrayBuffer(file)
-            reader.readAsText(file, 'UTF-8');
-
-            // here we tell the reader what to do when it's done reading...
-            reader.onload = readerEvent => {
-              let target = readerEvent.target;
-              if (target) {
-                let content = target.result;
-                if (content) {
-                  console.log(content);
-                  gEngine.import(content.toString())
-
-                }
-              }
-            }
-
-          }
-
-        }} />
-          <ConfirmCommandButton do={gEngine.reset} label={'Reset All Data'} warning={'This does nothing good. It is just a data wipe.'} />
       
       {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 10)}>
         10M</button>}
         {canCheat && <button onClick={() => gEngine.processDelta(MINUTE_MS * 60)}>
         60M</button>}
-      <br />
+
+        </span>
+        <span>
         v.7
+        </span>
     </div>
   )
 }
@@ -126,13 +97,10 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       <ListedResourceClass resource={gEngine.energyResource} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
-      Hover Energy Gain: <DisplayDecimal decimal={activityGain} />, <span className={cn}>Click Energy Gain: <DisplayDecimal decimal={clickGain} /></span>
-      <br />
+      Hover Energy Gain: <DisplayDecimal decimal={activityGain} />, <span className={cn}>Click Energy Gain: <DisplayDecimal decimal={clickGain} /></span><br />
+    {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}
       <div style={{display:'flex',gap:'5px'}}>
       <span style={{position:'relative'}}>
-        <ChildTip>
-          Hover for energy gain
-        </ChildTip>
       <button onMouseEnter={() => gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity} style={{position:'relative'}}>
         Gather Energy /s
       </button>
@@ -182,39 +150,7 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
   )
 }
 
-const DoomRow = (props: { data: Datamap }) => {
-  const data = props.data;
-  const engine = gEngine;
 
-  return (
-    <div>
-      <ListedResourceClass resource={engine.doom} />
-      {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
-      {data.unlocksStates.two > 2 && <ListedResourceClass resource={gEngine.gloom} />}
-      
-      <SingleBuildingUI building={engine.doomUpgrade1} />
-      <SingleBuildingUI building={engine.doomUpgrade2} />
-      <SingleBuildingUI building={engine.doomUpgrade3} />
-      <SingleBuildingUI building={engine.doomResearch.doomGardenSpeed} />
-      <SingleBuildingUI building={engine.doomResearch.doomJobSpeed} />
-      <br/>
-      <SingleBuildingUI building={engine.doomUpgrade4} />
-      <SingleBuildingUI building={engine.doomUpgrade5} />
-      <SingleBuildingUI building={engine.doomUpgrade7} />
-      <SingleBuildingUI building={engine.doomUpgrade8} />
-      {data.unlocksStates.two > 2 && <React.Fragment>
-      
-      <SingleBuildingUI building={engine.doomUpgrade6} />
-      <SingleBuildingUI building={engine.gloomGen1} />
-      <SingleBuildingUI building={engine.gloomGen2} />
-      <SingleBuildingUI building={engine.gloomGen3} />
-      <SingleBuildingUI building={engine.gloomGen4} />
-
-        </React.Fragment>
-        }
-    </div>
-  )
-}
 
 const NavRow = (props: { data: Datamap }) => {
   const data = props.data;

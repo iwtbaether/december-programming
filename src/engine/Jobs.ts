@@ -382,7 +382,7 @@ export default class Jobs {
         get: () => this.data.notReset.upgrades.job > 0,
         makeTrue: () => { this.data.notReset.upgrades.job = 1 },
         costs: [
-            { resource: this.xpResource, count: new Decimal(16) }
+            { resource: this.xpResource, count: new Decimal(8) }
         ],
     })
 

@@ -1,5 +1,7 @@
 import React from "react";
+import { gEngine } from "..";
 import { Datamap } from "../engine/Datamap";
+import ConfirmCommandButton from "./comps/ConfirmCommandButton";
 import DisplayDecimal from "./DisplayDecimal";
 
 const OptionsRow = (props: { data: Datamap }) => {
@@ -22,8 +24,45 @@ const OptionsRow = (props: { data: Datamap }) => {
         @antimatter-dimensions/notations
         </a>
     </div>
+    <br/>
     <div>
-      lol no options
+      Advanced File Options
+    </div>
+    <div>
+    <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
+      <button onClick={gEngine.export} >
+        Export
+          </button>
+      <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
+        Import
+                                </button>
+      <input id="file-input" type="file" name="name" style={{ display: "none" }}
+        onChange={(e) => {
+          let list = e.target.files;
+          if (list) {
+            let file = list[0];
+            var reader = new FileReader();
+
+            //reader.readAsArrayBuffer(file)
+            reader.readAsText(file, 'UTF-8');
+
+            // here we tell the reader what to do when it's done reading...
+            reader.onload = readerEvent => {
+              let target = readerEvent.target;
+              if (target) {
+                let content = target.result;
+                if (content) {
+                  console.log(content);
+                  gEngine.import(content.toString())
+
+                }
+              }
+            }
+
+          }
+
+        }} />
+          <ConfirmCommandButton do={gEngine.reset} label={'Reset All Data'} warning={'This does nothing good. It is just a data wipe.'} />
     </div>
   </div>)
 }

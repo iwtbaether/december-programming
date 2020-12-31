@@ -1,4 +1,4 @@
-import { GardeningItemModList } from "../../engine/m_st/Crafting";
+import { GardeningItemModList } from "../../engine/m_st/ModLists";
 
 function GardeningModAndValueToString(mod: GardeningItemModList, value: number): string {
     switch (mod) {
@@ -17,22 +17,27 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
         case GardeningItemModList.BiggerGarden:
             return `+1 Garden Plot`
             break;
+        case GardeningItemModList.DoomRate:
+            return `${value}% Doom Seed Find`
+            break;
         case GardeningItemModList.FruitGainBase:
-            return `+${value * .1} base fruit gain`
+            return `+${(value * .1).toFixed(1)} Base Fruit Gain`
             break;
         case GardeningItemModList.FruitGrainMult:
-            return `${value * 10}% more fruit gain`
+            return `${value * 10}% More Fruit Gain`
             break;
         case GardeningItemModList.PlantGrowthSpeed:
-            return `${value * 10}% more plant speed`
+            return `${value * 10}% More Plant Speed`
             break;
         case GardeningItemModList.WateringDurationBase:
-            return `+${value}s watering time`
+            return `+${value}s Watering Time`
             break;
         case GardeningItemModList.WateringDurationMult:
-            return `${value * 10}% more watering time`
+            return `${value * 10}% More Watering time`
             break;
-
+        case GardeningItemModList.Broken:
+            return `Oops! It automatically broke!`
+            break;
 
         default:
             return 'error'

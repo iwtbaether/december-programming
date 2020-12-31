@@ -516,7 +516,7 @@ export default class Engine extends CoreEngine {
         ],
         description: `Generates Gloom`,
         hidden: () => this.datamap.unlocksStates.two < 3,
-        outcome: () => `+1 Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()}`,
+        outcome: () => `+${this.datamap.cell.aewf} Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()}`,
     })
 
     gloomGen2: SingleBuilding = new SingleBuilding({

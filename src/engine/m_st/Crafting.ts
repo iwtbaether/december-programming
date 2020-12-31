@@ -1,9 +1,11 @@
 import { throws } from "assert";
 import Decimal from "break_infinity.js";
+import { timeStamp } from "console";
 import { basename } from "path";
 import { EnumType, isTypeNode } from "typescript";
 import Engine from "../Engine";
-import { getRandomInt, randomEnum, randomEnumFromListWithExclusions, randomEnumWithExclusion } from "../externalfns/util";
+import { canCheat, getRandomInt, randomEnum, randomEnumFromListWithExclusions, randomEnumWithExclusion } from "../externalfns/util";
+import { EnergyItemModList, GardeningItemModList } from "./ModLists";
 
 export default class Crafting {
     constructor(public engine: Engine) {
@@ -34,6 +36,7 @@ export default class Crafting {
     makeRandomGardeningEquipment = () => {
         if (this.data.currency.transmutes < 1) return;
         this.data.currency.transmutes--;
+        this.engine.save();
 
         this.data.currentCraft = makeGardeningItem();
         this.engine.notify();
@@ -43,6 +46,16 @@ export default class Crafting {
     getCurrency = () => {
         this.data.currency.transmutes += 10;
         this.data.currency.augmentations += 10;
+    }
+
+    getRandomACurrency = () => {
+        let rng = getRandomInt(0, 99);
+        let type = rng % 3;
+        
+        if (type === 0) this.data.currency.transmutes++;
+        if (type === 1) this.data.currency.augmentations++;
+        if (type === 2) this.data.currency.doomOrbs++;
+        this.engine.notify();
     }
 
     getRandomCurrency = () => {
@@ -65,6 +78,8 @@ export default class Crafting {
     }
 
     addModToCurrentCraft = () => {
+        if (this.cannotCraft()) return;
+        if (!canCheat) this.engine.save();
         if (this.data.currency.augmentations < 1) return;
         if (this.data.currentCraft) {
             let type = this.data.currentCraft.itemType;
@@ -86,9 +101,42 @@ export default class Crafting {
     }
 
     clearCraft = () => {
+        if (this.data.currentCraft?.doomed) this.gainDoomShards(5)
         this.data.currentCraft = null;
         this.getRandomCurrency();
+        if (this.engine.datamap.doomResearch.gloomShard) {
+            this.gainDoomShards(1);
+        }
         this.engine.notify();
+    }
+
+    gainDoomShards = (gain: number) => {
+        if ((this.data.currency.doomShards += gain)>= 20)
+        {
+            if (this.data.vaalProgress === 0) this.data.vaalProgress = 1;
+            this.data.currency.doomOrbs += Math.floor(this.data.currency.doomShards / 20);
+            this.data.currency.doomShards = this.data.currency.doomShards % 20;
+        }
+    }
+
+    applyDoomToCraft = () => {
+        if (this.cannotCraft()) return;
+        if (this.data.currency.doomOrbs < 1) return;
+        if (!canCheat) this.engine.save();
+        let rng = getRandomInt(0,1);
+        if (rng === 0) this.data.currentCraft = null;
+        if (rng === 1) if (this.data.currentCraft) {
+            this.data.currentCraft.doomed = true;
+        }
+        this.data.currency.doomOrbs -= 1;
+    }
+
+    cannotCraft = () => {
+        return (this.itIsDoomed() || (this.data.currentCraft === null))
+    }
+
+    itIsDoomed = () => {
+        return (this.data.currentCraft?.doomed === true)
     }
 
     equipCurrentCraft = () => {
@@ -211,6 +259,16 @@ export default class Crafting {
         this.gardeningCalcData = base;
     }
 
+    breakWateringCan = () => {
+        console.log('watering can broke');
+
+        let can = this.data.equipped.wateringCan;
+        if (can) {
+            let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.AutoWater)
+            can.mods[index].mod = GardeningItemModList.Broken;
+        }
+        this.setGardeningCalcedData();
+    }
 
 
 
@@ -339,6 +397,7 @@ export interface CraftingData {
         gardeningCap: GardeningItem | null;
     };
     currency: CraftingCurrency;
+    vaalProgress: number;
 }
 
 interface CraftingCurrency {
@@ -348,6 +407,8 @@ interface CraftingCurrency {
     reglas: number, //
     scours: number, //clears mods from item
     divines: number, //rerolls values of mods on item
+    doomShards: number, //
+    doomOrbs: number,
 }
 
 export function CraftingData_Init(): CraftingData {
@@ -368,7 +429,10 @@ export function CraftingData_Init(): CraftingData {
             reglas: 0,
             divines: 0,
             scours: 0,
-        }
+            doomShards: 0,
+            doomOrbs: 0,
+        },
+        vaalProgress: 0,
     }
 }
 
@@ -403,21 +467,56 @@ function makeGardeningItem(): GardeningItem {
     return item
 }
 
+function getEnergyModMaxValue(mod: EnergyItemModList): number {
+    switch (mod) {
+        case EnergyItemModList.ClicksPerSecond:
+            return 5;
+            break;
+        case EnergyItemModList.IncreasedGain:
+            return 30;
+            break;
+        default:
+            return 10;
+            break;
+    }
+}
 
 function addRandomEnergyMod(item: EnergyItem): EnergyItem {
     if (item.mods.length >= maxMods(item)) return item;
 
     let exclusions = getEnergyModExclusions(item)
     let chosen = randomEnumWithExclusion(EnergyItemModList, exclusions)
+    let max = getEnergyModMaxValue(chosen)
 
     let newMod: EnergyItemMod = {
         mod: chosen,
-        value: getRandomInt(1, 10)
+        value: getRandomInt(1, max)
     }
 
     item.mods.push(newMod);
 
     return item;
+}
+
+function getGardenModMaxValue(mod: GardeningItemModList): number {
+    switch (mod) {
+        case GardeningItemModList.AutoHarvest:
+        case GardeningItemModList.AutoPlant:
+        case GardeningItemModList.AutoWater:
+        case GardeningItemModList.BiggerBag:
+        case GardeningItemModList.BiggerGarden:
+            return 1;
+            break;
+        case GardeningItemModList.WateringDurationBase:
+            return 240;
+            break;
+        case GardeningItemModList.FruitGainBase:
+            return 20;
+            break;
+        default:
+            return 10;
+            break;
+    }
 }
 
 function addRandomGardeningMod(item: GardeningItem): GardeningItem {
@@ -442,7 +541,7 @@ function addRandomGardeningMod(item: GardeningItem): GardeningItem {
 
     let newMod: GardeningItemMod = {
         mod: chosen,
-        value: getRandomInt(1, 10)
+        value: getRandomInt(1, getGardenModMaxValue(chosen))
     }
 
     item.mods.push(newMod);
@@ -478,24 +577,28 @@ function getGardeningModExclusions(item: GardeningItem): GardeningItemModList[] 
 
 export interface ItemData {
     itemType: number,
+    doomed?: boolean,
+}
+
+export interface ModData {
+    value: number;
+    doomed? :boolean;
 }
 
 export interface EnergyItem extends ItemData {
     mods: EnergyItemMod[];
 }
 
-export interface EnergyItemMod {
+export interface EnergyItemMod extends ModData {
     mod: EnergyItemModList
-    value: number
 }
 
 export interface GardeningItem extends ItemData {
     mods: GardeningItemMod[];
 }
 
-export interface GardeningItemMod {
+export interface GardeningItemMod extends ModData {
     mod: GardeningItemModList
-    value: number
 }
 
 export enum ItemTypes {
@@ -509,36 +612,6 @@ export enum ItemTypes {
     GardeningHat,
 }
 
-//gonna do values for all 1-10 with 10% for each 1
-//flat base gain and flat clicks per second
-export enum EnergyItemModList {
-    ClicksPerSecond,
-    HoverMore,
-    ClickMore,
-    PassiveMore,
-    BaseGain,
-    IncreasedGain,
-    MoreGain,
-}
-
-export enum GardeningItemModList {
-    AutoHarvest, //implemented
-    AutoPlant, //implemented
-    AutoWater, //implemented
-
-    BiggerBag, //implemented
-    BiggerGarden, //implemented
-
-    FruitGainBase, //implemented
-    FruitGrainMult, //implemented
-
-    WateringDurationBase, //implemented
-    WateringDurationMult, //implemented
-
-    PlantGrowthSpeed, //implemented
-    DoomRate, //implemented
-
-}
 
 interface EnergyItemValues {
     clicksPerSecond: number,
@@ -584,10 +657,10 @@ function getPossibleEnergyMods(modList: EnergyItemMod[]) {
  *  More Energy Gain
  */
 
- enum DoomStoneModList {
-     MoreDoomGain,
-     BaseDoomGain,
-     IncreasedDoomGain,
-     DoomPerSecond,
-     GloomPerSecond,
- }
+enum DoomStoneModList {
+    MoreDoomGain,
+    BaseDoomGain,
+    IncreasedDoomGain,
+    DoomPerSecond,
+    GloomPerSecond,
+}

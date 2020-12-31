@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { gEngine } from "../..";
 import { Datamap } from "../../engine/Datamap";
 import { canCheat } from "../../engine/externalfns/util";
-import { EnergyItem, EnergyItemMod, EnergyItemModList, GardeningItem, GardeningItemMod, GardeningItemModList, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
+import { EnergyItem, EnergyItemMod, GardeningItem, GardeningItemMod, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
+import { EnergyItemModList } from "../../engine/m_st/ModLists";
+import ConfirmCommandButton from "../comps/ConfirmCommandButton";
 import TipFC from "../comps/TipFC";
 import DisplayDecimal from "../DisplayDecimal";
-import DisplayNumber from "../DisplayNumber";
 import { ListedNumber } from "../ListedResourceClass";
 import IITEM_STRINGS from "./ItemStrings";
 
 const CraftingRow = (props: { data: Datamap }) => {
+  const [statDetails, setStatDetails] =useState(false);
+
   const data = props.data;
   const crafting = gEngine.crafting;
   return (<div>
@@ -18,6 +21,8 @@ const CraftingRow = (props: { data: Datamap }) => {
         Currency:
         <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'}/>
         <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'}/>
+        {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'}/>}
+        {data.crafting.vaalProgress >= 1 && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'}/>}
         <span>Get 5 random currency each time you accept Doom</span>
       </div>
     {!data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'column'}}>
@@ -33,7 +38,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     {data.unlocksStates.one >= 7 &&<React.Fragment>
       <button onClick={crafting.makeRandomGardeningEquipment}>Make Random Garden Equipment</button>  
     </React.Fragment>}
-    {canCheat && <button onClick={crafting.getRandomCurrency}>
+    {canCheat && <button onClick={crafting.getRandomACurrency}>
       Get Random Currency
     </button>}
     </div>}
@@ -52,6 +57,14 @@ const CraftingRow = (props: { data: Datamap }) => {
       </div>
       <ItemDisplay item={data.crafting.currentCraft} />
     </div>}
+    {data.crafting.currentCraft && <div style={{display:'flex',flexDirection:'row'}}>
+      {crafting.data.vaalProgress >= 1 && <ConfirmCommandButton
+        label={'Doom Item'}
+        warning={'This has a chance to destory your item,\nand it forces a save'}
+        do={crafting.applyDoomToCraft}
+        disabled={crafting.data.currency.doomOrbs < 1}
+        />}
+      </div>}
     </div>
     <br/>
     Equipped:<br/>
@@ -66,13 +79,19 @@ const CraftingRow = (props: { data: Datamap }) => {
     <div style={{display:'flex', flexDirection:'row'}}>
       
     </div>
-    Final Stats From Equipment:<br/>
+    Final Stats From Equipment:
+    <button onClick={()=>{setStatDetails(!statDetails)}}>
+      {statDetails?'Hide':'Show'}  
+    </button>
+    <br/>
+    {statDetails && <div>
     {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}
     <div>
     {JSON.stringify(crafting.energyCalcedData)}
     </div>
     {data.unlocksStates.one >= 7 && <div>
       {JSON.stringify(crafting.gardeningCalcData)}  
+    </div>}
     </div>}
   </div>)
 }
@@ -82,7 +101,7 @@ export default CraftingRow;
 const EnergyItemDisplay = (props: {item: EnergyItem}) => {
   return (<div className={'EnergyItemDisplay'}>
     <div className='ItemTitle'>
-    Energy Catalyst<br/>
+    <span className={props.item.doomed?'red-text':""}>Energy Catalyst</span><br/>
     Size {maxMods(props.item)}
     </div>
     <div className='EnergyModList'>
@@ -144,7 +163,9 @@ function EnergyModAndValueToString  (mod: EnergyItemModList, value: number):stri
 const GardeningItemDisplay = (props: {item: GardeningItem}) => {
   return (<div className='GardeningItemDisplay'>
     <div className='ItemTitle'>
+      <span className={props.item.doomed?'red-text':""}>
       {gItemName(props.item.itemType)}
+      </span>
     </div>
     <div className='GardeningModList'>
     {props.item.mods.map((mod,index)=><GardeningModDisplay key={index} mod={mod}/>)}
@@ -174,7 +195,6 @@ function gItemName (it: ItemTypes): string {
 
 const GardeningModDisplay = (props: {mod: GardeningItemMod}) => {
   return (<div className='GardeningModDisplay'>
-    {GardeningItemModList[props.mod.mod]} - {props.mod.value}<br/>
     {IITEM_STRINGS.GardeningModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
 }

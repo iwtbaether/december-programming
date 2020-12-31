@@ -129,7 +129,9 @@ export default class Garden {
     }
 
     processDelta = (delta: number) => {
-        delta = delta * this.gardenJobSpeedMult.toNumber();
+
+        delta = delta * this.gardenSpeedMulti.toNumber();
+
         if (this.equipment.autoPlant) {
             if (this.data.bag.length > 0) {
                 if (this.canPlantSeed()) {
@@ -162,6 +164,8 @@ export default class Garden {
                     
                     plot.water -= extra;
                 } else if (this.equipment.autoWater) {
+                    let rng = getRandomInt(1,100)
+                    if (rng === 100) this.engine.crafting.breakWateringCan();
                     this.waterPlantQuietly(index);
                 }
             })
@@ -234,7 +238,7 @@ export default class Garden {
         if (this.data.researches.typeTriangle) possibleTypes.push(SeedType.triangle);
         if (this.data.researches.typeEgg) possibleTypes.push(SeedType.egg);
         let rng = getRandomInt(0, possibleTypes.length - 1);
-        console.log(possibleTypes, rng);
+        //console.log(possibleTypes, rng);
         
         let chosenType = possibleTypes[rng]
 
@@ -610,7 +614,7 @@ export default class Garden {
         hidden: () => this.engine.datamap.unlocksStates.two < 3,
         outcome: () => {
             const now = this.data.buildings.denseWater.add(1);
-            return `${now.floor()}x -> ${now.add(1).floor()}x more plant growth and less watering time`
+            return `${now.floor()}x -> ${now.add(1).floor()}x more plant growth water use`
         },
     })
 

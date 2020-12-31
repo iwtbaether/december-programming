@@ -5,6 +5,7 @@ import { Datamap } from "../engine/Datamap";
 import Engine from "../engine/Engine";
 import { FULL_JOBS_LIST } from "../engine/Jobs";
 import { SingleBuildingUI } from "./BuildingsUI";
+import ConfirmCommandButton from "./comps/ConfirmCommandButton";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass from "./ListedResourceClass";
@@ -27,9 +28,13 @@ const JobsRow = (props: { data: Datamap }) => {
     {data.jobs.work.eq(0) && <button onClick={jobs.convertToWork} disabled={jobs.data.converted}>
       Start
     </button>}
-    {data.jobs.work.notEquals(0) && <button onClick={jobs.prestige} disabled={jobs.data.jobProgress.lessThan(10)}>
-      Prestige
-    </button>}
+    <ConfirmCommandButton
+      do={jobs.prestige}
+      label={'Prestige'}
+      warning={'This will reset your job progress'}
+      disabled={jobs.data.jobProgress.lessThan(10)}
+      hidden={data.jobs.work.eq(0)}  
+    />
     {data.jobs.notReset.mechancProgession > 0 && <button onClick={jobs.spendXP}> Spend XP </button>}
     </div>
 

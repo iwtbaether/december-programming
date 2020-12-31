@@ -45,7 +45,7 @@ export default abstract class CoreEngine {
         //console.log('saving');
         this.datamap.autosaveCounter = 0;
         
-        console.log('saved');
+        //console.log('saved');
 
         let stringy = JSON.stringify(this.datamap);
         let based = window.btoa(stringy);

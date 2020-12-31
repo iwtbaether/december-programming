@@ -36,6 +36,20 @@ export default class DoomResearches {
         ]
     })
 
+    gloomShard: SingleResearch = new SingleResearch({
+        name: "Unlock Gloom Shard",
+        hidden: () => this.engine.datamap.cell.gloomGen1.eq(0) && this.data.gloomShard === false,
+        description: "Create a doom shard when you clear a craft",
+        get: () => this.data.gloomShard,
+        makeTrue: () => {
+            this.data.gloomShard = true
+        },
+        costs: [
+            { resource: this.engine.doom, count: new Decimal(1e7) },
+            { resource: this.engine.gloom, count: new Decimal(1e7) },
+        ]
+    })
+
     doomGardenSpeed: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
             name: 'Doomed Garden',
@@ -66,7 +80,7 @@ export default class DoomResearches {
             },
         }),
         costs: [
-            { expo: { initial: 1.5e6, coefficient: 10 }, resource: this.engine.doom },
+            { expo: { initial: 1.5e4, coefficient: 5 }, resource: this.engine.doom },
         ],
         description: `10% Increased Job Speed`,
         hidden: () => this.engine.datamap.unlocksStates.one < 6,
@@ -82,6 +96,7 @@ export default class DoomResearches {
 
 export interface DoomResearchData {
     autoclicker: boolean;
+    gloomShard: boolean;
     purpose: boolean; //unlocks jobs! first job is swimming
 }
 
@@ -89,5 +104,6 @@ export function DoomResearchData_Init(): DoomResearchData {
     return {
         autoclicker: false,
         purpose: false,
+        gloomShard: false,
     }
 }
