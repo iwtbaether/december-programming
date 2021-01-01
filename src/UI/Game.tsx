@@ -73,7 +73,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
 
         </span>
         <span className='yellow-text'>
-        v.7.1fresh
+        v.7.2
         </span>
     </div>
   )

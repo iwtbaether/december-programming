@@ -60,7 +60,7 @@ export default class DoomResearches {
             },
         }),
         costs: [
-            { expo: { initial: 1e6, coefficient: 10 }, resource: this.engine.doom },
+            { expo: { initial: 100, coefficient: 10 }, resource: this.engine.doom },
         ],
         description: `10% Increased Garden Speed`,
         hidden: () => this.engine.datamap.unlocksStates.one < 5,
