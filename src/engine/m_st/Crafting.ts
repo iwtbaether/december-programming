@@ -253,7 +253,8 @@ export default class Crafting {
             fruitGainMulti: 1,
             plantGrowthMulti: 1,
             waterTimeBase: 0,
-            waterTimeMulti: 1
+            waterTimeMulti: 1,
+            seedGainMore: 1,
         }
 
         base = gardeningItemCalc(this.data.equipped.wateringCan, base);
@@ -396,6 +397,9 @@ function modifyGardeningItemValues(mod: GardeningItemMod, values: GardeningItemV
         case GardeningItemModList.WateringDurationMult:
             values.waterTimeMulti *= 1 + mod.value;
             break;
+        case GardeningItemModList.SeedGainMore:
+            values.seedGainMore *= 1 + (mod.value * .1);
+            break;
 
         default:
             break;
@@ -488,10 +492,10 @@ function makeGardeningItem(): GardeningItem {
 function getEnergyModMaxValue(mod: EnergyItemModList): number {
     switch (mod) {
         case EnergyItemModList.ClicksPerSecond:
-            return 5;
+            return 10;
             break;
         case EnergyItemModList.IncreasedGain:
-            return 30;
+            return 50;
             break;
             case EnergyItemModList.BaseGain:
                 return 50;
@@ -552,7 +556,8 @@ function addRandomGardeningMod(item: GardeningItem, bypass?: boolean): Gardening
         GardeningItemModList.FruitGrainMult,
         GardeningItemModList.PlantGrowthSpeed,
         GardeningItemModList.WateringDurationBase,
-        GardeningItemModList.WateringDurationMult
+        GardeningItemModList.WateringDurationMult,
+        GardeningItemModList.SeedGainMore,
     ]
     if (item.itemType === ItemTypes.MagicWateringCan) baseList.push(GardeningItemModList.AutoWater);
     if (item.itemType === ItemTypes.MagicSecateurs) baseList.push(GardeningItemModList.AutoHarvest);
@@ -657,6 +662,7 @@ interface GardeningItemValus {
     waterTimeMulti: number;
     plantGrowthMulti: number;
     doomChance: number;
+    seedGainMore: number;
 }
 
 function getPossibleEnergyMods(modList: EnergyItemMod[]) {

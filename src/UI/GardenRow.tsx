@@ -29,7 +29,7 @@ const GardenRow = (props: { data: Datamap }) => {
                     {data.garden.researches.watering && <span>
                         Watering Time: <DisplayDecimal decimal={wt} /> units
                     </span>}
-                    {data.jobs.farthesthProgress.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult} /></span>}
+                    {data.jobs.farthesthProgress.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult * engine.crafting.gardeningCalcData.seedGainMore} /></span>}
                     Seed Generation: {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}
                     {garden.equipment.fruitGainBase > 0 && <div style={{position:'relative'}}>
                         Total Fruit Gain: <DisplayNumber num={garden.getFruitGain()} />  

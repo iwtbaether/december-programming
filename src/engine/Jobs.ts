@@ -276,7 +276,7 @@ export default class Jobs {
     })
 
     chargeCurrent = new SingleResource({
-        name: 'Charge Current',
+        name: 'Charge',
         get: () => this.engine.datamap.jobs.notReset.chargeCurrent,
         setDecimal: (dec) => {
             this.engine.datamap.jobs.notReset.chargeCurrent = dec

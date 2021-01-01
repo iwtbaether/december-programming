@@ -140,7 +140,7 @@ export default class Garden {
             }
         }
 
-        this.data.seedTimer += delta * this.engine.jobs.seedGainSpeedMult;
+        this.data.seedTimer += delta * this.engine.jobs.seedGainSpeedMult * this.engine.crafting.gardeningCalcData.seedGainMore;
         if (this.data.seedTimer >= TimeRequiredForSeed) {
             this.data.seeds = this.data.seeds.add(1);
             this.data.seedTimer -= TimeRequiredForSeed

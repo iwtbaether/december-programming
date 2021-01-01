@@ -35,6 +35,10 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
         case GardeningItemModList.WateringDurationMult:
             return `${value * 10}% More Watering time`
             break;
+        case GardeningItemModList.SeedGainMore:
+            return `${(value * 10)}% More Seed Gain Speed`
+            break;
+
         case GardeningItemModList.Broken:
             return `Oops! It automatically broke!`
             break;

@@ -29,7 +29,10 @@ export enum GardeningItemModList {
     PlantGrowthSpeed, //implemented
     DoomRate, //implemented
 
+    
     Broken,
+
+    SeedGainMore,
 }
 
 const MOD_LISTS = {
