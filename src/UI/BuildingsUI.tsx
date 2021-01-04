@@ -1,3 +1,4 @@
+import Decimal from "break_infinity.js";
 import React, { CSSProperties, ReactNode } from "react";
 import { gEngine } from "..";
 import { SingleBuilding } from "../engine/externalfns/decimalInterfaces/SingleBuilding";
@@ -17,13 +18,25 @@ export default class BuildingsUI extends React.Component<CompProps, CompState> {
 
 }
 
-export class SingleBuildingUI extends React.Component<{building: SingleBuilding}, {open: boolean}> {
+export class SingleBuildingUI extends React.Component<{building: SingleBuilding, hotkey? :string}, {open: boolean}> {
 
     constructor(props:any){
         super(props)
         this.state = {
             open: false
         }
+    }
+
+    _handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key.toLowerCase() === this.props.hotkey) this.props.building.buy();
+    }
+
+    componentDidMount () {
+        document.addEventListener("keydown", this._handleKeyDown);
+    }
+
+    componentWillUnmount () {
+        document.removeEventListener("keydown", this._handleKeyDown);
     }
     /*
     componentDidMount =()=> {
@@ -77,6 +90,10 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding}
     buy = (ev: React.MouseEvent) => {
         if (ev.shiftKey) {
             this.props.building.buyMaxMaybe();
+        } else if (ev.ctrlKey) {
+            this.props.building.buyN(new Decimal(10))
+        } else if (ev.altKey) { 
+            this.props.building.buyN(new Decimal(25))
         } else this.props.building.buy();
         gEngine.notify();
     }

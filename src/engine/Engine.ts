@@ -116,7 +116,7 @@ export default class Engine extends CoreEngine {
 
     drive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Drive',
+            name: '[D]rive',
             get: () => this.datamap.cell.c,
             setDecimal: (dec) => {
                 this.datamap.cell.c = dec
@@ -133,7 +133,7 @@ export default class Engine extends CoreEngine {
 
     antiDrive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Drive (A)',
+            name: '[A]nti-Drive ',
             get: () => this.datamap.cell.cc,
             setDecimal: (dec) => {
                 this.datamap.cell.cc = dec
@@ -150,7 +150,7 @@ export default class Engine extends CoreEngine {
 
     momentum: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Momentum',
+            name: '[M]omentum',
             get: () => this.datamap.cell.momentum,
             setDecimal: (dec) => {
                 this.datamap.cell.momentum = dec
@@ -345,7 +345,7 @@ export default class Engine extends CoreEngine {
 
     effort: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Effort',
+            name: '[E]ffort',
             get: () => this.datamap.cell.b,
             setDecimal: (dec) => {
                 this.datamap.cell.b = dec
@@ -584,7 +584,7 @@ export default class Engine extends CoreEngine {
 
     determination: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'Determination',
+            name: 'De[t]ermination',
             get: () => this.datamap.cell.determination,
             setDecimal: (dec) => {
                 this.datamap.cell.determination = dec

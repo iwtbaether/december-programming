@@ -108,11 +108,11 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
         
       </button>
       </span>
-      <SingleBuildingUI building={gEngine.effort} />
-      <SingleBuildingUI building={gEngine.drive} />
-      <SingleBuildingUI building={gEngine.antiDrive} />
-      <SingleBuildingUI building={gEngine.momentum} />
-      <SingleBuildingUI building={gEngine.determination} />
+      <SingleBuildingUI building={gEngine.effort} hotkey='e' />
+      <SingleBuildingUI building={gEngine.drive} hotkey='d' />
+      <SingleBuildingUI building={gEngine.antiDrive} hotkey='a' />
+      <SingleBuildingUI building={gEngine.momentum}  hotkey='m'/>
+      <SingleBuildingUI building={gEngine.determination} hotkey='t'/>
       </div>
       <span>
         Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>
@@ -147,12 +147,48 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
 }
 
 
+class NavRow extends React.Component<{ data: Datamap }, {}> {
 
-const NavRow = (props: { data: Datamap }) => {
-  const data = props.data;
-  const engine = gEngine;
-  return (
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+  componentDidMount(){
+    document.addEventListener("keydown", this._handleKeyDown);
+
+  }
+
+  componentWillUnmount () {
+    document.addEventListener("keydown", this._handleKeyDown);
+
+  }
+
+  _handleKeyDown = (event: KeyboardEvent) => {
+    switch (event.key) {
+      case '1':
+        gEngine.setNav(0);
+        break;
+        case '2':
+          if (gEngine.datamap.unlocksStates.two > 0) gEngine.setNav(1);
+        break;
+        case '3':
+          if (gEngine.datamap.unlocksStates.one >= 4) gEngine.setNav(6);
+        break;
+
+        case '4':
+          if (gEngine.datamap.unlocksStates.one >= 5) gEngine.setNav(3);
+        break;
+
+        case '5':
+          if (gEngine.datamap.unlocksStates.one >= 6) gEngine.setNav(5);
+        break;
+      default:
+        break;
+    }
+  }
+
+  render () {
+
+    const data = this.props.data;
+    const engine = gEngine;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <div>
         {true && <button onClick={() => engine.setNav(0)}>Energy</button>}
         {data.unlocksStates.two > 0 && <button onClick={() => engine.setNav(1)}>Doom</button>}
@@ -166,6 +202,7 @@ const NavRow = (props: { data: Datamap }) => {
       </div>
     </div>
   )
+}
 }
 
 
