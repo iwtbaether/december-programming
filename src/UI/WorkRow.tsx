@@ -24,15 +24,14 @@ const JobsRow = (props: { data: Datamap }) => {
     </div>
     <div>
 
-      {data.jobs.work.eq(0) && <button onClick={jobs.convertToWork} disabled={jobs.data.converted}>
+      <button onClick={jobs.convertToWork} disabled={jobs.data.converted || jobs.data.work.greaterThan(0)}>
         Start
-    </button>}
+    </button>
       <ConfirmCommandButton
         do={jobs.prestige}
         label={'Prestige'}
         warning={'This will reset your job progress'}
         disabled={jobs.data.jobProgress.lessThan(10)}
-        hidden={data.jobs.converted}
       />
       {data.jobs.notReset.mechancProgession > 0 && <button onClick={jobs.spendXP}> Spend XP </button>}
     </div>
