@@ -31,13 +31,18 @@ export class SingleBuildingUI extends React.Component<{building: SingleBuilding,
         if (event.key.toLowerCase() === this.props.hotkey) this.props.building.buy();
     }
 
+    /*
+
+
     componentDidMount () {
-        document.addEventListener("keydown", this._handleKeyDown);
+        if (this.props.hotkey) document.addEventListener("keydown", this._handleKeyDown);
     }
 
     componentWillUnmount () {
-        document.removeEventListener("keydown", this._handleKeyDown);
+        if (this.props.hotkey) document.removeEventListener("keydown", this._handleKeyDown);
     }
+
+    */
     /*
     componentDidMount =()=> {
         let ref: React.RefObject<SingleBuildingUI> = React.createRef()

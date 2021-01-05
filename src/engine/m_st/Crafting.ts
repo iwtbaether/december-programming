@@ -5,7 +5,8 @@ import { basename } from "path";
 import { EnumType, isTypeNode } from "typescript";
 import Engine from "../Engine";
 import { canCheat, getRandomInt, randomEnum, randomEnumFromListWithExclusions, randomEnumWithExclusion } from "../externalfns/util";
-import { EnergyItemModList, GardeningItemModList } from "./ModLists";
+import { GardenData } from "../garden/Garden";
+import { DoomStoneModList, EnergyItemModList, GardeningItemModList } from "./ModLists";
 
 export default class Crafting {
     constructor(public engine: Engine) {
@@ -123,7 +124,7 @@ export default class Crafting {
         if (this.cannotCraft()) return;
         if (this.data.currency.doomOrbs < 1) return;
         if (!canCheat) this.engine.save();
-        let rng = getRandomInt(0,2);
+        let rng = getRandomInt(0,3);
         if (rng === 0) this.data.currentCraft = null;
         if (rng === 1) if (this.data.currentCraft) {
             this.data.currentCraft.doomed = true;
@@ -145,6 +146,9 @@ export default class Crafting {
         }
         if (rng === 2) if (this.data.currentCraft) {
             this.data.currentCraft.doomed = true;
+        }
+        if (rng === 3) if (this.data.currentCraft) {
+            this.data.currentCraft = createDoomStone(this.data.currentCraft);
         }
         this.data.currency.doomOrbs -= 1;
     }
@@ -217,6 +221,18 @@ export default class Crafting {
             this.setGardeningCalcedData(); this.engine.garden.setTempData();
         }
 
+        else if (it === ItemTypes.DoomedCrystal) {
+            const gEquip = toEquip as DoomStone;
+            this.data.currentCraft = this.data.equipped.doomStone;
+            this.data.equipped.doomStone = gEquip;
+            
+            this.setEnergyCalcedData();
+            this.engine.calcEnergy();
+            
+            this.setGardeningCalcedData();
+            this.engine.garden.setTempData();
+        }
+
 
         this.engine.notify();
     }
@@ -237,6 +253,9 @@ export default class Crafting {
         base = energyItemCalc2(this.data.equipedEnergyItem, base);
         base = energyItemCalc2(this.data.equipedMedEnergyItem, base);
         base = energyItemCalc2(this.data.equipedSmallEnergyItem, base);
+        if (this.data.equipped.doomStone?.energyMod) {
+            base = modifyEnergyItemValues(this.data.equipped.doomStone.energyMod, base)
+        }
 
         return base;
     }
@@ -260,6 +279,9 @@ export default class Crafting {
         base = gardeningItemCalc(this.data.equipped.wateringCan, base);
         base = gardeningItemCalc(this.data.equipped.seceteurs, base);
         base = gardeningItemCalc(this.data.equipped.gardeningCap, base);
+        if (this.data.equipped.doomStone?.gardeningMod) {
+            base = modifyGardeningItemValues(this.data.equipped.doomStone.gardeningMod, base)
+        }
 
         return base
     }
@@ -296,6 +318,34 @@ export default class Crafting {
 
 }
 
+function createDoomStone (item: ItemData): DoomStone|null {
+    const strone: DoomStone = {
+        itemType: ItemTypes.DoomedCrystal,
+        doomMod: getRandomDoomMod(),
+        doomed: true,
+    }
+
+    const type = item.itemType;
+
+    if ([1, 2, 3].includes(type)) {
+        const specitem = item as EnergyItem;
+        const rngMod = specitem.mods[getRandomInt(0,specitem.mods.length-1)]
+        rngMod.doomed = true;
+        strone.energyMod = rngMod;
+
+    } else if ([5, 6, 7].includes(type)) {
+        const specitem = item as GardeningItem;
+        const rngMod = specitem.mods[getRandomInt(0,specitem.mods.length-1)]
+        rngMod.doomed = true;
+        strone.gardeningMod = rngMod;
+    } else return null;
+
+
+    return strone
+
+
+}
+
 
 function energyItemCalc2(item: EnergyItem | null, base: EnergyItemValues): EnergyItemValues {
 
@@ -307,6 +357,8 @@ function energyItemCalc2(item: EnergyItem | null, base: EnergyItemValues): Energ
 }
 
 function modifyEnergyItemValues(mod: EnergyItemMod, values: EnergyItemValues): EnergyItemValues {
+    console.log(mod, values);
+    
     switch (mod.mod) {
         case EnergyItemModList.BaseGain:
             values.baseGain += mod.value;
@@ -395,7 +447,7 @@ function modifyGardeningItemValues(mod: GardeningItemMod, values: GardeningItemV
             break;
 
         case GardeningItemModList.WateringDurationMult:
-            values.waterTimeMulti *= 1 + mod.value;
+            values.waterTimeMulti *= 1 + mod.value * .1;
             break;
         case GardeningItemModList.SeedGainMore:
             values.seedGainMore *= 1 + (mod.value * .1);
@@ -417,6 +469,7 @@ export interface CraftingData {
         wateringCan: GardeningItem | null;
         seceteurs: GardeningItem | null;
         gardeningCap: GardeningItem | null;
+        doomStone: DoomStone | null;
     };
     currency: CraftingCurrency;
     vaalProgress: number;
@@ -431,6 +484,7 @@ interface CraftingCurrency {
     divines: number, //rerolls values of mods on item
     doomShards: number, //
     doomOrbs: number,
+    chaos: number,
 }
 
 export function CraftingData_Init(): CraftingData {
@@ -443,6 +497,7 @@ export function CraftingData_Init(): CraftingData {
             gardeningCap: null,
             seceteurs: null,
             wateringCan: null,
+            doomStone: null,
         },
         currency: {
             transmutes: 0,
@@ -453,6 +508,7 @@ export function CraftingData_Init(): CraftingData {
             scours: 0,
             doomShards: 0,
             doomOrbs: 0,
+            chaos: 0
         },
         vaalProgress: 0,
     }
@@ -461,9 +517,9 @@ export function CraftingData_Init(): CraftingData {
 
 function makeSizedEnergyItem(size: number): EnergyItem {
     const sizes = [
-        ItemTypes.TinyEnergyItem,
         ItemTypes.SmallEnergyItem,
-        ItemTypes.EnergyItem
+        ItemTypes.MediumEnergyItem,
+        ItemTypes.LargeEnergyItem
     ]
     let chosen = sizes[size]
     let item: EnergyItem = {
@@ -576,10 +632,40 @@ function addRandomGardeningMod(item: GardeningItem, bypass?: boolean): Gardening
     return item;
 }
 
+function getDoomStoneModValue(mod: DoomStoneModList): number {
+    switch (mod) {
+        
+        default:
+            return 10;
+            break;
+    }
+}
+
+function getRandomDoomMod(): DoomStoneMod {
+
+    let baseList = [
+        DoomStoneModList.DoomPerSecond,
+        DoomStoneModList.GloomPerSecond,
+
+        DoomStoneModList.BaseDoomGain,
+        DoomStoneModList.IncreasedDoomGain,
+        DoomStoneModList.MoreDoomGain,
+    ]
+    let chosen = randomEnumFromListWithExclusions(baseList, [])
+
+    let newMod: DoomStoneMod = {
+        mod: chosen,
+        value: getRandomInt(1, getDoomStoneModValue(chosen)),
+        doomed: true
+    }
+
+    return newMod;
+}
+
 export function maxMods(item: ItemData): number {
-    if (item.itemType === ItemTypes.EnergyItem) return 3;
-    if (item.itemType === ItemTypes.SmallEnergyItem) return 2;
-    if (item.itemType === ItemTypes.TinyEnergyItem) return 1;
+    if (item.itemType === ItemTypes.LargeEnergyItem) return 3;
+    if (item.itemType === ItemTypes.MediumEnergyItem) return 2;
+    if (item.itemType === ItemTypes.SmallEnergyItem) return 1;
     if (item.itemType === ItemTypes.MagicSecateurs) return 2;
     if (item.itemType === ItemTypes.MagicWateringCan) return 2;
     if (item.itemType === ItemTypes.GardeningHat) return 3;
@@ -612,6 +698,16 @@ export interface ModData {
     doomed? :boolean;
 }
 
+export interface DoomStone extends ItemData {
+    energyMod?: EnergyItemMod;
+    gardeningMod?: GardeningItemMod;
+    doomMod: DoomStoneMod;
+}
+
+export interface DoomStoneMod extends ModData {
+    mod: DoomStoneModList
+}
+
 export interface EnergyItem extends ItemData {
     mods: EnergyItemMod[];
 }
@@ -630,10 +726,10 @@ export interface GardeningItemMod extends ModData {
 
 export enum ItemTypes {
     broken,
-    EnergyItem,
+    LargeEnergyItem,
+    MediumEnergyItem,
     SmallEnergyItem,
-    TinyEnergyItem,
-    DoomedCrystal,
+    DoomedCrystal, // not implemented 
     MagicWateringCan,
     MagicSecateurs,
     GardeningHat,
@@ -685,10 +781,3 @@ function getPossibleEnergyMods(modList: EnergyItemMod[]) {
  *  More Energy Gain
  */
 
-enum DoomStoneModList {
-    MoreDoomGain,
-    BaseDoomGain,
-    IncreasedDoomGain,
-    DoomPerSecond,
-    GloomPerSecond,
-}

@@ -1,17 +1,17 @@
-import { throws } from "assert";
 import Decimal from "break_infinity.js";
 import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
-import DisplayDecimal from "../UI/DisplayDecimal";
 import CoreEngine from "./CoreEngine";
 import DoomResearches from "./DoomResearches";
 import EnergyModule from "./EnergyModule";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
 import Garden from "./garden/Garden";
+import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
-import Crafting, { CraftingData_Init } from "./m_st/Crafting";
+import Crafting from "./m_st/Crafting";
 import Research from "./Research";
+import TheExchange from "./TheExchange";
 
 
 export const AUTOSAVE_INTERVAL = 1000 * 60;
@@ -41,6 +41,10 @@ export default class Engine extends CoreEngine {
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
+    theExchange: TheExchange =new TheExchange(this);
+    hotkeyManager: HotkeyManager = new HotkeyManager(this);
+
+    handleKey = (key:string) => this.hotkeyManager.handle(key);
     
     processDelta = (delta: number) => {
 
@@ -170,6 +174,9 @@ export default class Engine extends CoreEngine {
     })
 
     setNav = (num: number) => {
+        this.datamap.activity = 0;
+        this.calcEnergy();
+
         this.datamap.nav = num;
         this.notify();
     }
@@ -375,7 +382,6 @@ export default class Engine extends CoreEngine {
         description: 'Makes clicking better[!/?]',
         hidden: () => this.datamap.unlocksStates.two < 1,
         outcome: () => {
-            const now = this.datamap.cell.d1;
             return `-1 Base Energy Gain from Clicking\nCurrent: ${this.energyModule.energyGainClickBase()}`
         },
     })

@@ -4,6 +4,7 @@ import { Datamap } from "../engine/Datamap";
 import { FULL_JOBS_LIST } from "../engine/Jobs";
 import { SingleBuildingUI } from "./BuildingsUI";
 import ConfirmCommandButton from "./comps/ConfirmCommandButton";
+import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass from "./ListedResourceClass";
@@ -30,7 +31,7 @@ const JobsRow = (props: { data: Datamap }) => {
       <ConfirmCommandButton
         do={jobs.prestige}
         label={'Prestige'}
-        warning={'This will reset your job progress'}
+        warning={<span>This will reset your job progress</span>}
         disabled={jobs.data.jobProgress.lessThan(10)}
       />
       {data.jobs.notReset.mechancProgession > 0 && <button onClick={jobs.spendXP}> Spend XP </button>}
@@ -45,9 +46,13 @@ const JobsRow = (props: { data: Datamap }) => {
         Rebuy After Prestige
     </button>}
 
-      <div style={{ display: 'flex' }}>
+      <div>
         <SingleBuildingUI building={jobs.chargeStorage} />
-        {jobs.chargeStorage.count.greaterThan(0) && <button onClick={jobs.fillCharge}>Fill Charge</button>}
+        {jobs.chargeStorage.count.greaterThan(0) && <span style={{position:'relative'}}>
+          <button onClick={jobs.fillCharge}>Fill Charge</button>
+          <TipFC tip={'Charge is drained each second to boost your job progress at equal rates\nCharge progress ignores resistance'}/>
+          </span>
+          }
         <SingleBuildingUI building={jobs.chargePower} />
         <SingleBuildingUI building={jobs.jobResistanceMult} />
       </div>

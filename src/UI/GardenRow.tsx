@@ -8,7 +8,7 @@ import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
 import ListedResourceClass, { ListedDecimal, ListedNumber } from "./ListedResourceClass";
-import { NewSingleResearchUI, SingleResearchUI } from "./ResearchUI";
+import { NewSingleResearchUI } from "./ResearchUI";
 
 const GardenRow = (props: { data: Datamap }) => {
     const data = props.data;

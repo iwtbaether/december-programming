@@ -283,7 +283,7 @@ export default class Jobs {
             //this.setResistanceDiv();
         },
         calculateCap: () => {
-            console.log('calc cap');
+            //console.log('calc cap');
             
             return this.data.notReset.chargeStorage.times(100);
         }

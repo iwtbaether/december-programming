@@ -8,6 +8,7 @@ import { BasicCommandButton } from './comps/BasicCommand';
 import TipFC from './comps/TipFC';
 import DisplayDecimal from './DisplayDecimal';
 import DoomRow from './DoomRow';
+import ExchangeRow from './ExchangeRow';
 import FancySaveButton from './FancySaveButton';
 import GardenRow from './GardenRow';
 import JobXPPopup from './JobXPPopup';
@@ -15,6 +16,7 @@ import CraftingRow from './layout/CraftingRow';
 import ListedResourceClass from './ListedResourceClass';
 import OptionsRow from './OptionsRow';
 import JobsRow from './WorkRow';
+
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
 
@@ -38,6 +40,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 6 && <CraftingRow data={data} />}
         {data.nav === 2 && <StatsRow data={data} />}
         {data.nav === 4 && <OptionsRow data={data} />}
+        {data.nav === 7 && <ExchangeRow data={data}/>}
         </div>
         <hr style={{width:'100%'}} />
         <FileButtons auto={data.autosave} last={data.last} />
@@ -73,7 +76,7 @@ const FileButtons = (props: { last: number, auto: boolean }) => {
 
         </span>
         <span className='yellow-text'>
-        v.7.3.2
+        v.7.3.3 - more bug fixes
         </span>
     </div>
   )
@@ -94,7 +97,9 @@ const EnergyRow = (props: { data: Datamap, energy: Decimal }) => {
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
       Hover Energy Gain: <DisplayDecimal decimal={activityGain} />, <span className={cn}>Click Energy Gain: <DisplayDecimal decimal={clickGain} /></span><br />
-    {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers</div>}
+    {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div>
+      <DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers}/> Energy per second from autoclickers
+      </div>}
       <div style={{display:'flex',gap:'5px'}}>
       <span style={{position:'relative'}}>
       <button onMouseEnter={() => gEngine.setActivity(1)} onMouseLeave={gEngine.clearActivity} style={{position:'relative'}}>
@@ -160,27 +165,9 @@ class NavRow extends React.Component<{ data: Datamap }, {}> {
   }
 
   _handleKeyDown = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case '1':
-        gEngine.setNav(0);
-        break;
-        case '2':
-          if (gEngine.datamap.unlocksStates.two > 0) gEngine.setNav(1);
-        break;
-        case '3':
-          if (gEngine.datamap.unlocksStates.one >= 4) gEngine.setNav(6);
-        break;
+    gEngine.handleKey(event.key);
 
-        case '4':
-          if (gEngine.datamap.unlocksStates.one >= 5) gEngine.setNav(3);
-        break;
-
-        case '5':
-          if (gEngine.datamap.unlocksStates.one >= 6) gEngine.setNav(5);
-        break;
-      default:
-        break;
-    }
+    
   }
 
   render () {

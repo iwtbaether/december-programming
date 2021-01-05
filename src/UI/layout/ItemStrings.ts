@@ -1,4 +1,4 @@
-import { GardeningItemModList } from "../../engine/m_st/ModLists";
+import { DoomStoneModList, GardeningItemModList } from "../../engine/m_st/ModLists";
 
 function GardeningModAndValueToString(mod: GardeningItemModList, value: number): string {
     switch (mod) {
@@ -49,7 +49,17 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
     }
 }
 
+
+function DoomModAndValueToString(mod: DoomStoneModList, value: number): string {
+    switch (mod) {
+  
+      default:
+        return 'error'
+        break;
+    }
+  }
+
 const IITEM_STRINGS = {
-    GardeningModAndValueToString
+    GardeningModAndValueToString, DoomModAndValueToString
 }
 export default IITEM_STRINGS;

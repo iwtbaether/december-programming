@@ -1,9 +1,11 @@
 import Decimal from "break_infinity.js";
+import Achievements, { Achievements_Data, Achievements_Data_Init } from "./Achievements";
 import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
 import { SkillManager_Data, SkillManager_Data_Init } from "./skills/SkillManager";
+import TheExchange, { TheExchange_Data, TheExchange_Data_Init } from "./TheExchange";
 
 export interface Datamap {
     //core data
@@ -15,9 +17,11 @@ export interface Datamap {
     activity: number,
     doomResearch: DoomResearchData,
     testDec: Decimal;
+    theExchange:TheExchange_Data
     cell: I_HoldDecimals;
     skillManager: SkillManager_Data;
     jobs: JobsData;
+    achievments: Achievements_Data;
     unlocksStates: {
         one: number,
         two: number,
@@ -37,8 +41,10 @@ export function newDefaultMap() {
         popupUI: 0,
         last: Date.now(),
         jobs: JobsData_Init(),
+        theExchange: TheExchange_Data_Init(),
         doomResearch: DoomResearchData_Init(),
         skillManager: SkillManager_Data_Init(),
+        achievments: Achievements_Data_Init(),
         nav: 0,
         cell: {
             a: ZERO,

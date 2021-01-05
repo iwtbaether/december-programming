@@ -3,6 +3,8 @@ import { gEngine } from "..";
 import { Datamap } from "../engine/Datamap";
 import ConfirmCommandButton from "./comps/ConfirmCommandButton";
 
+const Bruh = new Audio('https://www.myinstants.com/media/sounds/movie_1.mp3')
+
 const OptionsRow = (props: { data: Datamap }) => {
   const data = props.data;
   return (<div>
@@ -22,6 +24,13 @@ const OptionsRow = (props: { data: Datamap }) => {
         and <a href='https://github.com/antimatter-dimensions/notations'>
         @antimatter-dimensions/notations
         </a>
+    </div>
+    <br/>
+    <div>
+      Controls
+    </div>
+    <div onClick={()=>{Bruh.play()}}>
+      shift+click to buy max or bypass confirmation prompts. ctrl+click to buy 10, alt+click to buy 20. [L]etters in [B]rackets are hotkeys. Hotkeys are new (read: buggy).
     </div>
     <br/>
     <div>
@@ -84,3 +93,5 @@ const Reddit = () => {
     </a>
   )
 }
+
+

@@ -646,6 +646,9 @@ export default class Garden {
             setDecimal: (dec) => {
                 this.data.buildings.seedGeneration = dec;
                 this.data.seeds = this.data.seeds.add(dec)
+                if (this.data.researches.progression === 0) {
+                    this.data.researches.progression = 1
+                }
             },
         }),
         costs: [

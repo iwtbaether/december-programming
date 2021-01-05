@@ -213,6 +213,11 @@ a {
     border-color: $green;
 }
 
+.DoomItemDisplay {
+    @extend .ItemDisplay;
+    border-color: $red;
+}
+
 .ItemTitle {
     background-color: $base02;
     min-height: 20px;
@@ -226,6 +231,11 @@ a {
 
 .GardeningItemDisplay > .ItemTitle {
     background-color: $green;
+    color: $base03;
+}
+
+.DoomItemDisplay > .ItemTitle {
+    background-color: $red;
     color: $base03;
 }
 

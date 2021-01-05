@@ -1,4 +1,4 @@
-import Decimal, { DecimalSource } from "break_infinity.js";
+import Decimal from "break_infinity.js";
 import { gEngine } from "..";
 import Engine from "./Engine";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";

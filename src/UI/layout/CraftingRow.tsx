@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { gEngine } from "../..";
 import { Datamap } from "../../engine/Datamap";
 import { canCheat } from "../../engine/externalfns/util";
-import { EnergyItem, EnergyItemMod, GardeningItem, GardeningItemMod, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
-import { EnergyItemModList } from "../../engine/m_st/ModLists";
+import { DoomStone, DoomStoneMod, EnergyItem, EnergyItemMod, GardeningItem, GardeningItemMod, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
+import { DoomStoneModList, EnergyItemModList } from "../../engine/m_st/ModLists";
 import ConfirmCommandButton from "../comps/ConfirmCommandButton";
 import TipFC from "../comps/TipFC";
 import DisplayDecimal from "../DisplayDecimal";
@@ -25,6 +25,9 @@ const CraftingRow = (props: { data: Datamap }) => {
         {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'} />}
         {data.crafting.vaalProgress >= 1 && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
         <span>Get 5 random currency each time you accept Doom</span>
+        {data.unlocksStates.one >= 8 && <button onClick={()=>{gEngine.setNav(7)}}>
+            Visit The Exchange
+          </button>}
       </div>
       {!data.crafting.currentCraft && <div style={{ display: 'flex', flexDirection: 'column' }}>
         {data.unlocksStates.one >= 6 && <button onClick={() => crafting.makeCatalyst(2)}>
@@ -117,10 +120,23 @@ const EnergyItemDisplay = (props: { item: EnergyItem }) => {
   </div>)
 }
 
+const DoomItemDisplay = (props: { item: DoomStone }) => {
+  return (<div className={'DoomItemDisplay'}>
+    <div className='ItemTitle'>
+      <span className={props.item.doomed ? 'DoomedText' : ""}>Doom Stone</span>
+    </div>
+       <DoomModDisplay mod={props.item.doomMod}/>
+      {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod}/>}
+      {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod}/>}
+
+  </div>)
+}
+
 const ItemDisplay = (props: { item: ItemData }) => {
   if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item as EnergyItem} />
   if (props.item.itemType === 2) return <EnergyItemDisplay item={props.item as EnergyItem} />
   if (props.item.itemType === 3) return <EnergyItemDisplay item={props.item as EnergyItem} />
+  if (props.item.itemType === 4) return <DoomItemDisplay item={props.item as DoomStone} />
   if ([5, 6, 7].includes(props.item.itemType)) return <GardeningItemDisplay item={props.item as GardeningItem} />
   return <span>error</span>;
 }
@@ -212,6 +228,15 @@ const GardeningModDisplay = (props: { mod: GardeningItemMod }) => {
   </div>)
 }
 
+const DoomModDisplay = (props: { mod: DoomStoneMod }) => {
+  const base = 'Doom';
+  const rest = 'ModDisplay';
+  const extra = props.mod.doomed ? ' DoomedMod' : ''
+  return (<div className={base + rest + extra}>
+    {IITEM_STRINGS.DoomModAndValueToString(props.mod.mod, props.mod.value)}
+  </div>)
+}
+
 function craftToModCount(item: ItemData | null) {
   if (item) {
     let max = maxMods(item);
@@ -221,3 +246,4 @@ function craftToModCount(item: ItemData | null) {
     }
   } else return ''
 }
+

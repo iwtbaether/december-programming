@@ -1,6 +1,3 @@
-export enum DoomStoneModList {
-
-}
 
 export enum EnergyItemModList {
     ClicksPerSecond,
@@ -10,6 +7,14 @@ export enum EnergyItemModList {
     BaseGain,
     IncreasedGain,
     MoreGain,
+}
+
+export enum DoomStoneModList {
+    MoreDoomGain,
+    BaseDoomGain,
+    IncreasedDoomGain,
+    DoomPerSecond,
+    GloomPerSecond,
 }
 
 export enum GardeningItemModList {
