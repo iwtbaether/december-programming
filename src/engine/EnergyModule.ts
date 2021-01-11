@@ -17,6 +17,11 @@ export default class EnergyModule {
         this.setEnergyGainFromAutoClickers();
     }
 
+    showCalcs = () => {
+        this.engine.datamap.popupUI = 2;
+        this.engine.notify();
+    }
+
     energyPerClick: Decimal = new Decimal(0);
     setEnergyPerClick = () => {
         let mult = this.energyGainMult.times(this.energyEquipmentMods.clickMore);
@@ -32,11 +37,12 @@ export default class EnergyModule {
     }
 
     energyGainFromAutoClickers: Decimal = new Decimal(0);
+    clickerCount: number = 0;
     setEnergyGainFromAutoClickers = () => {
         let base = this.energyPerClick;
-        let mult = this.energyEquipmentMods.clicksPerSecond;
-        mult = mult + this.engine.datamap.cell.d4.toNumber();
-        this.energyGainFromAutoClickers = Decimal.times(mult,base);
+        let count = this.energyEquipmentMods.clicksPerSecond;
+        this.clickerCount = count + this.engine.datamap.cell.d4.toNumber();
+        this.energyGainFromAutoClickers = Decimal.times(count,base);
     }
 
     energyGainBase: Decimal = new Decimal(0);

@@ -37,7 +37,7 @@ const ListedResourceClass: React.FC<{ resource: SingleResource}> = (props) => {
 export default ListedResourceClass;
 
 
-export const ListedDecimal: React.FC<{ resource: Decimal, name: string}> = (props) => {
+export const ListedDecimal: React.FC<{ resource: Decimal, name: string, ps?: Decimal}> = (props) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
@@ -48,6 +48,11 @@ export const ListedDecimal: React.FC<{ resource: Decimal, name: string}> = (prop
                 <span>
                  <DisplayDecimal decimal={props.resource} /> 
                 </span>
+            </span>
+            <span style={{width:'100px', textAlign: 'right'}}>
+                {props.ps && <span>
+                <DisplayDecimal decimal={props.ps}/> /s
+                </span>}
             </span>
         </div>
     )

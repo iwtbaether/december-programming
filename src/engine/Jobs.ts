@@ -80,7 +80,7 @@ export default class Jobs {
         const capped = Decimal.min(1000, progressPerSecondAfterResistance);
         
         this.addJobProgress(capped.times(deltaS));
-
+        this.chargeCurrent.calculate();
         this.setResistanceDiv();
     }
 
@@ -286,6 +286,9 @@ export default class Jobs {
             //console.log('calc cap');
             
             return this.data.notReset.chargeStorage.times(100);
+        },
+        calculateGain: () => {
+            return Decimal.negate(this.getChargeSpeed())
         }
     })
 
@@ -297,6 +300,14 @@ export default class Jobs {
         return this.data.notReset.chargeCurrent.times(this.data.notReset.chargePower.add(1).times(.01))
     }
 
+     tenkum = new Decimal(10000);
+     mum = new Decimal(1000000);
+    currentGoal = () => {
+        if (this.data.jobID === 0) {
+            return this.tenkum;
+        } else return new Decimal(0)
+    }
+
     chargePower: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
             name: 'Charge Power',
@@ -305,6 +316,7 @@ export default class Jobs {
                 this.engine.datamap.jobs.notReset.chargePower = dec
                 //this.setResistanceDiv();
             },
+            
         }),
         costs: [
             { expo: { initial: 1, coefficient: 4.2 }, resource: this.xpResource },
@@ -496,10 +508,10 @@ export const FULL_JOBS_LIST: JobsListInfo[] = [
         name: 'Swimmer',
         speedPlusLabel: 'Swim Speed +',
         speedMultLabel: 'Swim Speed x',
-        unitsLabel: 'Distance',
         resistanceLabels: ['pH Resistance', 'Penetration'],
+        unitsLabel: 'μm',
         slowReason: 'The toxicity of the environment',
-        progressLabel: 'Speed'
+        progressLabel: 'Distance'
 
     }
 ]

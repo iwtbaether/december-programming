@@ -74,8 +74,14 @@ export default class Crafting {
     }
 
     calc = () => {
+        this.setDoomAndGloomFromEQ();
         this.setEnergyCalcedData();
         this.setGardeningCalcedData();
+    }
+
+    setDoomAndGloomFromEQ = () => {
+        let base = this.calcDoomEq();
+        this.DoomAndGloomFromEQ = base;
     }
 
     addModToCurrentCraft = () => {
@@ -225,6 +231,8 @@ export default class Crafting {
             const gEquip = toEquip as DoomStone;
             this.data.currentCraft = this.data.equipped.doomStone;
             this.data.equipped.doomStone = gEquip;
+
+            this.setDoomAndGloomFromEQ();
             
             this.setEnergyCalcedData();
             this.engine.calcEnergy();
@@ -236,6 +244,23 @@ export default class Crafting {
 
         this.engine.notify();
     }
+
+    calcDoomEq = () => {
+        let base: DoomValues = {
+            BaseDoomGain: 0,
+            DoomPerSecond: 0,
+            GloomPerSecond: 0,
+            IncreasedDoomGain: 0,
+            MoreDoomGain: 1,
+        }
+        if (this.data.equipped.doomStone !== null) {
+            base = DoomItemCalc(this.data.equipped.doomStone, base)
+        }
+        return base;
+    }
+
+    DoomAndGloomFromEQ: DoomValues = this.calcDoomEq();
+
 
 
     calcEnergyEquipment = () => {
@@ -394,6 +419,42 @@ function modifyEnergyItemValues(mod: EnergyItemMod, values: EnergyItemValues): E
 
     return values;
 }
+
+function DoomItemCalc(item:DoomStone | null, base: DoomValues): DoomValues {
+    if (item === null) return base;
+    base = modifyDoomValues(item.doomMod, base);
+    return base;
+}
+
+function modifyDoomValues(mod: DoomStoneMod, values: DoomValues): DoomValues {
+    switch (mod.mod) {
+        case DoomStoneModList.BaseDoomGain:
+            values.BaseDoomGain += mod.value;
+            break;
+
+            case DoomStoneModList.DoomPerSecond:
+            values.DoomPerSecond += mod.value
+            break;
+
+            case DoomStoneModList.GloomPerSecond:
+            values.GloomPerSecond += mod.value
+            break;
+
+            case DoomStoneModList.IncreasedDoomGain:
+            values.IncreasedDoomGain += (mod.value * .1)
+            break;
+
+            case DoomStoneModList.MoreDoomGain:
+            values.MoreDoomGain *= (1 + (mod.value * .05))
+            break;
+    
+        default:
+            break;
+    }
+
+    return values;
+}
+
 
 function gardeningItemCalc(item: GardeningItem | null, base: GardeningItemValus): GardeningItemValus {
 
@@ -744,6 +805,14 @@ interface EnergyItemValues {
     baseGain: number,
     increasedGain: number,
     moreGain: number,
+}
+
+export interface DoomValues {
+    MoreDoomGain: number,
+    BaseDoomGain: number,
+    IncreasedDoomGain: number,
+    DoomPerSecond: number,
+    GloomPerSecond: number,
 }
 
 interface GardeningItemValus {

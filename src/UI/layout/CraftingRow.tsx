@@ -79,6 +79,7 @@ const CraftingRow = (props: { data: Datamap }) => {
       {data.crafting.equipped.gardeningCap && <ItemDisplay item={data.crafting.equipped.gardeningCap} />}<br />
       {data.crafting.equipped.seceteurs && <ItemDisplay item={data.crafting.equipped.seceteurs} />}<br />
       {data.crafting.equipped.wateringCan && <ItemDisplay item={data.crafting.equipped.wateringCan} />}<br />
+      {data.crafting.equipped.doomStone && <ItemDisplay item={data.crafting.equipped.doomStone} />}<br />
     </div>
     <div style={{ display: 'flex', flexDirection: 'row' }}>
 
@@ -101,6 +102,7 @@ const CraftingRow = (props: { data: Datamap }) => {
 
           {JSON.stringify(crafting.gardeningCalcData)}
         </div>
+        {data.crafting.equipped.doomStone && <div>{JSON.stringify(crafting.DoomAndGloomFromEQ)}</div>}
       </div>}
     </div>}
   </div>)

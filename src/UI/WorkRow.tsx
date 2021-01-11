@@ -7,19 +7,21 @@ import ConfirmCommandButton from "./comps/ConfirmCommandButton";
 import TipFC from "./comps/TipFC";
 import DisplayDecimal from "./DisplayDecimal";
 import DisplayNumber from "./DisplayNumber";
-import ListedResourceClass from "./ListedResourceClass";
+import ListedResourceClass, { ListedDecimal } from "./ListedResourceClass";
 
 const JobsRow = (props: { data: Datamap }) => {
   const data = props.data;
   const jobs = gEngine.jobs;
   const selectedJob = FULL_JOBS_LIST[jobs.data.jobID];
   const postResistance = jobs.calced.finalJobSpeed.div(jobs.calced.finalResitanceDiv)
+  const chargeSpeed = jobs.getChargeSpeed();
   return (<div style={{ display: 'flex', flexDirection: 'column' }}>
     <span>
       Current Job: Swimmer
     </span>
     <div>
       <ListedResourceClass resource={jobs.workResource} />
+      <ListedDecimal resource={jobs.data.jobProgress} name={selectedJob.progressLabel} ps={postResistance.add(chargeSpeed)} />
       {jobs.data.notReset.chargeStorage.greaterThan(0) && <ListedResourceClass resource={jobs.chargeCurrent} />}
       {jobs.data.notReset.mechancProgession > 0 && <ListedResourceClass resource={jobs.xpResource} />}
     </div>
@@ -48,9 +50,9 @@ const JobsRow = (props: { data: Datamap }) => {
 
       <div>
         <SingleBuildingUI building={jobs.chargeStorage} />
-        {jobs.chargeStorage.count.greaterThan(0) && <span style={{position:'relative'}}>
+        {jobs.chargeStorage.info.hidden() === false && <span style={{position:'relative'}}>
           <button onClick={jobs.fillCharge}>Fill Charge</button>
-          <TipFC tip={'Charge is drained each second to boost your job progress at equal rates\nCharge progress ignores resistance'}/>
+          <TipFC tip={'Charge is drained to boost your job progress at equal rates\nCharge progress ignores resistance'}/>
           </span>
           }
         <SingleBuildingUI building={jobs.chargePower} />
@@ -59,29 +61,28 @@ const JobsRow = (props: { data: Datamap }) => {
 
     </div>
     <span>
-      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={postResistance} /> /s
-      {postResistance.greaterThan(1000) && <span> Capped at 1000/s </span>}
-    </span>
-    {jobs.chargeStorage.count.greaterThan(0) && <span>
-      Charging at <DisplayDecimal decimal={jobs.getChargeSpeed()} /> /s
+      Current Speed: <DisplayDecimal decimal={postResistance}  /> {selectedJob.unitsLabel}/s
+      {postResistance.greaterThan(1000) && <span> Capped at 1000 {selectedJob.unitsLabel}/s </span>}
+    {jobs.chargeStorage.count.greaterThan(0) && <span style={{marginLeft:'5px'}}>
+      (+<DisplayDecimal decimal={jobs.getChargeSpeed()} /> {selectedJob.unitsLabel}/s from Charge)
     </span>}
+    </span>
     <span>
       {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv} />
     </span>
     {jobs.seedGainSpeedMult > 1 && <span style={{ display: 'flex' }}>
-      Seed Gain Speed Multi: x<DisplayNumber num={jobs.seedGainSpeedMult} />
     </span>}
     <span>
-      Current {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.jobProgress} />
+      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.jobProgress} />{selectedJob.unitsLabel} | Goal: <DisplayDecimal decimal={jobs.currentGoal()} /> {selectedJob.unitsLabel}
     </span>
     <span>
-      Last {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.last} />
+      Last {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.last} />
     </span>
     <span>
-      Best {selectedJob.unitsLabel}: <DisplayDecimal decimal={jobs.data.farthesthProgress} />
+      Best {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.farthesthProgress} />
+      (Giving Seed Gain Speed Multi: x<DisplayNumber num={jobs.seedGainSpeedMult} />)
     </span>
     <span>
-      Goal {selectedJob.unitsLabel}: 10k
     </span>
   </div>)
 }

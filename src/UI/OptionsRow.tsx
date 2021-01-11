@@ -2,12 +2,16 @@ import React from "react";
 import { gEngine } from "..";
 import { Datamap } from "../engine/Datamap";
 import ConfirmCommandButton from "./comps/ConfirmCommandButton";
+import FlexRow from "./comps/FlexRow";
 
 const Bruh = new Audio('https://www.myinstants.com/media/sounds/movie_1.mp3')
 
 const OptionsRow = (props: { data: Datamap }) => {
   const data = props.data;
   return (<div>
+    <div>
+      About
+    </div>
     <div>
       A game by IWTB-AETHER [Time: {data.last}]
           </div>
@@ -29,12 +33,28 @@ const OptionsRow = (props: { data: Datamap }) => {
     <div>
       Controls
     </div>
-    <div onClick={()=>{Bruh.play()}}>
-      shift+click to buy max or bypass confirmation prompts. ctrl+click to buy 10, alt+click to buy 20. [L]etters in [B]rackets are hotkeys. Hotkeys are new (read: buggy).
+    <div>
+      shift+click to buy max or bypass confirmation prompts. ctrl+click to buy 10, alt+click to buy 20.
     </div>
+      <div>
+       <UnlockMagic unlockStateOne={data.unlocksStates.one}   /> are hotkeys. Hotkeys are new (watch out for bugs!) Hotkeys visuals got taken out for now because I don't like how they look.
+      </div>
     <br/>
     <div>
-      Advanced File Options
+      Info on calculations
+    </div>
+    <div>
+      All resource generation formulas follow the same calculations: base production * (total sum of increased) * (total product of  more)<br/>
+      All increased modifiers are summed together. 10x increased from drive and 10x increased from anti-drive results in 20x / 2000% increased energy gain.<br/>
+      All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 32x.
+    </div>
+    <FlexRow>
+    <button onClick={gEngine.energyModule.showCalcs}>
+        Energy</button>
+    </FlexRow>
+    <br/>
+    <div>
+      Advanced File Options 
     </div>
     <div>
     <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
@@ -77,6 +97,14 @@ const OptionsRow = (props: { data: Datamap }) => {
 
 export default OptionsRow;
 
+const UnlockMagic = (props: {unlockStateOne: number}) => {
+  if (props.unlockStateOne >= 8) return <span style={{color:'magenta'}}>
+    [L]etters in Brackets "[ ]"
+  </span>
+  else return <span>
+    Letters in Brackets "[ ]"
+  </span>
+}
 
 const Discord = () => {
   return (

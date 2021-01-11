@@ -148,22 +148,6 @@ a {
     100% { opacity: 0;width: 0; height: 0;}
 }
 
-.TipFC {
-        left: 5px;
-        top: 12px;
-        border: 1px solid $base2;
-        color: $base1;
-        z-index: 1;
-        background-color: $base02;
-        text-align: center  ;
-    
-        position: absolute;
-        white-space: nowrap;
-        margin: 5px;
-        padding: 5px;
-        pointer-events: none;
-        white-space: pre;
-}
 
 .active-button  {
     @extend .MyButton;

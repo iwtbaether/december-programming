@@ -2,10 +2,31 @@
 
 .TipFC {
     display: none;
-    overflow: visible;
     z-index: 10;
+    overflow: visible;
+    left: 5px;
+    top: 12px;
+    border: 1px solid $base2;
+    color: $base1;
+    background-color: $base02;
+    text-align: center  ;
+
+    position: absolute;
+    white-space: nowrap;
+    margin: 5px;
+    padding: 5px;
+    pointer-events: none;
+    white-space: pre;
+}
+
+.TipFC2 {
+    @extend .TipFC
 }
 
 :hover > .TipFC {
+    display: initial;
+}
+
+:hover > * > .TipFC2 {
     display: initial;
 }

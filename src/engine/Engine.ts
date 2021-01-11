@@ -1,4 +1,5 @@
 import Decimal from "break_infinity.js";
+import { timeStamp } from "console";
 import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
 import CoreEngine from "./CoreEngine";
@@ -44,7 +45,9 @@ export default class Engine extends CoreEngine {
     theExchange: TheExchange =new TheExchange(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
 
+
     handleKey = (key:string) => this.hotkeyManager.handle(key);
+
     
     processDelta = (delta: number) => {
 
@@ -120,7 +123,7 @@ export default class Engine extends CoreEngine {
 
     drive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: '[D]rive',
+            name: 'Drive',
             get: () => this.datamap.cell.c,
             setDecimal: (dec) => {
                 this.datamap.cell.c = dec
@@ -137,7 +140,7 @@ export default class Engine extends CoreEngine {
 
     antiDrive: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: '[A]nti-Drive ',
+            name: 'Anti-Drive ',
             get: () => this.datamap.cell.cc,
             setDecimal: (dec) => {
                 this.datamap.cell.cc = dec
@@ -154,7 +157,7 @@ export default class Engine extends CoreEngine {
 
     momentum: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: '[M]omentum',
+            name: 'Momentum',
             get: () => this.datamap.cell.momentum,
             setDecimal: (dec) => {
                 this.datamap.cell.momentum = dec
@@ -174,12 +177,14 @@ export default class Engine extends CoreEngine {
     })
 
     setNav = (num: number) => {
-        this.datamap.activity = 0;
-        this.calcEnergy();
-
-        this.datamap.nav = num;
+        this.silentSetNav(num);
         this.notify();
     }
+
+    silentSetNav = (num: number) => {
+        this.datamap.nav = num;
+    }
+
 
     gainEnergy = (gain: Decimal) => {
         if (gain.greaterThanOrEqualTo(0)) {
@@ -211,6 +216,10 @@ export default class Engine extends CoreEngine {
         },
         giveUp: () => {
             if (this.energy.canGiveUp()) {
+                if (this.datamap.cell.aewf.greaterThan(0)) {
+                    this.datamap.cell.aewf = new Decimal(1)
+                }
+
                 this.clearDoom();
                 this.clearEnergy();
                 this.crafting.reset();
@@ -263,15 +272,25 @@ export default class Engine extends CoreEngine {
     }
 
     doomGain = () => {
-        let gainedDoom = Decimal.floor(this.energyResource.count.divideBy(this.energy.giveUpLevel2Cost))
-        gainedDoom = gainedDoom.add(gainedDoom.times(this.doomUpgrade2.count));
-        const incDoomGain = this.datamap.cell.d5.add(this.datamap.cell.d6);
+        //base
+        let doomPerPile = Decimal.add(1, this.crafting.DoomAndGloomFromEQ.BaseDoomGain).add(this.doomUpgrade2.count);
+        let pilesOfEnergy = Decimal.floor(this.energyResource.count.divideBy(this.energy.giveUpLevel2Cost))
+        let gainedDoom = Decimal.times(doomPerPile, pilesOfEnergy)
+
+        //increased
+        const incDoomGain = this.datamap.cell.d5.add(this.datamap.cell.d6).add(this.crafting.DoomAndGloomFromEQ.IncreasedDoomGain);
+        
         if (incDoomGain.greaterThan(0)) {
             gainedDoom = gainedDoom.times(incDoomGain.add(1));
         }
 
+        //more
+
         if (this.datamap.garden.fruits.doom.greaterThan(0)) {
             gainedDoom = gainedDoom.times(this.datamap.garden.fruits.doom.add(1))
+        }
+        if (this.crafting.DoomAndGloomFromEQ.MoreDoomGain > 0) {
+            gainedDoom = gainedDoom.times(this.crafting.DoomAndGloomFromEQ.MoreDoomGain)
         }
         return gainedDoom;
     }
@@ -305,7 +324,7 @@ export default class Engine extends CoreEngine {
 
     gUL2: BasicCommand = {
         command: this.energy.giveUpLevel2,
-        label: "Give up, accept Doom",
+        label: "Give Up, accept Doom",
         hidden: () => this.datamap.unlocksStates.one < 3,
         able: () => this.energyResource.count.greaterThanOrEqualTo(this.energy.giveUpLevel2Cost),
         description: 'wy?'
@@ -342,7 +361,7 @@ export default class Engine extends CoreEngine {
 
     gUL3: BasicCommand = {
         command: this.aewf,
-        label: 'Give Up, accept +1 Base Gloom',
+        label: 'Give Up, accept Gloom',
         hidden: () => this.datamap.jobs.notReset.upgrades.energy < 1 && this.datamap.cell.aewf.eq(0),
         able: ()=> this.datamap.jobs.notReset.upgrades.energy > 0,
     }
@@ -352,7 +371,7 @@ export default class Engine extends CoreEngine {
 
     effort: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: '[E]ffort',
+            name: 'Effort',
             get: () => this.datamap.cell.b,
             setDecimal: (dec) => {
                 this.datamap.cell.b = dec
@@ -574,9 +593,9 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 1000000000000, coefficient: 5 }, resource: this.gloom },
         ],
-        description: `Generates Gloom Generator Generator Generators`,
+        description: `Generates Gloom Generator Generator Generators\nExtra: ${this.datamap.cell.gloomGen4E.floor()}`,
         hidden: () => this.datamap.cell.gloomGen3.lessThan(1),
-        outcome: () => `+1 GGG Generator Per Second\nExtra: ${this.datamap.cell.gloomGen4E.floor()}`,
+        outcome: () => `+1 GGG Generator Per Second`,
     })
 
     calcGloom = () => {
@@ -590,7 +609,7 @@ export default class Engine extends CoreEngine {
 
     determination: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: 'De[t]ermination',
+            name: 'Determination',
             get: () => this.datamap.cell.determination,
             setDecimal: (dec) => {
                 this.datamap.cell.determination = dec
@@ -601,7 +620,7 @@ export default class Engine extends CoreEngine {
             { expo: { initial: 10, coefficient: 1.1 }, resource: this.garden.hopeFruit },
         ],
         description: `More Energy Gain`,
-        hidden: () => this.datamap.cell.determination.lessThan(1) && this.datamap.garden.fruits.hope.eq(0),
+        hidden: () => this.datamap.garden.researches.progression < 3,
         outcome: () => {
             let now = this.determination.count.add(1);
             return `x${now} -> x${now.add(1)} Energy Gain`

@@ -63,6 +63,7 @@ const GardenRow = (props: { data: Datamap }) => {
                     {data.garden.researches.progression > 2 && <React.Fragment>
 
                         <SingleBuildingUI building={engine.garden.rebirth} />
+                        <SingleBuildingUI building={gEngine.determination}/>
                         <SingleBuildingUI building={engine.garden.wateringCan} />
                         <SingleBuildingUI building={engine.garden.denseWater} />
                         <SingleBuildingUI building={engine.garden.bunchPower} />
