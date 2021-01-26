@@ -75,7 +75,9 @@ export class SingleResearch {
         gEngine.notify();
     }
 
-    
+    get true () {
+        return this.info.get();
+    }
 
 }
 

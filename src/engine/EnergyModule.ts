@@ -1,5 +1,6 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
 import Engine from "./Engine";
+import { moreDecimal } from "./externalfns/util";
 
 export default class EnergyModule {
     constructor(public engine: Engine) {
@@ -69,7 +70,11 @@ export default class EnergyModule {
         this.totalEnergyGainIncreased = this.engine.drive.count.add(this.engine.antiDrive.count).add(1).add(this.energyEquipmentMods.increasedGain);
         const mult2 = this.engine.doomUpgrade3.count.add(1)
         const mult3 = this.engine.datamap.cell.determination.add(1)
-        const mult4 = this.engine.datamap.cell.momentum.add(1)
+        let mult4 = this.engine.datamap.cell.momentum.add(1)
+        if (this.engine.theExchange.EU1.info.get()) { mult4 = moreDecimal(mult4, 1) }
+        if (this.engine.theExchange.EU2.info.get()) { mult4 = moreDecimal(mult4, 1) }
+        if (this.engine.theExchange.EU3.info.get()) { mult4 = moreDecimal(mult4, 1) }
+
         this.totalEnergyGainMore = mult4.times(mult2).times(mult3).times(this.energyEquipmentMods.moreGain);
         this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);
     }
@@ -78,3 +83,4 @@ export default class EnergyModule {
 
 
 }
+

@@ -3,6 +3,8 @@ import Decimal from "break_infinity.js";
 import { timeStamp } from "console";
 import { basename } from "path";
 import { EnumType, isTypeNode } from "typescript";
+import { gEngine } from "../..";
+import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { canCheat, getRandomInt, randomEnum, randomEnumFromListWithExclusions, randomEnumWithExclusion } from "../externalfns/util";
 import { GardenData } from "../garden/Garden";
@@ -52,7 +54,7 @@ export default class Crafting {
     getRandomACurrency = () => {
         let rng = getRandomInt(0, 99);
         let type = rng % 3;
-        
+
         if (type === 0) this.data.currency.transmutes++;
         if (type === 1) this.data.currency.augmentations++;
         if (type === 2) this.data.currency.doomOrbs++;
@@ -82,6 +84,7 @@ export default class Crafting {
     setDoomAndGloomFromEQ = () => {
         let base = this.calcDoomEq();
         this.DoomAndGloomFromEQ = base;
+        this.engine.calced_DoomPerPile.set();
     }
 
     addModToCurrentCraft = () => {
@@ -118,8 +121,7 @@ export default class Crafting {
     }
 
     gainDoomShards = (gain: number) => {
-        if ((this.data.currency.doomShards += gain)>= 20)
-        {
+        if ((this.data.currency.doomShards += gain) >= 20) {
             if (this.data.vaalProgress === 0) this.data.vaalProgress = 1;
             this.data.currency.doomOrbs += Math.floor(this.data.currency.doomShards / 20);
             this.data.currency.doomShards = this.data.currency.doomShards % 20;
@@ -130,7 +132,7 @@ export default class Crafting {
         if (this.cannotCraft()) return;
         if (this.data.currency.doomOrbs < 1) return;
         if (!canCheat) this.engine.save();
-        let rng = getRandomInt(0,3);
+        let rng = getRandomInt(0, 3);
         if (rng === 0) this.data.currentCraft = null;
         if (rng === 1) if (this.data.currentCraft) {
             this.data.currentCraft.doomed = true;
@@ -138,17 +140,17 @@ export default class Crafting {
             if ([1, 2, 3].includes(type)) {
                 let item = this.data.currentCraft as EnergyItem;
                 item = addRandomEnergyMod(item, true);
-                item.mods[item.mods.length - 1].doomed = true;       
+                item.mods[item.mods.length - 1].doomed = true;
                 this.data.currentCraft = item;
 
             } else if ([5, 6, 7].includes(type)) {
                 let item = this.data.currentCraft as GardeningItem;
                 item = addRandomGardeningMod(item, true);
-                item.mods[item.mods.length - 1].doomed = true;       
+                item.mods[item.mods.length - 1].doomed = true;
                 this.data.currentCraft = item;
-            
+
             }
-    
+
         }
         if (rng === 2) if (this.data.currentCraft) {
             this.data.currentCraft.doomed = true;
@@ -181,7 +183,6 @@ export default class Crafting {
             this.data.equipedEnergyItem = eEquip;
 
             this.setEnergyCalcedData();
-            this.engine.calcEnergy();
         }
 
         else if (it === 2) {
@@ -191,7 +192,6 @@ export default class Crafting {
             this.data.equipedMedEnergyItem = eEquip;
 
             this.setEnergyCalcedData();
-            this.engine.calcEnergy();
         }
 
         else if (it === 3) {
@@ -201,7 +201,6 @@ export default class Crafting {
             this.data.equipedSmallEnergyItem = eEquip;
 
             this.setEnergyCalcedData();
-            this.engine.calcEnergy();
         }
 
         else if (it === ItemTypes.MagicWateringCan) {
@@ -209,7 +208,7 @@ export default class Crafting {
             this.data.currentCraft = this.data.equipped.wateringCan;
             this.data.equipped.wateringCan = gEquip
 
-            this.setGardeningCalcedData(); this.engine.garden.setTempData();
+            this.setGardeningCalcedData();
 
         }
 
@@ -217,14 +216,14 @@ export default class Crafting {
             const gEquip = toEquip as GardeningItem;
             this.data.currentCraft = this.data.equipped.seceteurs;
             this.data.equipped.seceteurs = gEquip
-            this.setGardeningCalcedData(); this.engine.garden.setTempData();
+            this.setGardeningCalcedData();
         }
 
         else if (it === ItemTypes.GardeningHat) {
             const gEquip = toEquip as GardeningItem;
             this.data.currentCraft = this.data.equipped.gardeningCap;
             this.data.equipped.gardeningCap = gEquip
-            this.setGardeningCalcedData(); this.engine.garden.setTempData();
+            this.setGardeningCalcedData();
         }
 
         else if (it === ItemTypes.DoomedCrystal) {
@@ -232,13 +231,7 @@ export default class Crafting {
             this.data.currentCraft = this.data.equipped.doomStone;
             this.data.equipped.doomStone = gEquip;
 
-            this.setDoomAndGloomFromEQ();
-            
-            this.setEnergyCalcedData();
-            this.engine.calcEnergy();
-            
-            this.setGardeningCalcedData();
-            this.engine.garden.setTempData();
+            this.calc();
         }
 
 
@@ -316,6 +309,7 @@ export default class Crafting {
     setEnergyCalcedData = () => {
         let base = this.calcEnergyEquipment();
         this.energyCalcedData = base;
+        this.engine.calcEnergy();
     }
 
     gardeningCalcData: GardeningItemValus = this.calcGardeningEquipment();
@@ -323,17 +317,23 @@ export default class Crafting {
     setGardeningCalcedData = () => {
         let base = this.calcGardeningEquipment();
         this.gardeningCalcData = base;
+        this.engine.garden.setTempData();
+
     }
 
     breakWateringCan = () => {
-        console.log('watering can broke');
+        //console.log('watering can broke');
 
         let can = this.data.equipped.wateringCan;
         if (can) {
-            let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.AutoWater)
-            can.mods[index].mod = GardeningItemModList.Broken;
+
+            let unbroken = can.mods.findIndex(mod => mod.mod === GardeningItemModList.NeverBreak)
+            if (unbroken < 0) {   
+                let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.AutoWater)
+                can.mods[index].mod = GardeningItemModList.Broken;
+                this.setGardeningCalcedData();
+            }
         }
-        this.setGardeningCalcedData();
     }
 
 
@@ -343,7 +343,7 @@ export default class Crafting {
 
 }
 
-function createDoomStone (item: ItemData): DoomStone|null {
+function createDoomStone(item: ItemData): DoomStone | null {
     const strone: DoomStone = {
         itemType: ItemTypes.DoomedCrystal,
         doomMod: getRandomDoomMod(),
@@ -354,13 +354,13 @@ function createDoomStone (item: ItemData): DoomStone|null {
 
     if ([1, 2, 3].includes(type)) {
         const specitem = item as EnergyItem;
-        const rngMod = specitem.mods[getRandomInt(0,specitem.mods.length-1)]
+        const rngMod = specitem.mods[getRandomInt(0, specitem.mods.length - 1)]
         rngMod.doomed = true;
         strone.energyMod = rngMod;
 
     } else if ([5, 6, 7].includes(type)) {
         const specitem = item as GardeningItem;
-        const rngMod = specitem.mods[getRandomInt(0,specitem.mods.length-1)]
+        const rngMod = specitem.mods[getRandomInt(0, specitem.mods.length - 1)]
         rngMod.doomed = true;
         strone.gardeningMod = rngMod;
     } else return null;
@@ -382,8 +382,8 @@ function energyItemCalc2(item: EnergyItem | null, base: EnergyItemValues): Energ
 }
 
 function modifyEnergyItemValues(mod: EnergyItemMod, values: EnergyItemValues): EnergyItemValues {
-    console.log(mod, values);
-    
+    //console.log(mod, values);
+
     switch (mod.mod) {
         case EnergyItemModList.BaseGain:
             values.baseGain += mod.value;
@@ -420,7 +420,7 @@ function modifyEnergyItemValues(mod: EnergyItemMod, values: EnergyItemValues): E
     return values;
 }
 
-function DoomItemCalc(item:DoomStone | null, base: DoomValues): DoomValues {
+function DoomItemCalc(item: DoomStone | null, base: DoomValues): DoomValues {
     if (item === null) return base;
     base = modifyDoomValues(item.doomMod, base);
     return base;
@@ -432,22 +432,22 @@ function modifyDoomValues(mod: DoomStoneMod, values: DoomValues): DoomValues {
             values.BaseDoomGain += mod.value;
             break;
 
-            case DoomStoneModList.DoomPerSecond:
+        case DoomStoneModList.DoomPerSecond:
             values.DoomPerSecond += mod.value
             break;
 
-            case DoomStoneModList.GloomPerSecond:
+        case DoomStoneModList.GloomPerSecond:
             values.GloomPerSecond += mod.value
             break;
 
-            case DoomStoneModList.IncreasedDoomGain:
+        case DoomStoneModList.IncreasedDoomGain:
             values.IncreasedDoomGain += (mod.value * .1)
             break;
 
-            case DoomStoneModList.MoreDoomGain:
+        case DoomStoneModList.MoreDoomGain:
             values.MoreDoomGain *= (1 + (mod.value * .05))
             break;
-    
+
         default:
             break;
     }
@@ -534,6 +534,23 @@ export interface CraftingData {
     };
     currency: CraftingCurrency;
     vaalProgress: number;
+    research: {
+        moreEnergy: number;
+        moreDoom: number;
+        moreCrafting: number;
+        moreGarden: number;
+        moreSpellBook: number;
+        moreJobs1: number;
+        moreJobs2: number;
+        moreJobs3: number;
+        research_discardAversion: boolean;
+        rph1: boolean;
+        rph2: boolean;
+        rph3: boolean;
+        rph4: boolean;
+        rph5: boolean;
+        rph6: boolean;
+    }
 }
 
 interface CraftingCurrency {
@@ -572,6 +589,23 @@ export function CraftingData_Init(): CraftingData {
             chaos: 0
         },
         vaalProgress: 0,
+        research: {
+            moreEnergy: 0,
+            moreDoom: 0,
+            moreCrafting: 0,
+            moreGarden: 0,
+            moreSpellBook: 0,
+            moreJobs1: 0,
+            moreJobs2: 0,
+            moreJobs3: 0,
+            research_discardAversion: false,
+            rph1: false,
+            rph2: false,
+            rph3: false,
+            rph4: false,
+            rph5: false,
+            rph6: false,
+        }
     }
 }
 
@@ -591,20 +625,36 @@ function makeSizedEnergyItem(size: number): EnergyItem {
     return item
 }
 
+function rollForUnique () {
+    let rng = getRandomInt(1, 100)
+    return true;
+    return rng === 100
+}
+
 function makeGardeningItem(): GardeningItem {
     const types = [
         ItemTypes.MagicSecateurs,
         ItemTypes.MagicWateringCan,
         ItemTypes.GardeningHat
     ]
+    
     let chosen = types[getRandomInt(0, 2)]
     let item: GardeningItem = {
         itemType: chosen,
         mods: [],
     }
-    item = addRandomGardeningMod(item);
+    
+    if (gEngine.theExchange.CU1.true && rollForUnique() && chosen === ItemTypes.MagicWateringCan) {
+            if (chosen === ItemTypes.MagicWateringCan) {
+                item.mods.push({mod: GardeningItemModList.NeverBreak, value: 1})
+                item.mods.push({mod: GardeningItemModList.AutoWater, value: 1})
+                item.unique = 1;
+            }
+    } else item = addRandomGardeningMod(item);
+    
     return item
 }
+
 
 function getEnergyModMaxValue(mod: EnergyItemModList): number {
     switch (mod) {
@@ -614,10 +664,10 @@ function getEnergyModMaxValue(mod: EnergyItemModList): number {
         case EnergyItemModList.IncreasedGain:
             return 50;
             break;
-            case EnergyItemModList.BaseGain:
-                return 50;
-                break;
-            
+        case EnergyItemModList.BaseGain:
+            return 50;
+            break;
+
         default:
             return 10;
             break;
@@ -628,7 +678,18 @@ function addRandomEnergyMod(item: EnergyItem, bypass?: boolean): EnergyItem {
     if (!bypass) if (item.mods.length >= maxMods(item)) return item;
 
     let exclusions = getEnergyModExclusions(item)
-    let chosen = randomEnumWithExclusion(EnergyItemModList, exclusions)
+
+    let baseList = [
+        EnergyItemModList.BaseGain,
+        EnergyItemModList.ClickMore,
+        EnergyItemModList.ClicksPerSecond,
+        EnergyItemModList.HoverMore,
+        EnergyItemModList.IncreasedGain,
+        EnergyItemModList.MoreGain,
+        EnergyItemModList.PassiveMore,
+    ]
+
+    let chosen = randomEnumFromListWithExclusions(baseList, exclusions)
     let max = getEnergyModMaxValue(chosen)
 
     let newMod: EnergyItemMod = {
@@ -695,7 +756,7 @@ function addRandomGardeningMod(item: GardeningItem, bypass?: boolean): Gardening
 
 function getDoomStoneModValue(mod: DoomStoneModList): number {
     switch (mod) {
-        
+
         default:
             return 10;
             break;
@@ -752,11 +813,12 @@ function getGardeningModExclusions(item: GardeningItem): GardeningItemModList[] 
 export interface ItemData {
     itemType: number,
     doomed?: boolean,
+    unique?: number,
 }
 
 export interface ModData {
     value: number;
-    doomed? :boolean;
+    doomed?: boolean;
 }
 
 export interface DoomStone extends ItemData {
@@ -850,3 +912,63 @@ function getPossibleEnergyMods(modList: EnergyItemMod[]) {
  *  More Energy Gain
  */
 
+function unequip(type: ItemTypes, data: Datamap): Datamap {
+    if (data.crafting.currentCraft !== null) return data;
+    else {
+        switch (type) {
+            case ItemTypes.SmallEnergyItem:
+                data.crafting.currentCraft = data.crafting.equipedSmallEnergyItem;
+                data.crafting.equipedSmallEnergyItem = null;
+                break;
+
+            case ItemTypes.MediumEnergyItem:
+                data.crafting.currentCraft = data.crafting.equipedMedEnergyItem;
+                data.crafting.equipedMedEnergyItem = null;
+                break;
+
+            case ItemTypes.LargeEnergyItem:
+                data.crafting.currentCraft = data.crafting.equipedEnergyItem;
+                data.crafting.equipedEnergyItem = null;
+                break;
+
+            case ItemTypes.DoomedCrystal:
+                data.crafting.currentCraft = data.crafting.equipped.doomStone;
+                data.crafting.equipped.doomStone = null;
+                break;
+
+            case ItemTypes.GardeningHat:
+                data.crafting.currentCraft = data.crafting.equipped.gardeningCap;
+                data.crafting.equipped.gardeningCap = null;
+                break;
+
+            case ItemTypes.MagicSecateurs:
+                data.crafting.currentCraft = data.crafting.equipped.seceteurs;
+                data.crafting.equipped.seceteurs = null;
+                break;
+
+            case ItemTypes.MagicWateringCan:
+                data.crafting.currentCraft = data.crafting.equipped.wateringCan;
+                data.crafting.equipped.wateringCan = null;
+                break;
+
+
+
+            default:
+                console.log('item type does not exist?');
+                
+                break;
+        }
+        return data;
+    }
+
+}
+
+export function unEqItemType (it: ItemTypes) {
+    const data = gEngine.datamap;
+    if (data.crafting.currentCraft !== null) return;
+    else {
+        gEngine.datamap = unequip(it, data)
+    }
+
+    gEngine.notify();
+}

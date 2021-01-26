@@ -43,8 +43,13 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
             return `Oops! It automatically broke!`
             break;
 
+        case GardeningItemModList.NeverBreak:
+            return `Unbreakable`
+            break;
+
+
         default:
-            return 'error'
+            return 'GardeningModAndValueToString error'
             break;
     }
 }

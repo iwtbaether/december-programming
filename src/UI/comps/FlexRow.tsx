@@ -4,7 +4,7 @@ import './TipFC.scss'
 
 const FlexRow: React.FC <{ }> = (props) => {
     return (
-        <div style={{display:'flex',flexDirection:'row',gap:'5px'}}>
+        <div style={{display:'flex',flexDirection:'row',gap:'5px',flexWrap:'wrap', alignContent: 'flex-start'}}>
             {props.children}
         </div>
     )

@@ -27,9 +27,9 @@ const JobXPPopup = (props: { data: Datamap }) => {
             </div>
 
             <div style={{display:'flex'}}>
-                <div>
+                {gEngine.jobs.res_doubleWatering.info.hidden() === false && <div>
                     Garden Upgrades
-                </div>
+                </div>}
                 <NewSingleResearchUI research={gEngine.jobs.res_doubleWatering} />
                 <NewSingleResearchUI research={gEngine.jobs.res_doubleWateringAgain} />
                 <NewSingleResearchUI research={gEngine.jobs.res_g3_plusPlot} />
@@ -37,18 +37,22 @@ const JobXPPopup = (props: { data: Datamap }) => {
             </div>
 
             <div style={{display:'flex'}}>
-                <div>
+                {gEngine.jobs.res_doom1_autoclickers.info.hidden() === false && <div>
+                
                     Doom Upgrades
-                </div>
+                </div>}
             <NewSingleResearchUI research={gEngine.jobs.res_doom1_autoclickers} />
             <NewSingleResearchUI research={gEngine.jobs.res_doom2_letsPrestige} />
             </div>
 
             <div style={{display:'flex'}}>
-                <div>
+            {gEngine.jobs.res_energy1_nextReset.info.hidden() === false && <div>
                     Energy Upgrades
-                </div>
+                </div>}
             <NewSingleResearchUI research={gEngine.jobs.res_energy1_nextReset} />
+            </div>
+            <div>
+                Buy upgrades to reveal new ones.
             </div>
             <span>
 

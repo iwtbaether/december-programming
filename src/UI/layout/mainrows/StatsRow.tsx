@@ -1,6 +1,6 @@
 import React from 'react';
-import { Datamap } from '../engine/Datamap';
-import DisplayDecimal from './DisplayDecimal';
+import { Datamap } from '../../../engine/Datamap';
+import DisplayDecimal from '../../DisplayDecimal';
 
 export const StatsRow = (props: { data: Datamap; }) => {
   const data = props.data;

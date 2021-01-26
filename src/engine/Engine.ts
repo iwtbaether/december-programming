@@ -2,11 +2,14 @@ import Decimal from "break_infinity.js";
 import { timeStamp } from "console";
 import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
+import DisplayDecimal from "../UI/DisplayDecimal";
 import CoreEngine from "./CoreEngine";
 import DoomResearches from "./DoomResearches";
 import EnergyModule from "./EnergyModule";
+import CalcedDecimal from "./externalfns/decimalInterfaces/CalcedDecimal";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
+import { moreDecimal } from "./externalfns/util";
 import Garden from "./garden/Garden";
 import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
@@ -28,6 +31,12 @@ export default class Engine extends CoreEngine {
         }
     })
 
+    difficultyResource: SingleResource = new SingleResource({
+        name: 'Difficulty',
+        get: ()=> new Decimal(this.datamap.unlocksStates.one),
+        setDecimal: (d)=>{return},
+    })
+
     gloom: SingleResource = new SingleResource({
         name: 'Gloom',
         get: () => this.datamap.cell.gloom,
@@ -37,12 +46,12 @@ export default class Engine extends CoreEngine {
         calculateGain: ()=>this.datamap.cell.gloomGen1.add(this.datamap.cell.gloomGen1E).times(this.datamap.cell.aewf)
     })
 
+    theExchange: TheExchange =new TheExchange(this);
     crafting: Crafting = new Crafting(this);
     energyModule: EnergyModule = new EnergyModule(this);
     research: Research = new Research(this);
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
-    theExchange: TheExchange =new TheExchange(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
 
 
@@ -216,6 +225,9 @@ export default class Engine extends CoreEngine {
         },
         giveUp: () => {
             if (this.energy.canGiveUp()) {
+
+
+
                 if (this.datamap.cell.aewf.greaterThan(0)) {
                     this.datamap.cell.aewf = new Decimal(1)
                 }
@@ -271,9 +283,20 @@ export default class Engine extends CoreEngine {
         this.calcGloom();
     }
 
+    
+
     doomGain = () => {
+        //NEED TO REFACTOR FOR PERFORMANCE;
         //base
+        /*
         let doomPerPile = Decimal.add(1, this.crafting.DoomAndGloomFromEQ.BaseDoomGain).add(this.doomUpgrade2.count);
+
+        if (this.theExchange.DU1.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        if (this.theExchange.DU2.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        if (this.theExchange.DU3.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        */
+        const doomPerPile = this.calced_DoomPerPile.current;
+
         let pilesOfEnergy = Decimal.floor(this.energyResource.count.divideBy(this.energy.giveUpLevel2Cost))
         let gainedDoom = Decimal.times(doomPerPile, pilesOfEnergy)
 
@@ -412,6 +435,7 @@ export default class Engine extends CoreEngine {
             setDecimal: (dec) => {
                 this.datamap.cell.d2 = dec
                 this.calcEnergy();
+                this.calced_DoomPerPile.set();
             },
         }),
         costs: [
@@ -542,7 +566,7 @@ export default class Engine extends CoreEngine {
         ],
         description: `Generates Gloom`,
         hidden: () => this.datamap.unlocksStates.two < 3,
-        outcome: () => `+${this.datamap.cell.aewf} Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()}`,
+        outcome: () => `+${this.datamap.cell.aewf} Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()} `,
     })
 
     gloomGen2: SingleBuilding = new SingleBuilding({
@@ -674,6 +698,15 @@ export default class Engine extends CoreEngine {
         this.datamap.popupUI = 0;
         this.notify();
     }
+
+    calced_DoomPerPile: CalcedDecimal =  new CalcedDecimal(()=>{
+        let doomPerPile = Decimal.add(1, this.crafting.DoomAndGloomFromEQ.BaseDoomGain).add(this.doomUpgrade2.count);
+
+        if (this.theExchange.DU1.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        if (this.theExchange.DU2.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        if (this.theExchange.DU3.true) { doomPerPile = moreDecimal(doomPerPile, 1)}
+        return doomPerPile
+    })
 
 }
 

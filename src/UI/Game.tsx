@@ -1,20 +1,18 @@
-import React from 'react';
-import { Datamap } from '../engine/Datamap';
-import { BasicCommandButton } from './comps/BasicCommand';
-import FlexRow from './comps/FlexRow';
-import TipFC, { ChildTip, TipFC2 } from './comps/TipFC';
-import DoomRow from './DoomRow';
-import { EnergyRow } from './EnergyRow';
-import ExchangeRow from './ExchangeRow';
-import { FileButtons } from './FileButtons';
-import GardenRow from './GardenRow';
-import CraftingRow from './layout/CraftingRow';
-import MagicRow from './MagicRow';
-import { NavRow } from './NavRow';
-import OptionsRow from './OptionsRow';
-import { PopupRow } from './PopupRow';
-import { StatsRow } from './StatsRow';
-import JobsRow from './WorkRow';
+import React from "react";
+import { Datamap } from "../engine/Datamap";
+import { FileButtons } from "./layout/FileButtons";
+import CraftingRow from "./layout/mainrows/CraftingRow";
+import DoomRow from "./layout/mainrows/DoomRow";
+import { EnergyRow } from "./layout/mainrows/EnergyRow";
+import ExchangeRow from "./layout/mainrows/ExchangeRow";
+import GardenRow from "./layout/mainrows/GardenRow";
+import MagicRow from "./layout/mainrows/MagicRow";
+import { NavRow } from "./layout/mainrows/NavRow";
+import OptionsRow from "./layout/mainrows/OptionsRow";
+import { PopupRow } from "./layout/mainrows/PopupRow";
+import { StatsRow } from "./layout/mainrows/StatsRow";
+import JobsRow from "./layout/mainrows/WorkRow";
+
 
 
 export default class Game extends React.Component<{ data: Datamap }, {}> {
@@ -31,7 +29,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
           <NavRow data={data} />
         <hr style={{width:'100%'}} />
         </React.Fragment>}
-        <div style={{flexGrow:1}}>
+        <div style={{flexGrow:1, paddingLeft:'5px'}}>
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a} />}
         {data.nav === 1 && <DoomRow data={data} />}
         {data.nav === 3 && <GardenRow data={data} />}

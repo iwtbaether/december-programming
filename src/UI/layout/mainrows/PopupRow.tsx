@@ -1,7 +1,7 @@
 import React from 'react';
-import { Datamap } from '../engine/Datamap';
-import EnergyPopup from './EnergyPopup';
-import JobXPPopup from './JobXPPopup';
+import { Datamap } from '../../../engine/Datamap';
+import EnergyPopup from '../../EnergyPopup';
+import JobXPPopup from '../../JobXPPopup';
 
 export const PopupRow = (props: { data: Datamap; }) => {
   if (props.data.popupUI === 0)

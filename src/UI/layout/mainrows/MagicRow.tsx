@@ -1,8 +1,8 @@
 import React from "react";
-import { gEngine } from "..";
-import { Datamap } from "../engine/Datamap";
-import { CEX } from "../engine/TheExchange";
-import { ListedNumber } from "./ListedResourceClass";
+import { gEngine } from "../../..";
+import { Datamap } from "../../../engine/Datamap";
+import { CEX } from "../../../engine/TheExchange";
+import { ListedNumber } from "../../ListedResourceClass";
 
 const MagicRow = (props: { data: Datamap }) => {
     const currency = props.data.crafting.currency

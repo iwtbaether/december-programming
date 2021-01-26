@@ -38,6 +38,8 @@ export enum GardeningItemModList {
     Broken,
 
     SeedGainMore,
+
+    NeverBreak, // for unique watering can
 }
 
 const MOD_LISTS = {

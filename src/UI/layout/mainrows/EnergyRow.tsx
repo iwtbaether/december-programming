@@ -1,12 +1,15 @@
 import Decimal from 'break_infinity.js';
 import React from 'react';
-import { gEngine } from '..';
-import { Datamap } from '../engine/Datamap';
-import { percentOf } from '../engine/externalfns/util';
-import { SingleBuildingUI } from './BuildingsUI';
-import ConfirmCommandButton, { ConfirmBasicCommandButton } from './comps/ConfirmCommandButton';
-import DisplayDecimal from './DisplayDecimal';
-import ListedResourceClass from './ListedResourceClass';
+import { gEngine } from '../../..';
+import { Datamap } from '../../../engine/Datamap';
+import { percentOf } from '../../../engine/externalfns/util';
+import { SingleBuildingUI } from '../../BuildingsUI';
+import ConfirmCommandButton, { ConfirmBasicCommandButton } from '../../comps/ConfirmCommandButton';
+import FlexColumn from '../../comps/FlexColumn';
+import FlexRow from '../../comps/FlexRow';
+import { TipFC2 } from '../../comps/TipFC';
+import DisplayDecimal from '../../DisplayDecimal';
+import ListedResourceClass from '../../ListedResourceClass';
 
 export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
   const data = props.data;
@@ -19,13 +22,15 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
 
   return (
     <div style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
+      <div>
       <ListedResourceClass resource={gEngine.energyResource} />
       {data.unlocksStates.two > 1 && <ListedResourceClass resource={gEngine.antiEnergyResource} />}
       {data.cell.doom.greaterThan(0) && <ListedResourceClass resource={gEngine.doom} />}
       {data.unlocksStates.two > 2 && <ListedResourceClass resource={gEngine.gloom} />}
+      </div>
 
 
-      <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
 
         <div>
 
@@ -70,11 +75,16 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
             , Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
       </span>}
         </div>
-        <span className='flexRow'>
+        <FlexRow>
 
 
+            <span>
+              <TipFC2>
+                Current Difficulty: {data.unlocksStates.one}
+              </TipFC2>
           <ConfirmCommandButton do={gEngine.energy.giveUp} label='Difficulty Up' disabled={!reached}
             warning={`Resets everything, increases energy goal, and unlocks content\nCurrent Difficulty: ${data.unlocksStates.one}`} />
+            </span>
 
           <ConfirmBasicCommandButton {...gEngine.gUL3}>
             Resets Energy, Doom, Crafting, Jobs<br />
@@ -87,7 +97,7 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
         Gives Doom
          </ConfirmBasicCommandButton>
           </div>
-        </span>
+            </FlexRow>
       </div>
     </div>
   );

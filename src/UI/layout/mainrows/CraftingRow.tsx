@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { gEngine } from "../..";
-import { Datamap } from "../../engine/Datamap";
-import { canCheat } from "../../engine/externalfns/util";
-import { DoomStone, DoomStoneMod, EnergyItem, EnergyItemMod, GardeningItem, GardeningItemMod, ItemData, ItemTypes, maxMods } from "../../engine/m_st/Crafting";
-import { DoomStoneModList, EnergyItemModList } from "../../engine/m_st/ModLists";
-import ConfirmCommandButton from "../comps/ConfirmCommandButton";
-import TipFC from "../comps/TipFC";
-import DisplayDecimal from "../DisplayDecimal";
-import DisplayNumber from "../DisplayNumber";
-import { ListedNumber } from "../ListedResourceClass";
-import IITEM_STRINGS from "./ItemStrings";
+import { gEngine } from "../../..";
+import { Datamap } from "../../../engine/Datamap";
+import { canCheat } from "../../../engine/externalfns/util";
+import { EnergyItem, maxMods, DoomStone, ItemData, GardeningItem, EnergyItemMod, ItemTypes, GardeningItemMod, DoomStoneMod, unEqItemType } from "../../../engine/m_st/Crafting";
+import { EnergyItemModList } from "../../../engine/m_st/ModLists";
+import ConfirmCommandButton from "../../comps/ConfirmCommandButton";
+import FlexColumn from "../../comps/FlexColumn";
+import FlexRow from "../../comps/FlexRow";
+import TipFC, { ChildTip } from "../../comps/TipFC";
+import DisplayDecimal from "../../DisplayDecimal";
+import DisplayNumber from "../../DisplayNumber";
+import { ListedNumber } from "../../ListedResourceClass";
+import IITEM_STRINGS from "../ItemStrings";
+
 
 const CraftingRow = (props: { data: Datamap }) => {
   const [statDetails, setStatDetails] = useState(false);
@@ -17,19 +20,25 @@ const CraftingRow = (props: { data: Datamap }) => {
   const data = props.data;
   const crafting = gEngine.crafting;
   return (<div>
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, flexBasis: '240px' }}>
+    <FlexRow>
+      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, flexBasis: '240px', gap:'5px' }}>
+        <div>
+
+        <span>
         Currency:
+        </span>
         <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'} />
         <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'} />
         {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'} />}
         {data.crafting.vaalProgress >= 1 && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
-        <span>Get 5 random currency each time you accept Doom</span>
+        </div>
+        <span>Get 5 random basic currency each time you accept Doom</span>
+        {(data.unlocksStates.one < 7 && data.unlocksStates.one > 5 ) && <span> You can equip one Catalyst of each size</span>}
         {data.unlocksStates.one >= 8 && <button onClick={()=>{gEngine.setNav(7)}}>
             Visit The Exchange
           </button>}
       </div>
-      {!data.crafting.currentCraft && <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {<FlexColumn>
         {data.unlocksStates.one >= 6 && <button onClick={() => crafting.makeCatalyst(2)}>
           Create Large Catalyst (Energy)
     </button>}
@@ -45,9 +54,9 @@ const CraftingRow = (props: { data: Datamap }) => {
         {canCheat && <button onClick={crafting.getRandomACurrency}>
           Get Random Currency
     </button>}
-      </div>}
-      {data.crafting.currentCraft && <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ display: 'flex', flexDirection: "column" }}>
+      </FlexColumn>}
+      {data.crafting.currentCraft && <FlexRow>
+        <FlexColumn>
           <button onClick={crafting.addModToCurrentCraft}>
             Enchant Current Craft {craftToModCount(crafting.data.currentCraft)}
           </button>
@@ -58,18 +67,20 @@ const CraftingRow = (props: { data: Datamap }) => {
             Clear Current Craft
       <TipFC tip={'Get some currency, Start a new craft'} />
           </button>
-        </div>
+        </FlexColumn>
+        <div>
         <ItemDisplay item={data.crafting.currentCraft} />
-      </div>}
-      {data.crafting.currentCraft && <div style={{ display: 'flex', flexDirection: 'row' }}>
+        </div>
+      </FlexRow>}
+      {data.crafting.currentCraft && <FlexColumn>
         {crafting.data.vaalProgress >= 1 && <ConfirmCommandButton
           label={'Doom Item'}
           warning={'This has a chance to destory your item,\nand it forces a save'}
           do={crafting.applyDoomToCraft}
           disabled={crafting.data.currency.doomOrbs < 1}
         />}
-      </div>}
-    </div>
+      </FlexColumn>}
+    </FlexRow>
     <br />
     Equipped:<br />
     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -113,7 +124,10 @@ export default CraftingRow;
 const EnergyItemDisplay = (props: { item: EnergyItem }) => {
   return (<div className={'EnergyItemDisplay'}>
     <div className='ItemTitle'>
-      <span className={props.item.doomed ? 'DoomedText' : ""}>Energy Catalyst</span><br />
+      <span className={props.item.doomed ? 'DoomedText' : ""}>Energy Catalyst</span>
+      <UnEqMe it={props.item.itemType}/>
+
+      <br />
     Size {maxMods(props.item)}
     </div>
     <div className='EnergyModList'>
@@ -126,6 +140,8 @@ const DoomItemDisplay = (props: { item: DoomStone }) => {
   return (<div className={'DoomItemDisplay'}>
     <div className='ItemTitle'>
       <span className={props.item.doomed ? 'DoomedText' : ""}>Doom Stone</span>
+      <UnEqMe it={props.item.itemType}/>
+
     </div>
        <DoomModDisplay mod={props.item.doomMod}/>
       {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod}/>}
@@ -134,14 +150,53 @@ const DoomItemDisplay = (props: { item: DoomStone }) => {
   </div>)
 }
 
-const ItemDisplay = (props: { item: ItemData }) => {
-  if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item as EnergyItem} />
-  if (props.item.itemType === 2) return <EnergyItemDisplay item={props.item as EnergyItem} />
-  if (props.item.itemType === 3) return <EnergyItemDisplay item={props.item as EnergyItem} />
-  if (props.item.itemType === 4) return <DoomItemDisplay item={props.item as DoomStone} />
-  if ([5, 6, 7].includes(props.item.itemType)) return <GardeningItemDisplay item={props.item as GardeningItem} />
-  return <span>error</span>;
+const DoomItemModsList = (props: { item: DoomStone }) => {
+  return (<div className={'DoomItemModsList'}>
+       <DoomModDisplay mod={props.item.doomMod}/>
+      {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod}/>}
+      {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod}/>}
+
+  </div>)
 }
+
+
+const ItemDisplay =   (props: { item: ItemData }) => {
+  //if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item as EnergyItem} />
+  //if (props.item.itemType === 2) return <EnergyItemDisplay item={props.item as EnergyItem} />
+  //if (props.item.itemType === 3) return <EnergyItemDisplay item={props.item as EnergyItem} />
+  //if (props.item.itemType === 4) return <DoomItemDisplay item={props.item as DoomStone} />
+  //if ([5, 6, 7].includes(props.item.itemType)) return <GardeningItemDisplay item={props.item as GardeningItem} />
+  
+  let base = '';
+  if ([1,2,3].includes(props.item.itemType)) base = 'Energy';
+  else if ([4].includes(props.item.itemType)) base = 'Doom';
+  else if ([5,6,7].includes(props.item.itemType)) base = 'Gardening';
+  else return (<span>error</span>);
+
+  return (<div className={`${base}ItemDisplay`}>
+    <div className={'ItemTitle'}>
+      {props.item.unique && <span className='UniqueIcon'>★<ChildTip>This is a unique item with set enchantments</ChildTip></span>}
+      <span className={props.item.doomed ? 'DoomedText' : ""}>
+        {getItemName(props.item.itemType, props.item.unique)}
+      </span>
+      <span>
+      <UnEqMe it={props.item.itemType}/>
+      </span>
+    </div>
+    <div className={props.item.unique? 'UniqueModWindow ModWindow':'ModWindow'}>
+    {[5,6,7].includes(props.item.itemType) && <div className='GardeningModList'>
+      {(props.item as GardeningItem).mods.map((mod, index) => <GardeningModDisplay key={index} mod={mod} />)}
+    </div>}
+    {[1,2,3].includes(props.item.itemType) && <div className='EnergyModList'>
+      {(props.item as EnergyItem).mods.map((mod, index) => <EnergyModDisplay key={index} mod={mod} />)}
+    </div>}
+    {(props.item as DoomStone).itemType === 4 && <DoomItemModsList item={props.item as DoomStone} />}
+    </div>
+  </div>)
+}
+
+//idk what this is for
+//function unEqMaybe (type:ItemTypes) {}
 
 const EnergyModDisplay = (props: { mod: EnergyItemMod }) => {
   const base = 'Energy';
@@ -194,6 +249,8 @@ const GardeningItemDisplay = (props: { item: GardeningItem }) => {
       <span className={props.item.doomed ? 'DoomedText' : ""}>
         {gItemName(props.item.itemType)}
       </span>
+
+      <UnEqMe it={props.item.itemType}/>
     </div>
     <div className='GardeningModList'>
       {props.item.mods.map((mod, index) => <GardeningModDisplay key={index} mod={mod} />)}
@@ -221,6 +278,44 @@ function gItemName(it: ItemTypes): string {
   }
 }
 
+function getItemName(it: ItemTypes, unique?: number): string {
+
+  if (unique) {
+    switch (unique) {
+      case 1:
+        return 'Unbreakable Broken Watering Can'
+        break;
+    
+      default:
+        return 'unique error'
+        break;
+    }
+  }
+
+  switch (it) {
+    case ItemTypes.MagicSecateurs:
+      return 'Magic Secateurs';
+      break;
+
+    case ItemTypes.MagicWateringCan:
+      return 'Magic Watering Can';
+      break;
+
+    case ItemTypes.GardeningHat:
+      return 'Gardening Cap';
+      break;
+
+    case ItemTypes.LargeEnergyItem: return 'Large Energy Catalyst'; break;
+    case ItemTypes.MediumEnergyItem: return 'Medium Energy Catalyst'; break;
+    case ItemTypes.SmallEnergyItem: return 'Small Energy Catalyst'; break;
+    case ItemTypes.DoomedCrystal: return 'Doom Stone'; break;
+
+    default:
+      return `error ${it}`;
+      break;
+  }
+}
+
 const GardeningModDisplay = (props: { mod: GardeningItemMod }) => {
   const base = 'Gardening';
   const rest = 'ModDisplay';
@@ -237,6 +332,15 @@ const DoomModDisplay = (props: { mod: DoomStoneMod }) => {
   return (<div className={base + rest + extra}>
     {IITEM_STRINGS.DoomModAndValueToString(props.mod.mod, props.mod.value)}
   </div>)
+}
+
+const UnEqMe = (props: {it: ItemTypes}) => {
+  if (gEngine.datamap.crafting.currentCraft) return null;
+  return (
+    <button style={{right:'2px',position:'absolute', border:'none',background:'none',height:'0px',color:'black',textAlign:'right'}} onClick={()=>{unEqItemType(props.it)}}>
+      x
+    </button>
+  )
 }
 
 function craftToModCount(item: ItemData | null) {

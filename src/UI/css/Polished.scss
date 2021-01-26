@@ -184,6 +184,7 @@ a {
 .ItemDisplay {
     border: 1px solid;
     margin: 2px;
+    padding-bottom: 3px;
     text-align: center;
 }
 
@@ -204,8 +205,10 @@ a {
 
 .ItemTitle {
     background-color: $base02;
+    position: relative;
     min-height: 20px;
     padding: 2px;
+    margin-bottom: 3px;
 }
 
 .EnergyItemDisplay > .ItemTitle {
@@ -248,10 +251,6 @@ a {
     background-color: $red;
     color: black;
 }
-  
-body {
-    user-select: none;
-}
 
 .NewPlotDisplay {
     background-color: $base02;
@@ -269,9 +268,27 @@ body {
     text-decoration: underline;
     text-decoration-color: $red;
     margin-bottom: 3px;
+
+    color: $base0;
 }
+
 
 .DoomedText {
     color: $red;
     text-shadow: 1px 1px black;
+}
+.UniqueText {
+    color:rgb(175,96,37)
+}
+
+.UniqueModWindow {
+    color:rgb(175,96,37);
+    //border-left: 4px solid rgb(175,96,37);
+}
+
+.UniqueIcon {
+    @extend .UniqueText;
+    //text-shadow: 0 0 3px black;
+    border-left: 4px solid rgb(175,96,37);
+    font-size: 15px;
 }

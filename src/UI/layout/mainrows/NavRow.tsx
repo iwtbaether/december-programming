@@ -1,6 +1,6 @@
 import React from 'react';
-import { gEngine } from '..';
-import { Datamap } from '../engine/Datamap';
+import { gEngine } from '../../..';
+import { Datamap } from '../../../engine/Datamap';
 
 export class NavRow extends React.Component<{ data: Datamap; }, {}> {
 
@@ -29,10 +29,10 @@ export class NavRow extends React.Component<{ data: Datamap; }, {}> {
         <div>
           {true && <button onClick={() => engine.setNav(0)}>Energy</button>}
           {data.unlocksStates.two > 0 && <button onClick={() => engine.setNav(1)}>Doom</button>}
-          {data.unlocksStates.magic && <button onClick={() => engine.setNav(8)}>Magic</button>}
           {data.unlocksStates.one >= 4 && <button onClick={() => engine.setNav(6)}>Crafting</button>}
           {data.unlocksStates.one >= 5 && <button onClick={() => engine.setNav(3)}>Garden</button>}
           {data.unlocksStates.one >= 6 && <button onClick={() => engine.setNav(5)}>Jobs</button>}
+          {data.unlocksStates.magic && <button onClick={() => engine.setNav(8)}>Magic</button>}
         </div>
         <div>
           {data.cell.swimmerNumber.greaterThan(10) && <button onClick={() => engine.setNav(2)}>Stats</button>}

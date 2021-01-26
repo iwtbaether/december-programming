@@ -1,14 +1,15 @@
 import React from "react";
-import { gEngine } from "..";
-import { Datamap } from "../engine/Datamap";
-import { percentOf } from "../engine/externalfns/util";
-import { TimeRequiredForSeed, SeedType, GardenPlant, SeedGrowthTimeRequired, GardenSeed } from "../engine/garden/Garden";
-import { SingleBuildingUI } from "./BuildingsUI";
-import TipFC from "./comps/TipFC";
-import DisplayDecimal from "./DisplayDecimal";
-import DisplayNumber from "./DisplayNumber";
-import ListedResourceClass, { ListedDecimal, ListedNumber } from "./ListedResourceClass";
-import { NewSingleResearchUI } from "./ResearchUI";
+import { gEngine } from "../../..";
+import { Datamap } from "../../../engine/Datamap";
+import { percentOf } from "../../../engine/externalfns/util";
+import { TimeRequiredForSeed, GardenSeed, SeedType, GardenPlant, SeedGrowthTimeRequired } from "../../../engine/garden/Garden";
+import { SingleBuildingUI } from "../../BuildingsUI";
+import FlexRow from "../../comps/FlexRow";
+import TipFC from "../../comps/TipFC";
+import DisplayDecimal from "../../DisplayDecimal";
+import DisplayNumber from "../../DisplayNumber";
+import ListedResourceClass, { ListedNumber, ListedDecimal } from "../../ListedResourceClass";
+import { NewSingleResearchUI } from "../../ResearchUI";
 
 const GardenRow = (props: { data: Datamap }) => {
     const data = props.data;
@@ -29,7 +30,7 @@ const GardenRow = (props: { data: Datamap }) => {
                     {data.garden.researches.watering && <span>
                         Watering Time: <DisplayDecimal decimal={wt} /> units
                     </span>}
-                    {data.jobs.farthesthProgress.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult * engine.crafting.gardeningCalcData.seedGainMore} /></span>}
+                    {data.jobs.notReset.records.zero.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult * engine.crafting.gardeningCalcData.seedGainMore} /></span>}
                     Seed Generation: {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}
                     {garden.equipment.fruitGainBase > 0 && <div style={{position:'relative'}}>
                         Total Fruit Gain: <DisplayNumber num={garden.getFruitGain()} />  
@@ -59,7 +60,7 @@ const GardenRow = (props: { data: Datamap }) => {
                         </div>
                     </div>}
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start' }}>
+                <FlexRow>
                     {data.garden.researches.progression > 2 && <React.Fragment>
 
                         <SingleBuildingUI building={engine.garden.rebirth} />
@@ -81,7 +82,7 @@ const GardenRow = (props: { data: Datamap }) => {
                         <NewSingleResearchUI research={engine.garden.res_doomedDiscard} />
                     </React.Fragment>}
                     <SingleBuildingUI building={engine.garden.seedGeneration} />
-                </div>
+                </FlexRow>
                 <div>
                     {data.garden.researches.progression > 2 && <div style={{ display: "flex", flexDirection: 'column' }}>
 

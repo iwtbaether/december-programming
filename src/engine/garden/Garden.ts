@@ -1,4 +1,4 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
 import { log, timeStamp } from "console";
 import { isUndefined } from "lodash";
 import { prependListener } from "process";
@@ -143,7 +143,7 @@ export default class Garden {
 
         this.data.seedTimer += delta * this.engine.jobs.seedGainSpeedMult * this.engine.crafting.gardeningCalcData.seedGainMore;
         if (this.data.seedTimer >= TimeRequiredForSeed) {
-            this.data.seeds = this.data.seeds.add(1);
+            this.gainSeeds(1);
             this.data.seedTimer -= TimeRequiredForSeed
             if (this.data.researches.progression === 0) {
                 this.data.researches.progression = 1
@@ -193,6 +193,15 @@ export default class Garden {
         }
     }
 
+    gainSeeds = (n: DecimalSource) => {
+
+        let increased = 0;
+        if (this.engine.theExchange.GU1.true) increased += 1;
+        
+        let final = Decimal.times(n , (1 + increased))
+        
+        this.data.seeds = this.data.seeds.add(final);
+    }
 
 
     harvest = (index: number) => {
@@ -584,7 +593,9 @@ export default class Garden {
         this.cleanGarden();
 
         this.data.researches.progression = 1
-        this.data.seeds = this.engine.datamap.cell.rebirth.times(24).floor();
+        this.gainSeeds ( 
+            this.engine.datamap.cell.rebirth.times(24).floor()
+        )
         this.setTempData();
     }
 

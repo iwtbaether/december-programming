@@ -1,3 +1,4 @@
+import Decimal, { DecimalSource } from "break_infinity.js";
 
 export function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
@@ -77,4 +78,9 @@ export function randomEnumFromListWithExclusions<T>(enumValues: T[], exclusions:
     const randomIndex = Math.floor(Math.random() * enumValues.length)
     const randomEnumValue = enumValues[randomIndex]
     return randomEnumValue;
+}
+
+
+export function moreDecimal (base: Decimal, more: DecimalSource) {
+  return Decimal.times(base, Decimal.add(1, more));
 }

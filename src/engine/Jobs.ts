@@ -56,8 +56,8 @@ export default class Jobs {
 
         const jsMult1 = this.data.jobspeedmult.add(1).add(this.engine.datamap.cell.doomJobSpeed.times(.1));
         const jsMult2 = this.data.notReset.upgrades.jobSpeed.add(1);
-        const jsMult3 = this.engine.garden.gardenJobSpeedMult;
-
+        let jsMult3 = this.engine.garden.gardenJobSpeedMult;
+        if (this.engine.theExchange.JU12.true) { jsMult3 = jsMult3.times(2) }
         this.calced.finalJobSpeedMult = jsMult1.times(jsMult2).times(jsMult3);
         const precap = this.calced.finalBaseJobSpeed.times(this.calced.finalJobSpeedMult)
 
@@ -74,13 +74,14 @@ export default class Jobs {
             this.addJobProgress(trans);
             this.chargeCurrent.loseResource(trans)
         }
-        
+
         const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.calced.finalResitanceDiv);
-        
+
         const capped = Decimal.min(1000, progressPerSecondAfterResistance);
-        
+
         this.addJobProgress(capped.times(deltaS));
         this.chargeCurrent.calculate();
+        //need to remove this call for optimizng
         this.setResistanceDiv();
     }
 
@@ -139,23 +140,43 @@ export default class Jobs {
 
     getWorkReward = () => {
         let pp = this.data.jobProgress;
-        const mult = Decimal.add(1, Decimal.times(.1, this.data.notReset.upgrades.workFromPrestige))
+        let mult = Decimal.add(1, Decimal.times(.1, this.data.notReset.upgrades.workFromPrestige))
+        if (this.engine.theExchange.JU11.true) mult = mult.times(2);
         return pp.times(mult);
     }
 
 
+    ifIsFarthestSet = () => {
+        const data = this.data;
+        const nr = data.notReset
+        const jp = data.jobProgress
+
+        if (nr.jobID === 0) {
+            if (jp.greaterThan(nr.records.zero)) {
+                    nr.records.zero = jp
+                    this.setSeedGainSpeedMulti();
+            }
+        
+        }
+    }
+
     prestige = () => {
         //calc new values
+        const data = this.data;
         const pp = this.data.jobProgress;
-        const farthest = Decimal.max(this.data.farthesthProgress, pp);
+        
         const reward = this.getWorkReward();
 
+        //setup farthest job progress
+        this.ifIsFarthestSet();
+
         if (pp.greaterThan(10000)) {
-            if (this.data.notReset.mechancProgession === 0) this.data.notReset.mechancProgession = 1;
+            if (data.notReset.mechancProgession === 0) data.notReset.mechancProgession = 1;
             let xpGain = new Decimal(1);
-            if (this.data.notReset.upgrades.job >= 1) xpGain = xpGain.add(pp.div(10000).floor())
+            if (data.notReset.upgrades.job >= 1) xpGain = xpGain.add(pp.div(10000).floor())
             this.xpResource.gainResource(xpGain)
         }
+
 
         let old;
         if (this.data.notReset.rebuy) {
@@ -167,7 +188,6 @@ export default class Jobs {
 
         //set new values
         this.workResource.gainResource(reward);
-        this.data.farthesthProgress = farthest;
         this.data.last = pp;
 
         if (this.data.notReset.rebuy && old) {
@@ -177,7 +197,17 @@ export default class Jobs {
         }
 
         //setup memory
-        this.setSeedGainSpeedMulti();
+
+        //need to move this // working on this
+        if (data.notReset.jobID === 0)  if (this.engine.theExchange.JU13.true) {
+            if (pp.greaterThanOrEqualTo(this.currentGoal())) {
+                if (data.notReset.mechancProgession === 1) {
+                    data.notReset.mechancProgession = 2;
+                }
+                this.changeJob(1);
+            }
+        }
+
 
         //update ui
         this.engine.notify();
@@ -186,13 +216,13 @@ export default class Jobs {
     seedGainSpeedMult = 1;
     setSeedGainSpeedMulti = () => {
         let base = 1;
-        base = base + Decimal.log10(this.data.farthesthProgress.add(1)) / 10
+        base = base + Decimal.log10(this.data.notReset.records.zero.add(1)) / 10
         this.seedGainSpeedMult = base;
     }
 
     jobSpeed: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: FULL_JOBS_LIST[this.engine.datamap.jobs.jobID].speedPlusLabel,
+            name: FULL_JOBS_LIST[this.engine.datamap.jobs.notReset.jobID].speedPlusLabel,
             get: () => this.engine.datamap.jobs.jobspeedplus,
             setDecimal: (dec) => {
                 this.engine.datamap.jobs.jobspeedplus = dec
@@ -209,7 +239,7 @@ export default class Jobs {
 
     jobSpeedMult: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: FULL_JOBS_LIST[this.engine.datamap.jobs.jobID].speedMultLabel,
+            name: FULL_JOBS_LIST[this.engine.datamap.jobs.notReset.jobID].speedMultLabel,
             get: () => this.engine.datamap.jobs.jobspeedmult,
             setDecimal: (dec) => {
                 this.engine.datamap.jobs.jobspeedmult = dec
@@ -220,13 +250,13 @@ export default class Jobs {
             { expo: { initial: 1, coefficient: 1.4 }, resource: this.workResource },
         ],
         description: 'Increased Job Speed',
-        hidden: () => false,
+        hidden: () => this.jobSpeed.count.eq(0),
         outcome: () => '+1x Job Speed',
     })
 
     jobResistance: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: FULL_JOBS_LIST[this.engine.datamap.jobs.jobID].resistanceLabels[0],
+            name: FULL_JOBS_LIST[this.engine.datamap.jobs.notReset.jobID].resistanceLabels[0],
             get: () => this.engine.datamap.jobs.jobResistance,
             setDecimal: (dec) => {
                 this.engine.datamap.jobs.jobResistance = dec
@@ -237,13 +267,13 @@ export default class Jobs {
             { expo: { initial: 2, coefficient: 1.5 }, resource: this.workResource },
         ],
         description: 'Job Resistance',
-        hidden: () => false,
+        hidden: () => this.jobSpeedMult.count.eq(0),
         outcome: () => '+1 Base Job Resistance',
     })
 
     jobResistanceMult: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
-            name: FULL_JOBS_LIST[this.engine.datamap.jobs.jobID].resistanceLabels[1],
+            name: FULL_JOBS_LIST[this.engine.datamap.jobs.notReset.jobID].resistanceLabels[1],
             get: () => this.engine.datamap.jobs.notReset.jobResistanceMult,
             setDecimal: (dec) => {
                 this.engine.datamap.jobs.notReset.jobResistanceMult = dec
@@ -275,6 +305,33 @@ export default class Jobs {
         outcome: () => '+100 Charge storage',
     })
 
+    changeJob = (newID: number) => {
+        if ([0, 1].includes(newID)) {
+            this.data.notReset.jobID = newID;
+            this.resetBuildings();
+            this.data.work = ZERO;
+            this.data.converted = false;
+            //this.data.work = this.da
+        }
+    }
+    
+    resetBuildings = () => {
+        this.jobResistance.reset();
+        this.jobResistanceMult.reset();
+        this.jobSpeed.reset();
+        this.jobSpeedMult.reset();
+        this.chargeStorage.reset();
+
+        const jobID = this.data.notReset.jobID;
+
+        this.jobResistance.info.building.info.name = FULL_JOBS_LIST[jobID].resistanceLabels[0];
+        this.jobResistanceMult.info.building.info.name = FULL_JOBS_LIST[jobID].resistanceLabels[1];
+        this.jobSpeed.info.building.info.name = FULL_JOBS_LIST[jobID].speedPlusLabel;
+        this.jobSpeedMult.info.building.info.name = FULL_JOBS_LIST[jobID].speedMultLabel;
+
+
+    }
+
     chargeCurrent = new SingleResource({
         name: 'Charge',
         get: () => this.engine.datamap.jobs.notReset.chargeCurrent,
@@ -284,7 +341,7 @@ export default class Jobs {
         },
         calculateCap: () => {
             //console.log('calc cap');
-            
+
             return this.data.notReset.chargeStorage.times(100);
         },
         calculateGain: () => {
@@ -300,12 +357,17 @@ export default class Jobs {
         return this.data.notReset.chargeCurrent.times(this.data.notReset.chargePower.add(1).times(.01))
     }
 
-     tenkum = new Decimal(10000);
-     mum = new Decimal(1000000);
+    tenkum = new Decimal(10000);
+    mum = new Decimal(1000000);
     currentGoal = () => {
-        if (this.data.jobID === 0) {
-            return this.tenkum;
-        } else return new Decimal(0)
+        const jobID = this.data.notReset.jobID;
+        if (jobID === 0) {
+            if (this.engine.theExchange.JU13.true) return this.mum;
+            else return this.tenkum;
+        } else if (jobID === 1) {
+            return goalSizeInMicrograms;
+        }
+        else return new Decimal(0)
     }
 
     chargePower: SingleBuilding = new SingleBuilding({
@@ -316,7 +378,7 @@ export default class Jobs {
                 this.engine.datamap.jobs.notReset.chargePower = dec
                 //this.setResistanceDiv();
             },
-            
+
         }),
         costs: [
             { expo: { initial: 1, coefficient: 4.2 }, resource: this.xpResource },
@@ -479,12 +541,13 @@ export default class Jobs {
 
     res_energy1_nextReset: SingleResearch = new SingleResearch({
         name: "An Even Worse Fate",
-        hidden: () => this.data.notReset.upgrades.doom < 1 || this.engine.datamap.unlocksStates.one < 7,
+        hidden: () => this.data.notReset.upgrades.doom < 1,
         description: "Unlocks another reset",
         get: () => this.data.notReset.upgrades.energy > 0,
         makeTrue: () => { this.data.notReset.upgrades.energy = 1 },
         costs: [
-            { resource: this.xpResource, count: new Decimal(32) }
+            { resource: this.xpResource, count: new Decimal(32), },
+            { resource: this.engine.difficultyResource, count: new Decimal(7) }
         ]
     })
 
@@ -506,15 +569,34 @@ export interface JobsListInfo {
 export const FULL_JOBS_LIST: JobsListInfo[] = [
     {
         name: 'Swimmer',
-        speedPlusLabel: 'Swim Speed +',
-        speedMultLabel: 'Swim Speed x',
+        speedPlusLabel: 'Tail Length',
+        speedMultLabel: 'Tail Strength',
         resistanceLabels: ['pH Resistance', 'Penetration'],
         unitsLabel: 'μm',
         slowReason: 'The toxicity of the environment',
         progressLabel: 'Distance'
 
+    },
+    {
+        name: 'Grower',
+        speedPlusLabel: 'Base Growth',
+        speedMultLabel: 'More Growth',
+        resistanceLabels: ['Grower resistance', 'Grower Resistance[2]'],
+        unitsLabel: 'micrograms',
+        slowReason: 'Teratogens and physics',
+        progressLabel: 'Size'
     }
 ]
+
+
+//goal size 3300 * 10^6g
+// 39 weeks
+// seconds in 2.359e+7
+// 0.00013988978 g/s for 39 weeks eta
+// 0.13988978 milligrams /s for 39 weeks eta
+// 139.88978 micrograms /s for 39 weeks eta
+const goalSizeInMicrograms = new Decimal(3300e+6)
+
 
 export interface JobsData {
     jobspeedplus: Decimal,
@@ -523,12 +605,10 @@ export interface JobsData {
     work: Decimal,
     converted: boolean,
     jobProgress: Decimal,
-    farthesthProgress: Decimal,
     last: Decimal,
-    jobGoalMet: boolean,
-    jobID: number,
     notReset: {
         mechancProgession: number,
+        jobID: number,
         jobResistanceMult: Decimal,
         xp: Decimal,
         rebuy: boolean,
@@ -544,6 +624,9 @@ export interface JobsData {
             workFromPrestige: Decimal
             jobSpeed: Decimal
             effectiveResistance: Decimal
+        },
+        records: {
+            zero: Decimal;
         }
     }
 }
@@ -555,13 +638,11 @@ export function JobsData_Init(): JobsData {
         jobspeedplus: ZERO,
         jobResistance: ZERO,
         work: ZERO,
-        jobGoalMet: false,
         converted: false,
         jobProgress: ZERO,
-        jobID: 0,
         last: ZERO,
-        farthesthProgress: ZERO,
         notReset: {
+            jobID: 0,
             mechancProgession: 0,
             xp: ZERO,
             rebuy: false,
@@ -578,8 +659,10 @@ export function JobsData_Init(): JobsData {
                 workFromPrestige: ZERO,
                 jobSpeed: ZERO,
                 effectiveResistance: ZERO
+            },
+            records: {
+                zero: ZERO
             }
-
         },
     }
 }
@@ -591,7 +674,6 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.jobspeedplus = new Decimal(data.jobs.jobspeedplus);
     data.jobs.jobProgress = new Decimal(data.jobs.jobProgress);
     data.jobs.last = new Decimal(data.jobs.last);
-    data.jobs.farthesthProgress = new Decimal(data.jobs.farthesthProgress);
     data.jobs.notReset.xp = new Decimal(data.jobs.notReset.xp);
     data.jobs.notReset.jobResistanceMult = new Decimal(data.jobs.notReset.jobResistanceMult);
     data.jobs.notReset.upgrades.jobSpeed = new Decimal(data.jobs.notReset.upgrades.jobSpeed)
@@ -602,4 +684,6 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.notReset.chargePower = new Decimal(data.jobs.notReset.chargePower);
     data.jobs.notReset.chargeStorage = new Decimal(data.jobs.notReset.chargeStorage);
     data.jobs.notReset.chargeCurrent = new Decimal(data.jobs.notReset.chargeCurrent);
+
+    data.jobs.notReset.records.zero = new Decimal(data.jobs.notReset.records.zero);
 }

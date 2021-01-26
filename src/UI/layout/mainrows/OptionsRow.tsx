@@ -1,8 +1,9 @@
 import React from "react";
-import { gEngine } from "..";
-import { Datamap } from "../engine/Datamap";
-import ConfirmCommandButton from "./comps/ConfirmCommandButton";
-import FlexRow from "./comps/FlexRow";
+import { gEngine } from "../../..";
+import { Datamap } from "../../../engine/Datamap";
+import { canCheat } from "../../../engine/externalfns/util";
+import ConfirmCommandButton from "../../comps/ConfirmCommandButton";
+import FlexRow from "../../comps/FlexRow";
 
 const Bruh = new Audio('https://www.myinstants.com/media/sounds/movie_1.mp3')
 
@@ -46,7 +47,8 @@ const OptionsRow = (props: { data: Datamap }) => {
     <div>
       All resource generation formulas follow the same calculations: base production * (total sum of increased) * (total product of  more)<br/>
       All increased modifiers are summed together. 10x increased from drive and 10x increased from anti-drive results in 20x / 2000% increased energy gain.<br/>
-      All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 32x.
+      All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 32x.<br/>
+      A multi is just a more modifier + 100%.
     </div>
     <FlexRow>
     <button onClick={gEngine.energyModule.showCalcs}>
@@ -57,13 +59,14 @@ const OptionsRow = (props: { data: Datamap }) => {
       Advanced File Options 
     </div>
     <div>
-    <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />
+      {canCheat && 
+    <ConfirmCommandButton do={gEngine.load} label={'Load'} warning={'Are you sure you want to load?'} />}
       <button onClick={gEngine.export} >
         Export
           </button>
-      <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
+      {canCheat && <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
         Import
-                                </button>
+                                </button>}
       <input id="file-input" type="file" name="name" style={{ display: "none" }}
         onChange={(e) => {
           let list = e.target.files;

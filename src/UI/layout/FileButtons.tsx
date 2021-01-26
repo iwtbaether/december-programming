@@ -1,7 +1,7 @@
 import React from 'react';
-import { gEngine } from '..';
-import { canCheat, MINUTE_MS } from '../engine/externalfns/util';
-import FancySaveButton from './FancySaveButton';
+import { gEngine } from '../..';
+import { canCheat, MINUTE_MS } from '../../engine/externalfns/util';
+import FancySaveButton from '../FancySaveButton';
 
 export const FileButtons = (props: { last: number; auto: boolean; }) => {
   return (
@@ -20,8 +20,8 @@ export const FileButtons = (props: { last: number; auto: boolean; }) => {
           60M</button>}
 
       </span>
-      <span className='yellow-text'>
-        v.7.3.3 - more bug fixes
+      <span className='blue-text'>
+        v 0.8 - Difficulty, the Exchange, Growth, Magic 
         </span>
     </div>
   );
