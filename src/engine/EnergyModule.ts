@@ -43,7 +43,7 @@ export default class EnergyModule {
         let base = this.energyPerClick;
         let count = this.energyEquipmentMods.clicksPerSecond;
         this.clickerCount = count + this.engine.datamap.cell.d4.toNumber();
-        this.energyGainFromAutoClickers = Decimal.times(count,base);
+        this.energyGainFromAutoClickers = Decimal.times(this.clickerCount,base);
     }
 
     energyGainBase: Decimal = new Decimal(0);
