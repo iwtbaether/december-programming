@@ -176,7 +176,7 @@ const ItemDisplay =   (props: { item: ItemData }) => {
   return (<div className={`${base}ItemDisplay`}>
     <div className={'ItemTitle'}>
       {props.item.unique && <span className='UniqueIcon'>★<ChildTip>This is a unique item with set enchantments</ChildTip></span>}
-      <span className={props.item.doomed ? 'DoomedText' : ""}>
+      <span style={{flexGrow:1}} className={props.item.doomed ? 'DoomedText' : ""}>
         {getItemName(props.item.itemType, props.item.unique)}
       </span>
       <span>
@@ -337,7 +337,7 @@ const DoomModDisplay = (props: { mod: DoomStoneMod }) => {
 const UnEqMe = (props: {it: ItemTypes}) => {
   if (gEngine.datamap.crafting.currentCraft) return null;
   return (
-    <button style={{right:'2px',position:'absolute', border:'none',background:'none',height:'0px',color:'black',textAlign:'right'}} onClick={()=>{unEqItemType(props.it)}}>
+    <button style={{alignSelf:'flex-end',border:'none',background:'none',height:'0px',color:'black',textAlign:'right'}} onClick={()=>{unEqItemType(props.it)}}>
       x
     </button>
   )

@@ -58,16 +58,6 @@ export default class HotkeyManager {
             case 'r':
                 if (data.nav === 0) this.engine.determination.buy();
                 break;
-            case 'l':
-                if (gEngine.datamap.nav === 4) {
-                    if (gEngine.datamap.unlocksStates.magic === false) {
-                        if (data.unlocksStates.one >= 8) {
-                            this.engine.datamap.unlocksStates.magic = true;
-                        }
-                    }
-                    gEngine.datamap.nav = 8;
-                }
-                break;
             case 'Escape':
                 data.popupUI = 0;
                 break;

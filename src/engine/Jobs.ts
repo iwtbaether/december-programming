@@ -75,14 +75,28 @@ export default class Jobs {
             this.chargeCurrent.loseResource(trans)
         }
 
-        const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.calced.finalResitanceDiv);
 
-        const capped = Decimal.min(1000, progressPerSecondAfterResistance);
+        //console.log(this.calced.finalJobSpeed, this.calced.finalResitanceDiv);
+        
+
+        const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.data.jobProgress.add(1).times(this.calced.finalResitanceDiv));
+
+        const capped = Decimal.min(this.getCap(), progressPerSecondAfterResistance);
+
+        //console.log(capped);
+        
 
         this.addJobProgress(capped.times(deltaS));
         this.chargeCurrent.calculate();
         //need to remove this call for optimizng
-        this.setResistanceDiv();
+    }
+
+    getCap = ( ) => {
+        const jobID = this.data.notReset.jobID;
+        if (jobID === 0) return 1000;
+        if (jobID === 1) return 140;
+        
+        return 0;
     }
 
     offlineProgress = (bigDeltaS: Decimal) => {
@@ -102,7 +116,7 @@ export default class Jobs {
         const baseResist = this.data.jobResistance.add(1);
         const resist = baseResist.times(resistMult);
 
-        const baseProgress = this.data.jobProgress.add(1)
+        const baseProgress = new Decimal(1);
         this.calced.finalResitanceDiv = baseProgress.div(resist);
     }
 
@@ -321,6 +335,8 @@ export default class Jobs {
         this.jobSpeed.reset();
         this.jobSpeedMult.reset();
         this.chargeStorage.reset();
+        this.data.work = ZERO;
+        this.data.jobProgress = ZERO;
 
         const jobID = this.data.notReset.jobID;
 
@@ -527,6 +543,9 @@ export default class Jobs {
             { resource: this.xpResource, count: new Decimal(8) }
         ],
     })
+
+
+    
 
     res_jobs2_levels: SingleResearch = new SingleResearch({
         name: "Levels",

@@ -1,3 +1,4 @@
+import Decimal from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
@@ -13,20 +14,33 @@ import DisplayNumber from "../../DisplayNumber";
 import ListedResourceClass, { ListedDecimal } from "../../ListedResourceClass";
 
 const JobsRow = (props: { data: Datamap }) => {
+  
+  //O(1)
   const data = props.data;
   const jobs = gEngine.jobs;
   const selectedJob = FULL_JOBS_LIST[jobs.data.notReset.jobID];
-  const postResistance = jobs.calced.finalJobSpeed.div(jobs.calced.finalResitanceDiv)
+
+  //O(n)
+  const postResistance = jobs.calced.finalJobSpeed.div(jobs.data.jobProgress.add(1).times(jobs.calced.finalResitanceDiv));
   const chargeSpeed = jobs.getChargeSpeed();
   const goal = jobs.currentGoal();
   const met = jobs.data.jobProgress.greaterThan(goal);
+  const cap = jobs.getCap();
+
+  const speedWCharge = postResistance.add(chargeSpeed);
+
+  const capped = speedWCharge.greaterThanOrEqualTo(cap);
+
+  const finalSpeed = Decimal.min(cap,speedWCharge);
+
+
   return (<FlexColumn>
     <span>
       Current Job: {selectedJob.name}
     </span>
     <div>
       <ListedResourceClass resource={jobs.workResource} />
-      <ListedDecimal resource={jobs.data.jobProgress} name={selectedJob.progressLabel} ps={postResistance.add(chargeSpeed)} />
+      <ListedDecimal resource={jobs.data.jobProgress} name={selectedJob.progressLabel} ps={finalSpeed } />
       {jobs.data.notReset.chargeStorage.greaterThan(0) && <ListedResourceClass resource={jobs.chargeCurrent} />}
       {jobs.data.notReset.mechancProgession > 0 && <ListedResourceClass resource={jobs.xpResource} />}
     </div>
@@ -73,16 +87,16 @@ const JobsRow = (props: { data: Datamap }) => {
     </FlexRow>
     <span>
       Current Speed: <DisplayDecimal decimal={postResistance}  /> {selectedJob.unitsLabel}/s
-      {postResistance.greaterThan(1000) && <span> Capped at 1000 {selectedJob.unitsLabel}/s </span>}
+      {postResistance.greaterThan(cap) && <span> Capped at {cap}  {selectedJob.unitsLabel}/s </span>}
     {jobs.chargeStorage.count.greaterThan(0) && <span style={{marginLeft:'5px'}}>
       (+<DisplayDecimal decimal={chargeSpeed} /> {selectedJob.unitsLabel}/s from Charge)
     </span>}
     </span>
     <span>
-      {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv} />
+      {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv.times(data.jobs.jobProgress)} />
     </span>
     <span>
-      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.jobProgress} />{selectedJob.unitsLabel} | Goal
+      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.jobProgress} /> {selectedJob.unitsLabel} | Goal
       : <DisplayDecimal decimal={goal} /> {selectedJob.unitsLabel}
     </span>
     {!met && <span>

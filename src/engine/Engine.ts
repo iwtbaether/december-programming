@@ -15,6 +15,7 @@ import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
 import Crafting from "./m_st/Crafting";
 import Research from "./Research";
+import Magic from "./skills/Magic";
 import TheExchange from "./TheExchange";
 
 
@@ -53,6 +54,7 @@ export default class Engine extends CoreEngine {
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
+    magic: Magic = new Magic(this);
 
 
     handleKey = (key:string) => this.hotkeyManager.handle(key);

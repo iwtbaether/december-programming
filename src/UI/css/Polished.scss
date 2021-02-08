@@ -206,6 +206,8 @@ a {
 .ItemTitle {
     background-color: $base02;
     position: relative;
+    display: flex;
+    justify-content: space-between;
     min-height: 20px;
     padding: 2px;
     margin-bottom: 3px;
@@ -254,8 +256,6 @@ a {
 
 .NewPlotDisplay {
     background-color: $base02;
-    margin: 3px;
-    padding: 3px;
 }
 
 .NewSeedDisplay {

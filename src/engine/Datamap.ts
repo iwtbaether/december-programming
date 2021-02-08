@@ -4,6 +4,7 @@ import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
+import { Magic_Data, Magic_Data_Init } from "./skills/Magic";
 import { SkillManager_Data, SkillManager_Data_Init } from "./skills/SkillManager";
 import TheExchange, { TheExchange_Data, TheExchange_Data_Init } from "./TheExchange";
 
@@ -32,6 +33,7 @@ export interface Datamap {
     };
     garden: GardenData;
     crafting: CraftingData;
+    magic: Magic_Data;
 }
 
 export function newDefaultMap() {
@@ -103,6 +105,7 @@ export function newDefaultMap() {
         testDec: new Decimal(0),
         garden: GardenData_Init(),
         crafting: CraftingData_Init(),
+        magic: Magic_Data_Init(),
     }
     return map;
 }

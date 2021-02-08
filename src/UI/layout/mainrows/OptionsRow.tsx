@@ -37,9 +37,9 @@ const OptionsRow = (props: { data: Datamap }) => {
     <div>
       shift+click to buy max or bypass confirmation prompts. ctrl+click to buy 10, alt+click to buy 20.
     </div>
-      <div>
+      {false && <div>
        <UnlockMagic unlockStateOne={data.unlocksStates.one}   /> are hotkeys. Hotkeys are new (watch out for bugs!) Hotkeys visuals got taken out for now because I don't like how they look.
-      </div>
+      </div>}
     <br/>
     <div>
       Info on calculations

@@ -514,6 +514,10 @@ function modifyGardeningItemValues(mod: GardeningItemMod, values: GardeningItemV
             values.seedGainMore *= 1 + (mod.value * .1);
             break;
 
+        case GardeningItemModList.NeverBreak:
+            values.fruitGainMulti *= values.fruitGainMulti / 2;
+            break;
+
         default:
             break;
     }
@@ -627,8 +631,8 @@ function makeSizedEnergyItem(size: number): EnergyItem {
 
 function rollForUnique () {
     let rng = getRandomInt(1, 100)
-    return true;
     return rng === 100
+    return true;
 }
 
 function makeGardeningItem(): GardeningItem {
@@ -969,6 +973,7 @@ export function unEqItemType (it: ItemTypes) {
     else {
         gEngine.datamap = unequip(it, data)
     }
+    gEngine.crafting.calc();
 
     gEngine.notify();
 }

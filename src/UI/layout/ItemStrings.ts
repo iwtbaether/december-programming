@@ -44,7 +44,7 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
             break;
 
         case GardeningItemModList.NeverBreak:
-            return `Unbreakable`
+            return `Unbreakable, 0.5x Fruit Gain Multi`
             break;
 
 

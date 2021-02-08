@@ -7,6 +7,7 @@ import { SingleBuildingUI } from '../../BuildingsUI';
 import ConfirmCommandButton, { ConfirmBasicCommandButton } from '../../comps/ConfirmCommandButton';
 import FlexColumn from '../../comps/FlexColumn';
 import FlexRow from '../../comps/FlexRow';
+import ProgressBar from '../../comps/ProgressBar';
 import { TipFC2 } from '../../comps/TipFC';
 import DisplayDecimal from '../../DisplayDecimal';
 import ListedResourceClass from '../../ListedResourceClass';
@@ -67,22 +68,21 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
         </div>}
 
         <div>
-
-          <span>
-            Goal: <DisplayDecimal decimal={goal} /> Energy,  </span>
-          <span>Progress: {percentOf(data.cell.a.toNumber(), goal.toNumber())}</span>
-          {data.unlocksStates.one >= 3 && <span>
-            , Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
-      </span>}
+          <div style={{maxWidth:'400px'}}>  
+          <ProgressBar current={data.cell.a} max={goal} bg='black' color='' className='yellow-bg'>
+          Goal: <DisplayDecimal decimal={goal} /> Energy, Progress: 
+          </ProgressBar>
+          </div>
         </div>
         <FlexRow>
 
 
             <span>
               <TipFC2>
+                Give Up to reset, unlock new content, and increase Difficulty<br/>
                 Current Difficulty: {data.unlocksStates.one}
               </TipFC2>
-          <ConfirmCommandButton do={gEngine.energy.giveUp} label='Difficulty Up' disabled={!reached}
+          <ConfirmCommandButton do={gEngine.energy.giveUp} label='Give Up' disabled={!reached}
             warning={`Resets everything, increases energy goal, and unlocks content\nCurrent Difficulty: ${data.unlocksStates.one}`} />
             </span>
 
@@ -92,6 +92,9 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
       </ConfirmBasicCommandButton>
 
           <div>
+            <TipFC2>
+              Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
+            </TipFC2>
             <ConfirmBasicCommandButton {...gEngine.gUL2}>
               Resets Energy {data.unlocksStates.two > 2 && 'and Gloom production'}<br />
         Gives Doom

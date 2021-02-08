@@ -11,7 +11,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
     const currency = props.data.crafting.currency
     const exchange = gEngine.theExchange;
     return (
-        <FlexRow>
+        <div style={{display:'flex'}}>
 
         <div style={{display:'flex',flexDirection:'column', marginLeft:'10px',gap:'10px'}}>
             <span style={{fontWeight:'bold'}}>
@@ -154,7 +154,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
             </FlexRow>
             </FlexColumn>
         </FlexColumn>
-        </FlexRow>
+        </div>
     )
 }
 
