@@ -2,6 +2,7 @@ import React from 'react';
 import { Datamap } from '../../../engine/Datamap';
 import EnergyPopup from '../../EnergyPopup';
 import JobXPPopup from '../../JobXPPopup';
+import WorkRecordsPopup from '../WorkRecordsPopup';
 
 export const PopupRow = (props: { data: Datamap; }) => {
   if (props.data.popupUI === 0)
@@ -11,6 +12,7 @@ export const PopupRow = (props: { data: Datamap; }) => {
     <div className='WarningPopup'>
       {props.data.popupUI === 1 && <JobXPPopup data={props.data} />}
       {props.data.popupUI === 2 && <EnergyPopup data={props.data} />}
+      {props.data.popupUI === 3 && <WorkRecordsPopup data={props.data} />}
     </div>
   </div>);
 };

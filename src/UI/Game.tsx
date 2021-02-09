@@ -29,7 +29,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
           <NavRow data={data} />
         <hr style={{width:'100%'}} />
         </React.Fragment>}
-        <div style={{flexGrow:1, paddingLeft:'5px'}}>
+        <div style={{flexGrow:1, paddingLeft:'5px',overflow:'hidden',overflowY:'auto'}}>
         {data.nav === 0 && <EnergyRow data={data} energy={data.cell.a} />}
         {data.nav === 1 && <DoomRow data={data} />}
         {data.nav === 3 && <GardenRow data={data} />}

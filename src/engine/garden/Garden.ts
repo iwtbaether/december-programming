@@ -6,7 +6,7 @@ import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
-import { getRandomInt, MINUTE_MS } from "../externalfns/util";
+import { canCheat, getRandomInt, MINUTE_MS } from "../externalfns/util";
 import { SingleResearch } from "../Research";
 
 export default class Garden {
@@ -37,6 +37,7 @@ export default class Garden {
     calcBagSlots = () => {
         let base = 1 + this.data.researches.expansion + this.data.researches.bagExpansion + this.equipment.bagSlots;
         if (this.engine.datamap.jobs.notReset.upgrades.garden >= 4) base++;
+        if (canCheat) base = base * 3;
         return base
     }
 
@@ -44,6 +45,7 @@ export default class Garden {
         let base = 1 + this.data.researches.expansion + this.equipment.gardenPlots;
         if (this.engine.datamap.unlocksStates.one >= 6) base++;
         if (this.engine.datamap.jobs.notReset.upgrades.garden >= 3) base++;
+        if (canCheat) base = base * 3;
         return base
     }
 
@@ -197,8 +199,11 @@ export default class Garden {
 
         let increased = 0;
         if (this.engine.theExchange.GU1.true) increased += 1;
+
+        let more = 1;
+        more = more * this.engine.jobs.seedGainCountMult;
         
-        let final = Decimal.times(n , (1 + increased))
+        let final = Decimal.times(n , (1 + increased) * more)
         
         this.data.seeds = this.data.seeds.add(final);
     }
@@ -665,7 +670,7 @@ export default class Garden {
             get: () => this.data.buildings.seedGeneration,
             setDecimal: (dec) => {
                 this.data.buildings.seedGeneration = dec;
-                this.data.seeds = this.data.seeds.add(dec)
+                this.gainSeeds(dec)
                 if (this.data.researches.progression === 0) {
                     this.data.researches.progression = 1
                 }

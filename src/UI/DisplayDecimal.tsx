@@ -16,3 +16,11 @@ const DisplayDecimal: React.FC<{decimal: Decimal}> = (props) => (
 //{props.decimal.toFixed(2)}
 
 export default DisplayDecimal;
+
+export function DecimalToString (decimal: Decimal): string {
+    let str = decimal.abs().greaterThan(1)?
+        SCIENNOT.formatDecimal(decimal,2) :
+        decimal.toFixed(3)
+
+    return str;
+}

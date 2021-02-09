@@ -2,6 +2,7 @@ import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
 import { CEX } from "../../../engine/TheExchange";
+import CheatDiv from "../../comps/CheatDiv";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
 import { ListedNumber } from "../../ListedResourceClass";
@@ -54,14 +55,18 @@ const ExchangeRow = (props: { data: Datamap }) => {
                 <NewSingleResearchUI research={exchange.EU2} />
                 <NewSingleResearchUI research={exchange.EU3} />
             </FlexRow>
+            <CheatDiv>
+
             <FlexRow>
              <button>100% more Energy Gain (8)</button> <button>100% increased Energy Gain (9)</button><button>10% more Energy Gain(10)</button>
              <button>
                  Energy Pylon (11)
              </button>
             </FlexRow>
+            </CheatDiv>
             </FlexColumn>
-            <FlexColumn>
+
+            {exchange.EU1.true && <FlexColumn>
             <span>Doom Upgrades</span> 
                 
             <FlexRow>
@@ -69,6 +74,8 @@ const ExchangeRow = (props: { data: Datamap }) => {
                 <NewSingleResearchUI research={exchange.DU2} />
                 <NewSingleResearchUI research={exchange.DU3} />
             </FlexRow>
+            <CheatDiv>
+
             <FlexRow>
             <button>100% more Doom Gain (8)</button> <button>100% increased Doom gain (12)</button><button>10% more Doom Gain (12)</button>
             <button>
@@ -76,13 +83,18 @@ const ExchangeRow = (props: { data: Datamap }) => {
             </button>
 
             </FlexRow>
-            </FlexColumn>
-            <FlexColumn>
+            </CheatDiv>
+            </FlexColumn>}
+
+            {exchange.DU1.true && <FlexColumn>
 
             <span>Crafting Upgrades</span> 
             <FlexRow>
                 <NewSingleResearchUI research={exchange.CU1} />
             </FlexRow>
+            <CheatDiv>
+
+
             <FlexRow>
             <button>Unlock Unique Items (8)</button> <button>Unlock T2 Enchantments (13)</button>
             <button>
@@ -92,15 +104,19 @@ const ExchangeRow = (props: { data: Datamap }) => {
                 Relic Creation (15)
             </button>
             </FlexRow>
-            </FlexColumn>
+            </CheatDiv>
+            </FlexColumn>}
             
-            <FlexColumn>
+            {exchange.CU1.true && <FlexColumn>
 
                 
             <span>Garden Upgrades</span> 
             <FlexRow>
                 <NewSingleResearchUI research={exchange.GU1} />
             </FlexRow>
+            <CheatDiv>
+
+
             <FlexRow>
             <button>
                 Seed Gain (9)
@@ -108,33 +124,53 @@ const ExchangeRow = (props: { data: Datamap }) => {
             <button>Discard Aversion (11)</button> <button>Ascension (16)</button> <button>100% more Garden Speed (17)</button> <button>100% increased Garden Speed (17)</button>
             <button>10% more Garden Speed</button>
             </FlexRow>
-            </FlexColumn>
+            </CheatDiv>
+            </FlexColumn>}
+            {exchange.GU1.true &&
             <FlexColumn>
             <span>Jobs Upgrades</span>
             <div>
             <NewSingleResearchUI research={exchange.JU11} />
             </div>
+            
+            <CheatDiv>
+
+            
             <span>
 
             <button>100% more Work Gain (9)</button> <button>100% increased Work Gain (18)</button><button>10% more Work Gain (18)</button>
             </span>
+            </CheatDiv>
             <div>
             <NewSingleResearchUI research={exchange.JU12} />
             </div>
+            <CheatDiv>
+
             <span>
             <button>100% more Progress Gain (9)</button> <button>100% increased Progress Gain (19)</button><button>10% more Progress Gain (19)</button>
             </span>
+            </CheatDiv>
             <div>
             <NewSingleResearchUI research={exchange.JU13} />
             </div>
+            <CheatDiv>
+
             <span>
                 <button>
                 Job #1 Completion (9)
                 </button>
             </span>
+            </CheatDiv>
 
-            </FlexColumn><FlexColumn>
+            </FlexColumn>}
+            
+            <CheatDiv>
+
+            <FlexColumn>
             <span>Spellbook Upgrades</span> 
+
+            <CheatDiv>
+
             <FlexRow>
 
             <button>Unlock Spellbook Crafting (20)</button>
@@ -152,7 +188,10 @@ const ExchangeRow = (props: { data: Datamap }) => {
             </button>
             
             </FlexRow>
+            </CheatDiv>
             </FlexColumn>
+            </CheatDiv>
+
         </FlexColumn>
         </div>
     )

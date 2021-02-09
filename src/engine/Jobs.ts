@@ -15,6 +15,7 @@ export default class Jobs {
         this.calcJobSpeed();
         this.setResistanceDiv();
         this.setSeedGainSpeedMulti();
+        this.setSeedGainCountMulti();
         this.chargeCurrent.calculate();
 
     }
@@ -144,11 +145,19 @@ export default class Jobs {
 
     convertToWork = () => {
         if (this.data.converted) return;
-        else {
+        if (this.data.work.lt(1)) {
             this.workResource.gainResource(this.engine.datamap.unlocksStates.one);
             this.data.converted = true;
-            //this.engine.energyResource.info.setDecimal(new Decimal(0));
         }
+        
+        /* old version
+        if (this.data.converted) return;
+        else {
+            this.data.converted = true;
+            this.workResource.gainResource(this.engine.datamap.unlocksStates.one);
+            //this.engine.energyResource.info.setDecimal(new Decimal(0));
+        }*/
+
         this.engine.notify();
     }
 
@@ -169,6 +178,13 @@ export default class Jobs {
             if (jp.greaterThan(nr.records.zero)) {
                     nr.records.zero = jp
                     this.setSeedGainSpeedMulti();
+            }
+        
+        }
+        else if (nr.jobID === 1) {
+            if (jp.greaterThan(nr.records.grower)) {
+                    nr.records.grower = jp
+                    this.setSeedGainCountMulti();
             }
         
         }
@@ -216,7 +232,7 @@ export default class Jobs {
         if (data.notReset.jobID === 0)  if (this.engine.theExchange.JU13.true) {
             if (pp.greaterThanOrEqualTo(this.currentGoal())) {
                 if (data.notReset.mechancProgession === 1) {
-                    data.notReset.mechancProgession = 2;
+                    data.notReset.mechancProgession = 2; //got to job two!
                 }
                 this.changeJob(1);
             }
@@ -232,6 +248,13 @@ export default class Jobs {
         let base = 1;
         base = base + Decimal.log10(this.data.notReset.records.zero.add(1)) / 10
         this.seedGainSpeedMult = base;
+    }
+
+    seedGainCountMult = 1;
+    setSeedGainCountMulti = () => {
+        let base = 1;
+        base = base + Decimal.log10(this.data.notReset.records.grower.add(1)) / 10
+        this.seedGainCountMult = base;
     }
 
     jobSpeed: SingleBuilding = new SingleBuilding({
@@ -335,6 +358,7 @@ export default class Jobs {
         this.jobSpeed.reset();
         this.jobSpeedMult.reset();
         this.chargeStorage.reset();
+        this.chargePower.reset();
         this.data.work = ZERO;
         this.data.jobProgress = ZERO;
 
@@ -646,6 +670,11 @@ export interface JobsData {
         },
         records: {
             zero: Decimal;
+            grower: Decimal;
+            consumer: Decimal;
+            entry1: Decimal;
+            entry2: Decimal;
+            entry3: Decimal;
         }
     }
 }
@@ -680,7 +709,12 @@ export function JobsData_Init(): JobsData {
                 effectiveResistance: ZERO
             },
             records: {
-                zero: ZERO
+                zero: ZERO,
+                consumer: ZERO,
+                entry1: ZERO,
+                grower: ZERO,
+                entry2: ZERO,
+                entry3: ZERO,
             }
         },
     }
@@ -705,4 +739,9 @@ export function JobsData_SetDecimals(data: Datamap) {
     data.jobs.notReset.chargeCurrent = new Decimal(data.jobs.notReset.chargeCurrent);
 
     data.jobs.notReset.records.zero = new Decimal(data.jobs.notReset.records.zero);
+    data.jobs.notReset.records.grower = new Decimal(data.jobs.notReset.records.grower);
+    data.jobs.notReset.records.consumer = new Decimal(data.jobs.notReset.records.consumer);
+    data.jobs.notReset.records.entry1 = new Decimal(data.jobs.notReset.records.entry1);
+    data.jobs.notReset.records.entry2 = new Decimal(data.jobs.notReset.records.entry2);
+    data.jobs.notReset.records.entry3 = new Decimal(data.jobs.notReset.records.entry3);
 }

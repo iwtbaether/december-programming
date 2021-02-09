@@ -2,6 +2,7 @@ import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
 import { CEX } from "../../../engine/TheExchange";
+import CheatDiv from "../../comps/CheatDiv";
 import { ListedNumber } from "../../ListedResourceClass";
 
 const MagicRow = (props: { data: Datamap }) => {
@@ -12,6 +13,14 @@ const MagicRow = (props: { data: Datamap }) => {
             <span style={{fontWeight:'bold'}}>
             Magic - coming soon to a reset (8) near you
             </span>
+            <CheatDiv>
+                <button onClick={()=>{
+                    gEngine.datamap.unlocksStates.magic = false;
+                    gEngine.notify();
+                }}>
+                    Lock magic
+                </button>
+            </CheatDiv>
             <ul>
                 TODO:
                 <li>

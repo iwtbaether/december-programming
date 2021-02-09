@@ -1,6 +1,7 @@
 import {Datamap, newDefaultMap, setDecimals} from './Datamap';
 import * as _ from 'lodash';
 import { AUTOSAVE_INTERVAL } from './Engine';
+import { canCheat } from './externalfns/util';
 
 export const GAMEKEY = 'uglylikeme'
 
@@ -103,7 +104,7 @@ export default abstract class CoreEngine {
         this.datamap.last = newnow;
         
         this.processDelta(delta)
-        if (this.datamap.autosave) {
+        if (this.datamap.autosave || !canCheat) {
             this.datamap.autosaveCounter += delta;
             if (this.datamap.autosaveCounter >= AUTOSAVE_INTERVAL) this.save();
         }
@@ -116,7 +117,8 @@ export default abstract class CoreEngine {
     }
 
     import = (basedstr: string) => {
-        this.datamap.autosave = false;
+        this.stop();
+        //this.datamap.autosave = false;
 
         //var LZUTF8 = require('lzutf8');
 
@@ -155,8 +157,17 @@ export default abstract class CoreEngine {
 
         this.datamap.autosave = false;
         this.checkSet();
+        
+        this.stopCheaters();
+
         this.extraLoad();
 
+        this.start();
+
+    }
+
+    stopCheaters = () => {
+        //this is where I delete your random items, except I don't
     }
 
     export = () => {

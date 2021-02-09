@@ -4,6 +4,7 @@ import { gEngine } from '../../..';
 import { Datamap } from '../../../engine/Datamap';
 import { percentOf } from '../../../engine/externalfns/util';
 import { SingleBuildingUI } from '../../BuildingsUI';
+import CalETA from '../../comps/CalETA';
 import ConfirmCommandButton, { ConfirmBasicCommandButton } from '../../comps/ConfirmCommandButton';
 import FlexColumn from '../../comps/FlexColumn';
 import FlexRow from '../../comps/FlexRow';
@@ -67,11 +68,14 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
           <SingleBuildingUI building={gEngine.gloomGen4} />
         </div>}
 
-        <div>
-          <div style={{maxWidth:'400px'}}>  
+        <div style={{display:'flex', gap:'5px'}}>
+          <div style={{width:'400px'}}>  
           <ProgressBar current={data.cell.a} max={goal} bg='black' color='' className='yellow-bg'>
           Goal: <DisplayDecimal decimal={goal} /> Energy, Progress: 
           </ProgressBar>
+          </div>
+          <div>
+            ETA: <CalETA ETAs={goal.div(gEngine.energyResource.gainPS)} />
           </div>
         </div>
         <FlexRow>
@@ -86,10 +90,15 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
             warning={`Resets everything, increases energy goal, and unlocks content\nCurrent Difficulty: ${data.unlocksStates.one}`} />
             </span>
 
+            <span>
+            <TipFC2>
+              Current Gloom Level: <DisplayDecimal decimal={data.cell.aewf} />
+            </TipFC2>
           <ConfirmBasicCommandButton {...gEngine.gUL3}>
             Resets Energy, Doom, Crafting, Jobs<br />
         Gives +1 Base Gloom
       </ConfirmBasicCommandButton>
+            </span>
 
           <div>
             <TipFC2>

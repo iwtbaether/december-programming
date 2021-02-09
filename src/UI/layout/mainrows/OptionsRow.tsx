@@ -4,6 +4,7 @@ import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
 import ConfirmCommandButton from "../../comps/ConfirmCommandButton";
 import FlexRow from "../../comps/FlexRow";
+import { TipFC2 } from "../../comps/TipFC";
 
 const Bruh = new Audio('https://www.myinstants.com/media/sounds/movie_1.mp3')
 
@@ -64,8 +65,10 @@ const OptionsRow = (props: { data: Datamap }) => {
       <button onClick={gEngine.export} >
         Export
           </button>
-      {canCheat && <button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
-        Import
+      {<button onClick={() => { (document.getElementById('file-input') as HTMLInputElement).click() }} >
+        Import <TipFC2>
+          WARNING: "Items" cannot survive the import process
+        </TipFC2>
                                 </button>}
       <input id="file-input" type="file" name="name" style={{ display: "none" }}
         onChange={(e) => {

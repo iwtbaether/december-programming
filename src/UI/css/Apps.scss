@@ -15,6 +15,9 @@ $blue:      #268bd2;
 $cyan:      #2aa198;
 $green:     #859900;
 
+* {
+    user-select: none;
+}
 
 button {
     //border: none;
@@ -172,4 +175,15 @@ button:disabled:hover {
 
 .base2-text {
     color: $base2;
+}
+.base0-text {
+    color: $base0;
+}
+
+.pb-text {
+    text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
 }

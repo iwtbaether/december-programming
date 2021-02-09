@@ -174,7 +174,8 @@ export default class TheExchange {
     CU1: SingleResearch = new SingleResearch({
         name: "Unlock Unique Items",
         hidden: ()=>(this.data.research.moreDoom < 1),
-        description: "Want to design a unique item? @me",
+        //description: "Want to design a unique item? @me",
+        description: "Total Unique Items: [1]",
         get: () => this.data.research.moreCrafting >= 1,
         makeTrue: () => {if (this.data.research.moreCrafting < 1) this.data.research.moreCrafting = 1},
         costs: [

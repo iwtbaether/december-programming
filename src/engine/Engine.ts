@@ -2,14 +2,14 @@ import Decimal from "break_infinity.js";
 import { timeStamp } from "console";
 import _ from "lodash";
 import { BasicCommand } from "../UI/comps/BasicCommand";
-import DisplayDecimal from "../UI/DisplayDecimal";
+import DisplayDecimal, { DecimalToString } from "../UI/DisplayDecimal";
 import CoreEngine from "./CoreEngine";
 import DoomResearches from "./DoomResearches";
 import EnergyModule from "./EnergyModule";
 import CalcedDecimal from "./externalfns/decimalInterfaces/CalcedDecimal";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
-import { moreDecimal } from "./externalfns/util";
+import { canCheat, moreDecimal } from "./externalfns/util";
 import Garden from "./garden/Garden";
 import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
@@ -568,7 +568,7 @@ export default class Engine extends CoreEngine {
         ],
         description: `Generates Gloom`,
         hidden: () => this.datamap.unlocksStates.two < 3,
-        outcome: () => `+${this.datamap.cell.aewf} Gloom Per Second\nExtra: ${this.datamap.cell.gloomGen1E.floor()} `,
+        outcome: () => `+${this.datamap.cell.aewf} Gloom Per Second\nExtra: ${DecimalToString(this.datamap.cell.gloomGen1E)}`,
     })
 
     gloomGen2: SingleBuilding = new SingleBuilding({
@@ -586,7 +586,7 @@ export default class Engine extends CoreEngine {
         ],
         description: `Generates Gloom Generators`,
         hidden: () => this.datamap.cell.gloomGen1.lessThan(1),
-        outcome: () => `+1 Gloom Generator Per Second\nExtra: ${this.datamap.cell.gloomGen2E.floor()}`,
+        outcome: () => `+1 Gloom Generator Per Second\nExtra: ${DecimalToString(this.datamap.cell.gloomGen2E)}`,
     })
 
     gloomGen3: SingleBuilding = new SingleBuilding({
@@ -604,7 +604,7 @@ export default class Engine extends CoreEngine {
         ],
         description: `Generates Gloom Generator Generators`,
         hidden: () => this.datamap.cell.gloomGen2.lessThan(1),
-        outcome: () => `+1 GG Generator Per Second\nExtra: ${this.datamap.cell.gloomGen3E.floor()}`,
+        outcome: () => `+1 GG Generator Per Second\nExtra: ${DecimalToString(this.datamap.cell.gloomGen3E)}`,
     })
 
     gloomGen4: SingleBuilding = new SingleBuilding({
@@ -619,10 +619,15 @@ export default class Engine extends CoreEngine {
         costs: [
             { expo: { initial: 1000000000000, coefficient: 5 }, resource: this.gloom },
         ],
-        description: `Generates Gloom Generator Generator Generators\nExtra: ${this.datamap.cell.gloomGen4E.floor()}`,
+        description: `Generates Gloom Generator Generator Generators`,
         hidden: () => this.datamap.cell.gloomGen3.lessThan(1),
         outcome: () => `+1 GGG Generator Per Second`,
     })
+
+    setPopup = (pop: number) => {
+        this.datamap.popupUI = pop;
+        this.notify();
+    }
 
     calcGloom = () => {
         this.gloom.calculate();
@@ -686,6 +691,7 @@ export default class Engine extends CoreEngine {
     extraLoad = () => {
         //this.datamap.crafting = CraftingData_Init();
         //console.log('i fixed the bug');
+        if (!canCheat) this.datamap.autosave =true;
         
         this.crafting.calc();
         //console.log('EXTRALOAD');

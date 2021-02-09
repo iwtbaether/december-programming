@@ -18,10 +18,10 @@ const GardenRow = (props: { data: Datamap }) => {
     const garden = gEngine.garden;
     const wt = garden.waterTimeBase.times(garden.waterTimeMulti).div(1000)
     return (
-        <div style={{height:'100%'}}>
+        <div>
             Spiritual Garden<br />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between',height:'100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ flexBasis: '500px', flexShrink: 0, display: "flex", flexDirection: 'column' }}>
                     {data.cell.rebirth.greaterThan(0) &&
                         <div>
@@ -39,23 +39,25 @@ const GardenRow = (props: { data: Datamap }) => {
                             Base <DisplayNumber num={garden.equipment.fruitGainBase + 1} /> * Mult <DisplayNumber num={garden.fruitGainMult} />
                         </span>} />
                     </div>}
-                    {data.garden.researches.progression > 0 && <div style={{ marginBottom: '5px',flexGrow:1,display:"flex",flexDirection:'column' }}>
+                    {data.garden.researches.progression > 0 && <div style={{ marginBottom: '5px',display:"flex",flexDirection:'column' }}>
+                        <span>
 
-                        Seeds: <DisplayDecimal decimal={data.garden.seeds} /><br /><br />
+                        Seeds: <DisplayDecimal decimal={data.garden.seeds} /><br />
+                        </span>
                         <button disabled={!engine.garden.canGetSeed()} onClick={engine.garden.getSeed} >
                             Grab Seed
         </button><br />
                             
-                    <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between', flexGrow:1}}>
+                    <div style={{display:'flex',flexDirection:'row'}}>
                         {data.garden.researches.progression > 1 && <BagDisplay />}
 
-                    {data.garden.researches.progression > 1 && <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid' }}>
+                    {data.garden.researches.progression > 1 && <div style={{ display: 'flex', flexDirection: 'column',flexGrow:1}}>
 
                         <span style={{ fontWeight: 'bold', textAlign: 'center', width: '100%' }}>
 
                             Garden: {engine.garden.data.plots.length}/{engine.garden.maxgGardenPlots} plots<br />
                         </span>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', margin: '3px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', margin: '3px', flexDirection:'row'}}>
                             {data.garden.plots.map((plant, index) => {
                                 return <NewPlotDisplay plant={plant} index={index} key={'plot' + index} />
                             })}
@@ -131,11 +133,11 @@ const BagDisplay = () => {
     const data = engine.datamap;
     const cps = engine.garden.canPlantSeed();
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flexGrow:0,flexShrink:0,flexBasis:'150px' }}>
             <span style={{ fontWeight: 'bold', textAlign: 'center', width: '100%' }}>
                 Bag: {engine.garden.data.bag.length}/{engine.garden.maxBagSlots} seeds<br />
             </span>
-            <div style={{ display: "flex", flexDirection: 'row', flexWrap: 'wrap' }}>
+            <div style={{ display: "flex", flexDirection: 'column-reverse', flexWrap: 'nowrap' }}>
                 {data.garden.bag.map((seed, index) => {
                     return <NewSeedDisplay seed={seed} index={index} key={'bag' + index} canPlantSeed={cps} />
                 })}
@@ -148,7 +150,7 @@ const BagDisplay = () => {
 
 const NewSeedDisplay = (props: { seed: GardenSeed, index: number, canPlantSeed: boolean }) => {
 
-    return <div style={{ display: 'flex', flexDirection: "column", flexBasis: '150px' }} className='NewSeedDisplay'>
+    return <div style={{ display: 'flex', flexDirection: "column"}} className='NewSeedDisplay'>
         <span>
             {SeedType[props.seed.type].toUpperCase()} SEED
         </span>
@@ -171,7 +173,7 @@ const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
     const waterTime = engine.garden.waterTimeBase.times(engine.garden.waterTimeMulti).toNumber();
     const waterPercent = percentOf(props.plant.water, waterTime);
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px', flexShrink: 0, padding: '3px', border: '1px solid', gap: '3px' }} className='NewPlotDisplay'>
+        <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '150px', flexShrink: 0, padding: '3px', gap: '3px' }} className='NewPlotDisplay'>
 
             <span style={{ textAlign: 'center' }}>
                 {SeedType[props.plant.seed.type].toUpperCase()} PLANT

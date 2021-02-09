@@ -5,10 +5,12 @@ import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
 import { FULL_JOBS_LIST } from "../../../engine/Jobs";
 import { SingleBuildingUI } from "../../BuildingsUI";
+import CalETA from "../../comps/CalETA";
 import ConfirmCommandButton from "../../comps/ConfirmCommandButton";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
-import TipFC from "../../comps/TipFC";
+import ProgressBar from "../../comps/ProgressBar";
+import TipFC, { TipFC2 } from "../../comps/TipFC";
 import DisplayDecimal from "../../DisplayDecimal";
 import DisplayNumber from "../../DisplayNumber";
 import ListedResourceClass, { ListedDecimal } from "../../ListedResourceClass";
@@ -33,6 +35,8 @@ const JobsRow = (props: { data: Datamap }) => {
 
   const finalSpeed = Decimal.min(cap,speedWCharge);
 
+  const ETA = goal.sub(jobs.data.jobProgress).div(finalSpeed)
+
 
   return (<FlexColumn>
     <span>
@@ -40,25 +44,36 @@ const JobsRow = (props: { data: Datamap }) => {
     </span>
     <div>
       <ListedResourceClass resource={jobs.workResource} />
+      <div className={capped?'orange-text':''}>
+        <div>{/** for css (n)th */}</div>
       <ListedDecimal resource={jobs.data.jobProgress} name={selectedJob.progressLabel} ps={finalSpeed } />
+      </div>
       {jobs.data.notReset.chargeStorage.greaterThan(0) && <ListedResourceClass resource={jobs.chargeCurrent} />}
       {jobs.data.notReset.mechancProgession > 0 && <ListedResourceClass resource={jobs.xpResource} />}
     </div>
-    <div>
+    <FlexRow>
       {canCheat && <div>
         <button onClick={()=>{jobs.changeJob(0)}}>job 0</button>  
       </div>}
-      <button onClick={jobs.convertToWork} disabled={jobs.data.converted}>
+      {jobs.jobSpeed.count.lessThan(1) && jobs.workResource.count.lessThan(1) && <button onClick={jobs.convertToWork} disabled={jobs.data.converted}>
         Get Work
-    </button>
+    </button>}
+    {<div>
+        <TipFC2>
+        Last {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.last} />
+        </TipFC2>
       <ConfirmCommandButton
         do={jobs.prestige}
         label={met?'Prestige, Goal reached':'Prestige'}
         warning={<span>This will reset your job progress</span>}
         disabled={jobs.data.jobProgress.lessThan(10)}
-      />
+        />
+        </div>}
       {data.jobs.notReset.mechancProgession > 0 && <button onClick={jobs.spendXP}> Spend XP </button>}
-    </div>
+    <button onClick={()=>{gEngine.setPopup(3)}}>
+      Records
+    </button>
+    </FlexRow>
 
     <FlexRow>
 
@@ -87,32 +102,35 @@ const JobsRow = (props: { data: Datamap }) => {
     </FlexRow>
     <span>
       Current Speed: <DisplayDecimal decimal={postResistance}  /> {selectedJob.unitsLabel}/s
-      {postResistance.greaterThan(cap) && <span> Capped at {cap}  {selectedJob.unitsLabel}/s </span>}
+      + <DisplayDecimal decimal={chargeSpeed} /> {selectedJob.unitsLabel}/s from Charge
+      {capped && <span className='orange-text'> | Capped at {cap}  {selectedJob.unitsLabel}/s </span>}
     {jobs.chargeStorage.count.greaterThan(0) && <span style={{marginLeft:'5px'}}>
-      (+<DisplayDecimal decimal={chargeSpeed} /> {selectedJob.unitsLabel}/s from Charge)
     </span>}
     </span>
     <span>
       {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv.times(data.jobs.jobProgress)} />
     </span>
-    <span>
-      Current {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.jobProgress} /> {selectedJob.unitsLabel} | Goal
-      : <DisplayDecimal decimal={goal} /> {selectedJob.unitsLabel}
+
+          <div>
+
+    <span style={{display:'flex',gap:'5px'}}>
+      <span style={{width:'400px'}}>
+      <ProgressBar current={data.jobs.jobProgress} max={goal} bg='black' color='orange'>
+        Goal: <DisplayDecimal decimal={goal} /> {selectedJob.unitsLabel}, Progress:
+      </ProgressBar>
+      </span>
+      <span>
+      ETA: <CalETA ETAs={ETA}/> 
+      </span>
     </span>
-    {!met && <span>
-      ETA: {}
-    </span>}
-    <span>
-      Last {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.last} />
-    </span>
-    <span>
-      Best {selectedJob.progressLabel}: <DisplayDecimal decimal={jobs.data.notReset.records.zero} />
-      (Giving Seed Gain Speed Multi: x<DisplayNumber num={jobs.seedGainSpeedMult} />)
-    </span>
-    <span>
-    </span>
+          </div>
+    
+
+
   </FlexColumn>)
 }
+
+
 
 export default JobsRow;
 
