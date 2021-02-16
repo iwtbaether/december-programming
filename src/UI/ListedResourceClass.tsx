@@ -58,18 +58,21 @@ export const ListedDecimal: React.FC<{ resource: Decimal, name: string, ps?: Dec
     )
 }
 
-export const ListedNumber: React.FC<{ resource: number, name: string}> = (props) => {
+export const ListedNumber: React.FC<{ resource: number, name: string,middle?:boolean}> = (props) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
             <span style={{ marginRight: '5px' }} className='resourceColor'>
                 {props.name}
             </span>
-            <span style={{flexGrow:1, textAlign:'right'}}>
+            <span style={{textAlign:'right',flexGrow:1}}>
                 <span>
                  <DisplayNumber num={props.resource} /> 
                 </span>
             </span>
+            {props.middle && <span style={{width:'100px', textAlign: 'right'}}>
+                
+            </span>}
         </div>
     )
 }

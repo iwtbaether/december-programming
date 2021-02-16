@@ -63,8 +63,8 @@ function DoomModAndValueToString(mod: DoomStoneModList, value: number): string {
         case DoomStoneModList.BaseDoomGain: return `+${value} Doom Gain`
         case DoomStoneModList.IncreasedDoomGain: return `+${value*10}% Increased Doom Gain`
         case DoomStoneModList.MoreDoomGain: return `+${value*5}% More Doom Gain`
-        case DoomStoneModList.DoomPerSecond: return `+${value} Doom Per Second`
-        case DoomStoneModList.GloomPerSecond: return `+${value} Gloom Per Second`
+        //case DoomStoneModList.DoomPerSecond: return `+${value} Doom Per Second`
+        //case DoomStoneModList.GloomPerSecond: return `+${value} Gloom Per Second`
 
       default:
         return 'error'

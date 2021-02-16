@@ -9,13 +9,14 @@ import EnergyModule from "./EnergyModule";
 import CalcedDecimal from "./externalfns/decimalInterfaces/CalcedDecimal";
 import { SingleBuilding } from "./externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "./externalfns/decimalInterfaces/SingleResource";
-import { canCheat, moreDecimal } from "./externalfns/util";
+import { canCheat, HOUR_MS, moreDecimal } from "./externalfns/util";
 import Garden from "./garden/Garden";
 import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
 import Crafting from "./m_st/Crafting";
 import Research from "./Research";
 import Magic from "./skills/Magic";
+import SkillManager from "./skills/SkillManager";
 import TheExchange from "./TheExchange";
 
 
@@ -54,6 +55,7 @@ export default class Engine extends CoreEngine {
     garden: Garden = new Garden(this);
     jobs: Jobs = new Jobs(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
+    skillManager: SkillManager = new SkillManager(this);
     magic: Magic = new Magic(this);
 
 
@@ -62,17 +64,18 @@ export default class Engine extends CoreEngine {
     
     processDelta = (delta: number) => {
 
-
+        if (delta >= HOUR_MS * 8) delta = HOUR_MS * 8;
+        else if (delta < 0) delta = 0;
         
-        if (delta < 0) delta = 0;
         this.garden.processDelta(delta)
-        
 
         const deltaS = delta / 1000;
 
         this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
         this.antiEnergyResource.gainResource(this.antiEnergyResource.gainPS.times(deltaS))
-        if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta)
+        
+        if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta);
+
         if (this.datamap.unlocksStates.two > 2) {
             this.gloom.gainResource(this.gloom.gainPS.times(deltaS));
             this.datamap.cell.gloomGen1E = this.datamap.cell.gloomGen1E.add( this.gloomGen1.info.building.gainPS.times(deltaS))
@@ -648,7 +651,7 @@ export default class Engine extends CoreEngine {
             },
         }),
         costs: [
-            { expo: { initial: 10, coefficient: 1.1 }, resource: this.garden.hopeFruit },
+            { expo: { initial: 3, coefficient: 1.2 }, resource: this.garden.hopeFruit },
         ],
         description: `More Energy Gain`,
         hidden: () => this.datamap.garden.researches.progression < 3,

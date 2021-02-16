@@ -27,11 +27,11 @@ export default abstract class CoreEngine {
     }
 
     start = () => {
+        this.extraLoad();
         if (!this.loop) {
             this.loop = setInterval(this.tick, 200);
             
         }
-        this.extraLoad();
     }
 
     stop = () => {
@@ -155,12 +155,10 @@ export default abstract class CoreEngine {
             _.merge(this.datamap, oldobj)
         }
 
-        this.datamap.autosave = false;
         this.checkSet();
         
         this.stopCheaters();
-
-        this.extraLoad();
+        
 
         this.start();
 

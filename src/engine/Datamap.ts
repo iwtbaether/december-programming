@@ -5,7 +5,7 @@ import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Ga
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
 import { Magic_Data, Magic_Data_Init } from "./skills/Magic";
-import { SkillManager_Data, SkillManager_Data_Init } from "./skills/SkillManager";
+import { SkillManager_Data, SkillManager_Data_Init, SkillManager_Data_SetDecimals } from "./skills/SkillManager";
 import TheExchange, { TheExchange_Data, TheExchange_Data_Init } from "./TheExchange";
 
 export interface Datamap {
@@ -163,6 +163,7 @@ export function setDecimals(data: Datamap) {
 
     GardenData_SetDecimals(data);
     JobsData_SetDecimals(data);
+    SkillManager_Data_SetDecimals(data);
     //data.whateverdecimal = new Decimal(whateverdecimal)
 }
 

@@ -71,8 +71,6 @@ button:disabled {
 .NavButton {
     font-size: 1em;
     color: $base0;
-    border: none;
-    background: none;
 }
 
 
@@ -82,7 +80,7 @@ button:disabled {
 
 .ActiveNavButton {
     @extend .NavButton;
-    color: $green;
+    text-decoration: underline;
 }
 
 button:hover {
@@ -186,4 +184,16 @@ button:disabled:hover {
     1px -1px 0 #000,
     -1px 1px 0 #000,
      1px 1px 0 #000;
+}
+
+.CostUnable {
+    @extend .orange-text;
+}
+
+.CostCapped {
+    @extend .red-text;
+}
+
+.SelectedNavButton {
+    box-shadow: 1px solid $blue;
 }

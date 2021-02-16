@@ -83,7 +83,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     </FlexRow>
     <br />
     Equipped:<br />
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
+    <div style={{ display: 'flex', flexDirection: 'row',flexWrap:'wrap' }}>
       {data.crafting.equipedEnergyItem && <ItemDisplay item={data.crafting.equipedEnergyItem} />}<br />
       {data.crafting.equipedMedEnergyItem && <ItemDisplay item={data.crafting.equipedMedEnergyItem} />}<br />
       {data.crafting.equipedSmallEnergyItem && <ItemDisplay item={data.crafting.equipedSmallEnergyItem} />}<br />
@@ -214,7 +214,7 @@ function EnergyModAndValueToString(mod: EnergyItemModList, value: number): strin
       break;
 
     case EnergyItemModList.ClickMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Energy from Clicking`
+      return `x${(value * .1 + 1).toFixed(1)} More Clicking Energy Gain`
       break;
 
     case EnergyItemModList.ClicksPerSecond:
@@ -222,7 +222,7 @@ function EnergyModAndValueToString(mod: EnergyItemModList, value: number): strin
       break;
 
     case EnergyItemModList.HoverMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Energy from Hovering`
+      return `x${(value * .1 + 1).toFixed(1)} More Hovering Energy Gain`
       break;
 
     case EnergyItemModList.IncreasedGain:
@@ -234,7 +234,7 @@ function EnergyModAndValueToString(mod: EnergyItemModList, value: number): strin
       break;
 
     case EnergyItemModList.PassiveMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Energy per second`
+      return `x${(value * .1 + 1).toFixed(1)} More Passive Energy Gain`
       break;
 
     default:

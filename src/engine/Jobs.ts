@@ -17,6 +17,7 @@ export default class Jobs {
         this.setSeedGainSpeedMulti();
         this.setSeedGainCountMulti();
         this.chargeCurrent.calculate();
+        this.setNames();
 
     }
 
@@ -35,7 +36,7 @@ export default class Jobs {
         if (deltaS.lessThanOrEqualTo(10)) {
             this.progress(deltaS)
         } if (deltaS.greaterThan(10)) {
-            this.offlineProgress(deltaS);
+           this.offlineProgress(deltaS);
         }
     }
 
@@ -70,23 +71,26 @@ export default class Jobs {
     }
 
     progress = (deltaS: Decimal) => {
+
+        
+        
+        //console.log(this.calced.finalJobSpeed, this.calced.finalResitanceDiv);
+        
+        
+        let progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.data.jobProgress.add(1).times(this.calced.finalResitanceDiv));
+        
         if (this.chargeCurrent.count.greaterThan(0)) {
-            const trans = this.getChargeSpeed().times(deltaS);
+            const speed = this.getChargeSpeed();
+            progressPerSecondAfterResistance.add(speed); 
+            const trans = speed.times(deltaS);
             this.addJobProgress(trans);
             this.chargeCurrent.loseResource(trans)
         }
-
-
-        //console.log(this.calced.finalJobSpeed, this.calced.finalResitanceDiv);
-        
-
-        const progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.data.jobProgress.add(1).times(this.calced.finalResitanceDiv));
 
         const capped = Decimal.min(this.getCap(), progressPerSecondAfterResistance);
 
         //console.log(capped);
         
-
         this.addJobProgress(capped.times(deltaS));
         this.chargeCurrent.calculate();
         //need to remove this call for optimizng
@@ -140,6 +144,19 @@ export default class Jobs {
         get: () => this.engine.datamap.jobs.notReset.xp,
         setDecimal: (decimal) => {
             this.engine.datamap.jobs.notReset.xp = decimal
+        },
+    })
+
+    jobTierResource = new SingleResource({
+        name: 'Job Tier',
+        get: () => {
+            if (this.engine.datamap.jobs.notReset.jobID === 0) return new Decimal(0);
+            if (this.engine.datamap.jobs.notReset.jobID === 1) return new Decimal(1);
+
+            return new Decimal(0);
+        },
+            setDecimal: (decimal) => {
+            //noop
         },
     })
 
@@ -205,6 +222,11 @@ export default class Jobs {
             let xpGain = new Decimal(1);
             if (data.notReset.upgrades.job >= 1) xpGain = xpGain.add(pp.div(10000).floor())
             this.xpResource.gainResource(xpGain)
+            if (this.engine.skillManager.skills.patience.getData().unlocked) {
+                if (pp.greaterThanOrEqualTo(1000000)) {
+                    this.engine.skillManager.skills.patience.gainXP(pp.divideBy(1000000))
+                }
+            }
         }
 
 
@@ -362,14 +384,16 @@ export default class Jobs {
         this.data.work = ZERO;
         this.data.jobProgress = ZERO;
 
+        this.setNames();
+        
+    }
+    
+    setNames = () => {
         const jobID = this.data.notReset.jobID;
-
         this.jobResistance.info.building.info.name = FULL_JOBS_LIST[jobID].resistanceLabels[0];
         this.jobResistanceMult.info.building.info.name = FULL_JOBS_LIST[jobID].resistanceLabels[1];
         this.jobSpeed.info.building.info.name = FULL_JOBS_LIST[jobID].speedPlusLabel;
         this.jobSpeedMult.info.building.info.name = FULL_JOBS_LIST[jobID].speedMultLabel;
-
-
     }
 
     chargeCurrent = new SingleResource({
@@ -573,12 +597,13 @@ export default class Jobs {
 
     res_jobs2_levels: SingleResearch = new SingleResearch({
         name: "Levels",
-        hidden: () => this.data.notReset.upgrades.job < 1,
+        hidden: () => this.data.notReset.mechancProgession < 2,
         description: "Unlocks Skill Levels",
         get: () => this.data.notReset.upgrades.job > 1,
         makeTrue: () => { this.data.notReset.upgrades.job = 2 },
         costs: [
-            { resource: this.xpResource, count: new Decimal(64) }
+            { resource: this.xpResource, count: new Decimal(100) },
+            { resource: this.jobTierResource, count: new Decimal(1) },
         ],
     })
 

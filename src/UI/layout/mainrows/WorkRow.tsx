@@ -87,7 +87,7 @@ const JobsRow = (props: { data: Datamap }) => {
     <FlexRow>
           <SingleBuildingUI building={jobs.jobResistanceMult} />
     </FlexRow>
-    <FlexRow>
+    {<FlexRow>
       
 
       
@@ -99,10 +99,12 @@ const JobsRow = (props: { data: Datamap }) => {
           }
         <SingleBuildingUI building={jobs.chargePower} />
 
-    </FlexRow>
+    </FlexRow>}
     <span>
       Current Speed: <DisplayDecimal decimal={postResistance}  /> {selectedJob.unitsLabel}/s
+      {chargeSpeed.greaterThan(0.01) && <span>
       + <DisplayDecimal decimal={chargeSpeed} /> {selectedJob.unitsLabel}/s from Charge
+      </span>}
       {capped && <span className='orange-text'> | Capped at {cap}  {selectedJob.unitsLabel}/s </span>}
     {jobs.chargeStorage.count.greaterThan(0) && <span style={{marginLeft:'5px'}}>
     </span>}

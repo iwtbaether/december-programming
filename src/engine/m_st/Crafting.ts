@@ -241,8 +241,8 @@ export default class Crafting {
     calcDoomEq = () => {
         let base: DoomValues = {
             BaseDoomGain: 0,
-            DoomPerSecond: 0,
-            GloomPerSecond: 0,
+            //DoomPerSecond: 0,
+            //GloomPerSecond: 0,
             IncreasedDoomGain: 0,
             MoreDoomGain: 1,
         }
@@ -328,7 +328,7 @@ export default class Crafting {
         if (can) {
 
             let unbroken = can.mods.findIndex(mod => mod.mod === GardeningItemModList.NeverBreak)
-            if (unbroken < 0) {   
+            if (unbroken < 0) {
                 let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.AutoWater)
                 can.mods[index].mod = GardeningItemModList.Broken;
                 this.setGardeningCalcedData();
@@ -432,13 +432,16 @@ function modifyDoomValues(mod: DoomStoneMod, values: DoomValues): DoomValues {
             values.BaseDoomGain += mod.value;
             break;
 
-        case DoomStoneModList.DoomPerSecond:
-            values.DoomPerSecond += mod.value
-            break;
-
-        case DoomStoneModList.GloomPerSecond:
-            values.GloomPerSecond += mod.value
-            break;
+        /**
+         * 
+         case DoomStoneModList.DoomPerSecond:
+             values.DoomPerSecond += mod.value
+             break;
+             
+             case DoomStoneModList.GloomPerSecond:
+                 values.GloomPerSecond += mod.value
+                 break;
+                 */
 
         case DoomStoneModList.IncreasedDoomGain:
             values.IncreasedDoomGain += (mod.value * .1)
@@ -629,7 +632,7 @@ function makeSizedEnergyItem(size: number): EnergyItem {
     return item
 }
 
-function rollForUnique () {
+function rollForUnique() {
     let rng = getRandomInt(1, 100)
     return rng === 100
     return true;
@@ -641,21 +644,21 @@ function makeGardeningItem(): GardeningItem {
         ItemTypes.MagicWateringCan,
         ItemTypes.GardeningHat
     ]
-    
+
     let chosen = types[getRandomInt(0, 2)]
     let item: GardeningItem = {
         itemType: chosen,
         mods: [],
     }
-    
+
     if (gEngine.theExchange.CU1.true && rollForUnique() && chosen === ItemTypes.MagicWateringCan) {
-            if (chosen === ItemTypes.MagicWateringCan) {
-                item.mods.push({mod: GardeningItemModList.NeverBreak, value: 1})
-                item.mods.push({mod: GardeningItemModList.AutoWater, value: 1})
-                item.unique = 1;
-            }
+        if (chosen === ItemTypes.MagicWateringCan) {
+            item.mods.push({ mod: GardeningItemModList.NeverBreak, value: 1 })
+            item.mods.push({ mod: GardeningItemModList.AutoWater, value: 1 })
+            item.unique = 1;
+        }
     } else item = addRandomGardeningMod(item);
-    
+
     return item
 }
 
@@ -770,8 +773,8 @@ function getDoomStoneModValue(mod: DoomStoneModList): number {
 function getRandomDoomMod(): DoomStoneMod {
 
     let baseList = [
-        DoomStoneModList.DoomPerSecond,
-        DoomStoneModList.GloomPerSecond,
+        //DoomStoneModList.DoomPerSecond,
+        //DoomStoneModList.GloomPerSecond,
 
         DoomStoneModList.BaseDoomGain,
         DoomStoneModList.IncreasedDoomGain,
@@ -815,7 +818,7 @@ function getGardeningModExclusions(item: GardeningItem): GardeningItemModList[] 
 }
 
 export interface ItemData {
-    itemType: number,
+    itemType: ItemTypes,
     doomed?: boolean,
     unique?: number,
 }
@@ -856,10 +859,11 @@ export enum ItemTypes {
     LargeEnergyItem,
     MediumEnergyItem,
     SmallEnergyItem,
-    DoomedCrystal, // not implemented 
+    DoomedCrystal,
     MagicWateringCan,
     MagicSecateurs,
     GardeningHat,
+    PatiencePeace,
 }
 
 
@@ -877,8 +881,8 @@ export interface DoomValues {
     MoreDoomGain: number,
     BaseDoomGain: number,
     IncreasedDoomGain: number,
-    DoomPerSecond: number,
-    GloomPerSecond: number,
+    //DoomPerSecond: number,
+    //GloomPerSecond: number,
 }
 
 interface GardeningItemValus {
@@ -959,7 +963,7 @@ function unequip(type: ItemTypes, data: Datamap): Datamap {
 
             default:
                 console.log('item type does not exist?');
-                
+
                 break;
         }
         return data;
@@ -967,7 +971,7 @@ function unequip(type: ItemTypes, data: Datamap): Datamap {
 
 }
 
-export function unEqItemType (it: ItemTypes) {
+export function unEqItemType(it: ItemTypes) {
     const data = gEngine.datamap;
     if (data.crafting.currentCraft !== null) return;
     else {

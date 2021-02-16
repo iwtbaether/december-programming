@@ -13,8 +13,8 @@ export enum DoomStoneModList {
     MoreDoomGain,
     BaseDoomGain,
     IncreasedDoomGain,
-    DoomPerSecond,
-    GloomPerSecond,
+    //DoomPerSecond,
+    //GloomPerSecond,
 }
 
 export enum GardeningItemModList {

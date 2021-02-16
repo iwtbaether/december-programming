@@ -10,6 +10,7 @@ import MagicRow from "./layout/mainrows/MagicRow";
 import { NavRow } from "./layout/mainrows/NavRow";
 import OptionsRow from "./layout/mainrows/OptionsRow";
 import { PopupRow } from "./layout/mainrows/PopupRow";
+import SkillsRow from "./layout/mainrows/SkillsRow";
 import { StatsRow } from "./layout/mainrows/StatsRow";
 import JobsRow from "./layout/mainrows/WorkRow";
 
@@ -39,6 +40,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 4 && <OptionsRow data={data} />}
         {data.nav === 7 && <ExchangeRow data={data}/>}
         {data.nav === 8 && <MagicRow data={data}/>}
+        {data.nav === 9 && <SkillsRow data={data}/>}
         </div>
         <hr style={{width:'100%'}} />
         <FileButtons auto={data.autosave} last={data.last} />

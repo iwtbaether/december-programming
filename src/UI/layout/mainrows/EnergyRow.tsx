@@ -14,8 +14,11 @@ import DisplayDecimal from '../../DisplayDecimal';
 import ListedResourceClass from '../../ListedResourceClass';
 
 export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
+  const engine = gEngine;
   const data = props.data;
   const goal = gEngine.energy.unlockGoal();
+  const energyAmount = gEngine.energyResource.count;
+  const todo = goal.minus(energyAmount);
   const reached = gEngine.energy.canGiveUp();
   const clickGain = gEngine.energyModule.energyPerClick;
   const activityGain = gEngine.energyModule.energyGainFromActivity;
@@ -75,7 +78,7 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
           </ProgressBar>
           </div>
           <div>
-            ETA: <CalETA ETAs={goal.div(gEngine.energyResource.gainPS)} />
+            ETA: <CalETA ETAs={todo.div(gEngine.energyResource.gainPS)} />
           </div>
         </div>
         <FlexRow>
@@ -83,16 +86,17 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
 
             <span>
               <TipFC2>
-                Give Up to reset, unlock new content, and increase Difficulty<br/>
+                Reset everything, unlock new content, and increase Difficulty<br/>
                 Current Difficulty: {data.unlocksStates.one}
               </TipFC2>
-          <ConfirmCommandButton do={gEngine.energy.giveUp} label='Give Up' disabled={!reached}
+          <ConfirmCommandButton do={gEngine.energy.giveUp} label='Give Up, Difficulty Up' disabled={!reached}
             warning={`Resets everything, increases energy goal, and unlocks content\nCurrent Difficulty: ${data.unlocksStates.one}`} />
             </span>
 
             <span>
             <TipFC2>
-              Current Gloom Level: <DisplayDecimal decimal={data.cell.aewf} />
+              Current Gloom Level: <DisplayDecimal decimal={data.cell.aewf} /><br/>
+              {data.cell.aewf.greaterThan(0) && ('Is reset down to 1 on Difficulty Up')}
             </TipFC2>
           <ConfirmBasicCommandButton {...gEngine.gUL3}>
             Resets Energy, Doom, Crafting, Jobs<br />
@@ -102,7 +106,8 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
 
           <div>
             <TipFC2>
-              Consolation Prize: <DisplayDecimal decimal={prize} /> Doom
+              Consolation Prize: <DisplayDecimal decimal={prize} /> Doom<br/>
+              Requires {engine.energy.giveUpLevel2Cost} energy
             </TipFC2>
             <ConfirmBasicCommandButton {...gEngine.gUL2}>
               Resets Energy {data.unlocksStates.two > 2 && 'and Gloom production'}<br />

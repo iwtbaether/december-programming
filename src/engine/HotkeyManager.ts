@@ -1,5 +1,6 @@
 import { KeyObject } from "crypto";
 import { keys } from "lodash";
+import { getCurrentNavAndNavs } from "../UI/layout/mainrows/NavRow";
 import Engine from "./Engine";
 
 export default class HotkeyManager {
@@ -61,12 +62,32 @@ export default class HotkeyManager {
             case 'Escape':
                 data.popupUI = 0;
                 break;
+            case 'ArrowLeft':
+                this.goL();
+                break;
+            case 'ArrowRight':
+                this.goR();
+                break;
                 
             default:
                 break;
         }
         this.engine.notify();
     }
+    
+    goL = () => {
+        let data = this.engine.datamap;
+        let [navs, current] = getCurrentNavAndNavs(data);
+        let next = Math.max(0, current - 1)
+        this.engine.setNav(navs[next][0])
+      }
+    
+      goR = () => {
+        let data = this.engine.datamap;
+        let [navs, current] = getCurrentNavAndNavs(data);
+        let next = Math.min(navs.length - 1, current + 1)
+        this.engine.setNav(navs[next][0])
+      }
     
 
 }
