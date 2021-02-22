@@ -385,7 +385,7 @@ export default class Garden {
     res_seedtype_egg: SingleResearch = new SingleResearch({
         name: "Egg Shaped Seeds",
         hidden: () => this.data.researches.expansion === 0 || this.engine.datamap.unlocksStates.one < 6,
-        description: "You can generate egg seeds now\n Egg fruits provide more job speed",
+        description: "You can generate egg seeds now\n Egg fruits provide more job Progress",
         get: () => this.data.researches.typeEgg,
         makeTrue: () => { this.data.researches.typeEgg = true },
         costs: [
@@ -601,6 +601,9 @@ export default class Garden {
         this.gainSeeds ( 
             this.engine.datamap.cell.rebirth.times(24).floor()
         )
+        if (this.engine.datamap.skillManager.fortitude.unlocked) {
+            this.engine.skillManager.skills.fortitude.gainXP(1)
+        }
         this.setTempData();
     }
 

@@ -20,7 +20,16 @@ export default class Crafting {
     }
 
     reset = () => {
-        this.engine.datamap.crafting = CraftingData_Init();
+
+        //keep exhcnage upgrades if fortitue is unlocked (level 0)
+        if (this.engine.datamap.skillManager.fortitude.unlocked) {
+            const keep = this.engine.datamap.crafting.research;
+            this.engine.datamap.crafting = CraftingData_Init();
+            this.engine.datamap.crafting.research = keep;
+        } else {   
+            this.engine.datamap.crafting = CraftingData_Init();
+        }
+        
         this.calc();
     }
 

@@ -42,7 +42,20 @@ const SkillsRow = (props: { data: Datamap }) => {
         <FlexRow>
             <FlexColumn>
                 <span style={{ textAlign: "center" }}>
-                    Metaphysical
+                ⚀
+                </span>
+                <SingleSkillDiv 
+                    unlock={{ source: props.data.jobs.jobProgress, goal: FOURM, ulString: 'Reach Size', isUnlocked: patienceUnlocked, doUnlock: () => { patienceUnlocked = true } }}
+                    skill={manager.skills.patience}
+                />
+                <SingleSkillDiv 
+                    unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying', isUnlocked: false, doUnlock: () => { } }}
+                    skill={manager.skills.fortitude}
+                />
+            </FlexColumn>
+            <FlexColumn>
+                <span style={{ textAlign: "center" }}>
+                ΘN
                 </span>
                 <SingleSkillDiv
                     unlock={{ source: ZERO, goal: ONEK, ulString: 'Own Spaces', isUnlocked: false, doUnlock: () => { } }}
@@ -69,24 +82,9 @@ const SkillsRow = (props: { data: Datamap }) => {
                     skill={manager.skills.magic}
                 />
             </FlexColumn>
-            <FlexColumn>
-                <span style={{ textAlign: "center" }}>
-                    Physical
-                </span>
-                <SingleSkillDiv 
-                    unlock={{ source: props.data.jobs.jobProgress, goal: FOURM, ulString: 'Reach Size', isUnlocked: patienceUnlocked, doUnlock: () => { patienceUnlocked = true } }}
-                    skill={manager.skills.patience}
-                />
-                <SingleSkillDiv 
-                    unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying', isUnlocked: false, doUnlock: () => { } }}
-                    skill={manager.skills.fortitude}
-                />
-            </FlexColumn>
+            
             {manager.openGuide && <FlexColumn>
-                Chosen Skill: {manager.openGuide.name}<br/>
-                    <button onClick={manager.closeSkill}>
-                        Close
-                    </button>    
+                  
                 <ChosenGuide data={props.data}/>
             </FlexColumn>}
         </FlexRow>

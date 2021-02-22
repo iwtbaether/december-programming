@@ -82,11 +82,11 @@ export default class DoomResearches {
         costs: [
             { expo: { initial: 1.5e4, coefficient: 5 }, resource: this.engine.doom },
         ],
-        description: `10% Increased Job Speed`,
+        description: `10% Increased Job Progress`,
         hidden: () => this.engine.datamap.unlocksStates.one < 6,
         outcome: () => {
             let now = this.engine.datamap.cell.doomJobSpeed;
-            return `Current: ${now.times(10).floor()}% Increased Job Speed`
+            return `Current: ${now.times(10).floor()}% Increased Job Progress`
         },
     })
 

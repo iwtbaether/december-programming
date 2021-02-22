@@ -81,6 +81,9 @@ export function Skill_Data_Init (): Skill_Data {
     }
 }
 export interface SkillManager_Data {
+    manager: {
+        unlocked: boolean;
+    }
     matter: Skill_Data;
     energy: Skill_Data;
     space: Skill_Data;
@@ -110,6 +113,10 @@ export function SkillManager_Data_Init (): SkillManager_Data {
         fortitude: Skill_Data_Init(),
 
         poeCrafting: Skill_Data_Init(),
+
+        manager: {
+            unlocked: false,
+        }
     }
 }
 

@@ -78,7 +78,9 @@ export default class TheExchange {
         hidden: ()=>(this.data.research.moreEnergy < 0 ),
         description: "Double Energy Gain",
         get: () => this.data.research.moreEnergy >= 1,
-        makeTrue: () => {if (this.data.research.moreEnergy < 1) this.data.research.moreEnergy = 1},
+        makeTrue: () => {if (this.data.research.moreEnergy < 1) this.data.research.moreEnergy = 1
+            this.engine.calcEnergy();
+        },
         costs: [
             { resource: this.chaosResource, count: this.ONE },
             {resource: this.engine.difficultyResource, count: new Decimal(8)},
@@ -89,7 +91,9 @@ export default class TheExchange {
         hidden: ()=>(this.data.research.moreEnergy < 1),
         description: "Double Energy Gain Again",
         get: () => this.data.research.moreEnergy >= 2,
-        makeTrue: () => {if (this.data.research.moreEnergy < 2) this.data.research.moreEnergy = 2},
+        makeTrue: () => {if (this.data.research.moreEnergy < 2) this.data.research.moreEnergy = 2
+            this.engine.calcEnergy();
+        },
         costs: [
             { resource: this.chaosResource, count: this.ONE  },
             {resource: this.engine.difficultyResource, count: new Decimal(9)},
@@ -100,7 +104,9 @@ export default class TheExchange {
         hidden: ()=>(this.data.research.moreEnergy < 2),
         description: "Another one",
         get: () => this.data.research.moreEnergy >= 3,
-        makeTrue: () => {if (this.data.research.moreEnergy < 3) this.data.research.moreEnergy = 3},
+        makeTrue: () => {if (this.data.research.moreEnergy < 3) this.data.research.moreEnergy = 3
+            this.engine.calcEnergy();
+        },
         costs: [
             { resource: this.chaosResource, count: this.ONE },
             {resource: this.engine.difficultyResource, count: new Decimal(10)},

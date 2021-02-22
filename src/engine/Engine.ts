@@ -237,6 +237,10 @@ export default class Engine extends CoreEngine {
                     this.datamap.cell.aewf = new Decimal(1)
                 }
 
+                if (this.datamap.skillManager.fortitude.unlocked) {
+                    this.skillManager.skills.fortitude.gainXP(3)
+                }
+
                 this.clearDoom();
                 this.clearEnergy();
                 this.crafting.reset();
@@ -373,6 +377,10 @@ export default class Engine extends CoreEngine {
         this.clearDoom();
         this.resetGloom()
         this.clearEnergy();
+
+        if (this.datamap.skillManager.fortitude.unlocked) {
+            this.skillManager.skills.fortitude.gainXP(2)
+        }
 
 
         this.datamap.cell.swimmerNumber = this.datamap.cell.swimmerNumber.add(1);

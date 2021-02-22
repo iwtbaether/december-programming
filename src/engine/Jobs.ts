@@ -489,7 +489,7 @@ export default class Jobs {
         costs: [
             { expo: { initial: 2, coefficient: 1.5 }, resource: this.xpResource },
         ],
-        description: `More Job Speed`,
+        description: `More Job Progress`,
         hidden: () => this.data.notReset.upgrades.workFromPrestige.eq(0),
         outcome: () => {
             return `+1x Job Speed`
@@ -596,11 +596,11 @@ export default class Jobs {
     
 
     res_jobs2_levels: SingleResearch = new SingleResearch({
-        name: "Levels",
-        hidden: () => this.data.notReset.mechancProgession < 2,
-        description: "Unlocks Skill Levels",
-        get: () => this.data.notReset.upgrades.job > 1,
-        makeTrue: () => { this.data.notReset.upgrades.job = 2 },
+        name: "Skills",
+        hidden: () => this.data.notReset.mechancProgession < 2 && this.engine.datamap.skillManager.manager.unlocked === false,
+        description: "Unlocks Skills",
+        get: () => this.engine.datamap.skillManager.manager.unlocked,
+        makeTrue: () => { this.engine.datamap.skillManager.manager.unlocked = true},
         costs: [
             { resource: this.xpResource, count: new Decimal(100) },
             { resource: this.jobTierResource, count: new Decimal(1) },
