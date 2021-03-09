@@ -22,7 +22,18 @@ export default class Jobs {
     }
 
     realReset = () => {
+         
+        if (this.engine.datamap.skillManager.fortitude.level.greaterThanOrEqualTo(1)) {
+            let sv1 = this.engine.datamap.jobs.notReset.upgrades.jobSpeed;
+            let sv2 = this.engine.datamap.jobs.notReset.upgrades.workFromPrestige;
+            let sv3 = this.engine.datamap.jobs.notReset.upgrades.effectiveResistance;
+            this.engine.datamap.jobs = JobsData_Init();
+            this.engine.datamap.jobs.notReset.upgrades.jobSpeed = sv1;
+            this.engine.datamap.jobs.notReset.upgrades.workFromPrestige = sv2;
+            this.engine.datamap.jobs.notReset.upgrades.effectiveResistance = sv3;
+    } else {
         this.engine.datamap.jobs = JobsData_Init();
+        }
         this.setTempData();
     }
 
@@ -434,6 +445,8 @@ export default class Jobs {
         else return new Decimal(0)
     }
 
+    
+
     chargePower: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
             name: 'Charge Power',
@@ -454,7 +467,11 @@ export default class Jobs {
 
     reset = () => {
         const saved = this.engine.datamap.jobs.notReset;
-        this.engine.datamap.jobs = JobsData_Init();
+       
+            this.engine.datamap.jobs = JobsData_Init();
+    
+        
+
         this.engine.datamap.jobs.notReset = saved;
         this.setTempData();
     }
@@ -641,17 +658,17 @@ export const FULL_JOBS_LIST: JobsListInfo[] = [
         speedMultLabel: 'Tail Strength',
         resistanceLabels: ['pH Resistance', 'Penetration'],
         unitsLabel: 'μm',
-        slowReason: 'The toxicity of the environment',
+        slowReason: 'The toxic environment is',
         progressLabel: 'Distance'
 
     },
     {
         name: 'Grower',
-        speedPlusLabel: 'Base Growth',
-        speedMultLabel: 'More Growth',
-        resistanceLabels: ['Grower resistance', 'Grower Resistance[2]'],
+        speedPlusLabel: 'Blood',
+        speedMultLabel: 'Sugar',
+        resistanceLabels: ['Love', 'Hope'],
         unitsLabel: 'micrograms',
-        slowReason: 'Teratogens and physics',
+        slowReason: 'Teratogens are',
         progressLabel: 'Size'
     }
 ]

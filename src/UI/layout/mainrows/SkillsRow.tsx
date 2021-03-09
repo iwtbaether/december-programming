@@ -42,7 +42,7 @@ const SkillsRow = (props: { data: Datamap }) => {
         <FlexRow>
             <FlexColumn>
                 <span style={{ textAlign: "center" }}>
-                ⚀
+                Thetan
                 </span>
                 <SingleSkillDiv 
                     unlock={{ source: props.data.jobs.jobProgress, goal: FOURM, ulString: 'Reach Size', isUnlocked: patienceUnlocked, doUnlock: () => { patienceUnlocked = true } }}
@@ -52,11 +52,6 @@ const SkillsRow = (props: { data: Datamap }) => {
                     unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying', isUnlocked: false, doUnlock: () => { } }}
                     skill={manager.skills.fortitude}
                 />
-            </FlexColumn>
-            <FlexColumn>
-                <span style={{ textAlign: "center" }}>
-                ΘN
-                </span>
                 <SingleSkillDiv
                     unlock={{ source: ZERO, goal: ONEK, ulString: 'Own Spaces', isUnlocked: false, doUnlock: () => { } }}
                     skill={manager.skills.matter}

@@ -1,16 +1,19 @@
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
-import { percentOf } from "../../../engine/externalfns/util";
+import { canCheat, percentOf } from "../../../engine/externalfns/util";
 import { TimeRequiredForSeed, GardenSeed, SeedType, GardenPlant, SeedGrowthTimeRequired } from "../../../engine/garden/Garden";
+import { GuideTypes } from "../../../engine/garden/Juice";
 import { SingleBuildingUI } from "../../BuildingsUI";
+import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
 import ProgressBar from "../../comps/ProgressBar";
-import TipFC from "../../comps/TipFC";
+import TipFC, { ChildTip } from "../../comps/TipFC";
 import DisplayDecimal from "../../DisplayDecimal";
 import DisplayNumber from "../../DisplayNumber";
 import ListedResourceClass, { ListedNumber, ListedDecimal } from "../../ListedResourceClass";
 import { NewSingleResearchUI } from "../../ResearchUI";
+import FruitResources from "./FruitResources";
 
 const GardenRow = (props: { data: Datamap }) => {
     const data = props.data;
@@ -44,9 +47,19 @@ const GardenRow = (props: { data: Datamap }) => {
 
                         Seeds: <DisplayDecimal decimal={data.garden.seeds} /><br />
                         </span>
+                        <FlexRow>
+
                         <button disabled={!engine.garden.canGetSeed()} onClick={engine.garden.getSeed} >
                             Grab Seed
-        </button><br />
+                        </button>
+                        {garden.data.juicin && <button onClick={()=>{gEngine.setNav(10)}}>
+                            <ChildTip>
+                                Your Spiritual prowess has attracted attention 
+                            </ChildTip>
+                            Go Make Juice
+                        </button>}
+                        </FlexRow>
+        <br />
                             
                     <div style={{display:'flex',flexDirection:'row'}}>
                         {data.garden.researches.progression > 1 && <BagDisplay />}
@@ -67,6 +80,7 @@ const GardenRow = (props: { data: Datamap }) => {
                             </div>
                             </div>}
                 </div>
+                            <FlexColumn>
 
                     <FlexRow>
                         {data.garden.researches.progression > 2 && <React.Fragment>
@@ -88,32 +102,23 @@ const GardenRow = (props: { data: Datamap }) => {
                             <NewSingleResearchUI research={engine.garden.res_doomfromhope} />
                             <NewSingleResearchUI research={engine.garden.res_seedtype_egg} />
                             <NewSingleResearchUI research={engine.garden.res_doomedDiscard} />
+
+
                         </React.Fragment>}
                         <SingleBuildingUI building={engine.garden.seedGeneration} />
+                    {canCheat && <button onClick={engine.garden.juice.dataReset}>Reset Juice Data</button>}
                     </FlexRow>
+                    {garden.data.adverse.length > 0 && <FlexRow>
+                        <span>Can't Grab ({data.garden.adverse.length}):</span>
+                        {data.garden.adverse.map((type)=>{
+                            return(<span key={`adverse${type}`}>
+                                [{SeedType[type]}]
+                            </span>)
+                        })}
+                        </FlexRow>}
+                            </FlexColumn>
                     <div>
-                        {data.garden.researches.progression > 2 && <div style={{ display: "flex", flexDirection: 'column' }}>
-
-                            <span>
-                                Fruits:
-                        </span>
-                            {<ListedResourceClass resource={engine.garden.hopeFruit} />}
-                            {data.garden.researches.typeCircle &&
-                                <ListedResourceClass resource={engine.garden.circularFruit} />
-                            }
-                            {data.garden.researches.typeSquare && <ListedResourceClass resource={engine.garden.squareFruit} />}
-                            {data.garden.researches.typeBunch && <ListedResourceClass resource={engine.garden.bunchedFruit} />}
-                            {data.garden.researches.typeTriangle && <ListedResourceClass resource={engine.garden.triangularFruit} />}
-                            {data.garden.researches.doomedSeeds && <ListedResourceClass resource={engine.garden.doomedFruits} />}
-                            {data.garden.researches.typeEgg && <ListedResourceClass resource={engine.garden.eggFruit} />}
-                            <hr />
-                            {data.garden.researches.typeCircle && <ListedNumber resource={engine.garden.plantSpeedMult} middle name="Plant Growth Multi" />}
-                            {data.garden.researches.typeBunch && <ListedNumber resource={engine.garden.fruitGainMult} middle name="Fruit Gain Multi" />}
-                            {data.garden.researches.typeTriangle && <ListedDecimal resource={engine.garden.waterTimeMulti} name='Water Time Multi' />}
-                            {data.garden.researches.doomedSeeds && <ListedDecimal resource={engine.garden.doomFruitMult} name='Doom Gain Multi' />}
-                            {data.garden.researches.typeEgg && <ListedDecimal resource={engine.garden.gardenJobSpeedMult} name='Job Speed Multi' />}
-
-                        </div>}
+                        {data.garden.researches.progression > 2 && <FruitResources data={data}/>}
 
 
 
@@ -159,7 +164,7 @@ const NewSeedDisplay = (props: { seed: GardenSeed, index: number, canPlantSeed: 
             Plant
         </button>
 
-        {gEngine.datamap.garden.researches.doomedSeeds2 && <button onClick={() => { gEngine.garden.discardSeed(props.index) }}>
+        {gEngine.datamap.garden.researches.doomedSeeds2 && <button hidden={gEngine.datamap.juice.guide === GuideTypes.Sara} onClick={() => { gEngine.garden.discardSeed(props.index) }}>
             Discard
         </button>}
     </div>
@@ -181,14 +186,14 @@ const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
 
             {req > props.plant.plantTimer &&
 
+                    <button disabled className=''>
                 <FlexRow>
-                    <span>
                         Growth:
-            </span>
                     <span style={{ flexGrow: 1 }}>
                         <ProgressBar current={props.plant.plantTimer} max={req} color={''} bg={'black'} className={'green-bg'} />
                     </span>
                 </FlexRow>
+            </button>
             }
 
             {req <= props.plant.plantTimer &&

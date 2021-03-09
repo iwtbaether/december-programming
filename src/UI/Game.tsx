@@ -6,6 +6,7 @@ import DoomRow from "./layout/mainrows/DoomRow";
 import { EnergyRow } from "./layout/mainrows/EnergyRow";
 import ExchangeRow from "./layout/mainrows/ExchangeRow";
 import GardenRow from "./layout/mainrows/GardenRow";
+import JuiceRow from "./layout/mainrows/JuiceRow";
 import MagicRow from "./layout/mainrows/MagicRow";
 import { NavRow } from "./layout/mainrows/NavRow";
 import OptionsRow from "./layout/mainrows/OptionsRow";
@@ -41,6 +42,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
         {data.nav === 7 && <ExchangeRow data={data}/>}
         {data.nav === 8 && <MagicRow data={data}/>}
         {data.nav === 9 && <SkillsRow data={data}/>}
+        {data.nav === 10 && <JuiceRow data={data}/>}
         </div>
         <hr style={{width:'100%'}} />
         <FileButtons auto={data.autosave} last={data.last} />
@@ -49,5 +51,7 @@ export default class Game extends React.Component<{ data: Datamap }, {}> {
     );
   }
 }
+
+
 
 

@@ -110,7 +110,7 @@ const JobsRow = (props: { data: Datamap }) => {
     </span>}
     </span>
     <span>
-      {selectedJob.slowReason} slows progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv.times(data.jobs.jobProgress)} />
+      {selectedJob.slowReason} slowing progress by: x1/<DisplayDecimal decimal={jobs.calced.finalResitanceDiv.times(data.jobs.jobProgress)} />
     </span>
 
           <div>

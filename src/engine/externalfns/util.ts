@@ -15,6 +15,11 @@ export function percentOf (num: number, base: number) {
     else return Math.floor(100*num/base).toString() + '%';
 }
 
+export function percentOfNum (num: number, base: number) {
+  if (num === 0 || base === 0) return 0;
+  else return Math.floor(100*num/base);
+}
+
 export function msToFullHMS (msTime: number) {
     
     let hour = Math.floor(msTime/HOUR_MS).toString();

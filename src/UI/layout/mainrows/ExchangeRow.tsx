@@ -54,6 +54,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
                 <NewSingleResearchUI research={exchange.EU1} />
                 <NewSingleResearchUI research={exchange.EU2} />
                 <NewSingleResearchUI research={exchange.EU3} />
+                <NewSingleResearchUI research={exchange.EU4} />
             </FlexRow>
             <CheatDiv>
 
@@ -73,6 +74,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
                 <NewSingleResearchUI research={exchange.DU1} />
                 <NewSingleResearchUI research={exchange.DU2} />
                 <NewSingleResearchUI research={exchange.DU3} />
+                <NewSingleResearchUI research={exchange.DU4} />
             </FlexRow>
             <CheatDiv>
 
@@ -113,6 +115,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
             <span>Garden Upgrades</span> 
             <FlexRow>
                 <NewSingleResearchUI research={exchange.GU1} />
+                <NewSingleResearchUI research={exchange.GU1point5} />
             </FlexRow>
             <CheatDiv>
 

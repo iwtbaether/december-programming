@@ -146,6 +146,10 @@ button:disabled:hover {
     color: $yellow;
 }
 
+.blue-text {
+    color: $blue;
+}
+
 .HarvestButton {
     border-color: $green;
     color: $green;
@@ -196,4 +200,16 @@ button:disabled:hover {
 
 .SelectedNavButton {
     box-shadow: 1px solid $blue;
+}
+
+.blue-border {
+    border: 1px solid $blue;
+}
+
+.red-border {
+    border: 1px solid $red;
+}
+
+.green-border {
+    border: 1px solid $green;
 }

@@ -74,7 +74,7 @@ export default class TheExchange {
 
     ONE = new Decimal(1)
     EU1: SingleResearch = new SingleResearch({
-        name: "100% more Energy Gain",
+        name: "Energy Gain Booster",
         hidden: ()=>(this.data.research.moreEnergy < 0 ),
         description: "Double Energy Gain",
         get: () => this.data.research.moreEnergy >= 1,
@@ -87,7 +87,7 @@ export default class TheExchange {
         ]
     })
     EU2: SingleResearch = new SingleResearch({
-        name: "100% more Energy Gain",
+        name: "Energy Gain Enhancer",
         hidden: ()=>(this.data.research.moreEnergy < 1),
         description: "Double Energy Gain Again",
         get: () => this.data.research.moreEnergy >= 2,
@@ -100,7 +100,7 @@ export default class TheExchange {
         ]
     })
     EU3: SingleResearch = new SingleResearch({
-        name: "100% more Energy Gain",
+        name: "Energy Gain Trophy",
         hidden: ()=>(this.data.research.moreEnergy < 2),
         description: "Another one",
         get: () => this.data.research.moreEnergy >= 3,
@@ -113,7 +113,7 @@ export default class TheExchange {
         ]
     })
     EU4: SingleResearch = new SingleResearch({
-        name: "Energy Pylon",
+        name: "Energy Pylon Schematics",
         hidden: ()=>(this.data.research.moreEnergy < 3),
         description: "That's a big energy item.",
         get: () => this.data.research.moreEnergy >= 4,
@@ -126,7 +126,7 @@ export default class TheExchange {
 
 
     DU1: SingleResearch = new SingleResearch({
-        name: "100% more Doom Gain",
+        name: "Doom Gain Booster",
         hidden: ()=>(this.data.research.moreEnergy < 1),
         description: "Double Doom Gain",
         get: () => this.data.research.moreDoom >= 1,
@@ -139,7 +139,7 @@ export default class TheExchange {
         ]
     })
     DU2: SingleResearch = new SingleResearch({
-        name: "100% more Doom Gain",
+        name: "Doom Gain Enhancer",
         hidden: ()=>(this.data.research.moreDoom < 1),
         description: "Double Doom Gain",
         get: () => this.data.research.moreDoom >= 2,
@@ -148,11 +148,11 @@ export default class TheExchange {
         },
         costs: [
             { resource: this.chaosResource, count: this.ONE },
-            {resource: this.engine.difficultyResource, count: new Decimal(12)},
+            {resource: this.engine.difficultyResource, count: new Decimal(10)},
         ]
     })
     DU3: SingleResearch = new SingleResearch({
-        name: "100% more Doom Gain",
+        name: "Doom Gain Trophy",
         hidden: ()=>(this.data.research.moreDoom < 2),
         description: "Double Doom Gain",
         get: () => this.data.research.moreDoom >= 3,
@@ -161,13 +161,13 @@ export default class TheExchange {
         },
         costs: [
             { resource: this.chaosResource, count: this.ONE },
-            {resource: this.engine.difficultyResource, count: new Decimal(12)},
+            {resource: this.engine.difficultyResource, count: new Decimal(11)},
         ]
     })
     DU4: SingleResearch = new SingleResearch({
-        name: "Doom Obelisk",
+        name: "Doom Obelisk Schematics",
         hidden: ()=>(this.data.research.moreDoom < 3),
-        description: "That's a big doom item.",
+        description: "WARNING: This could be dangerous",
         get: () => this.data.research.moreDoom >= 4,
         makeTrue: () => {if (this.data.research.moreDoom < 4) this.data.research.moreDoom = 4},
         costs: [
@@ -224,9 +224,9 @@ export default class TheExchange {
     })
 
     GU1: SingleResearch = new SingleResearch({
-        name: "100% increased seed gain",
+        name: "Seed Proliferation",
         hidden: ()=>(this.data.research.moreCrafting < 1 ),
-        description: "Increases seed gain amount by 100%",
+        description: "100% increased seed gain",
         get: () => this.data.research.moreGarden >= 1,
         makeTrue: () => {if (this.data.research.moreGarden < 1) this.data.research.moreGarden = 1},
         costs: [
@@ -238,14 +238,14 @@ export default class TheExchange {
     GU1point5: SingleResearch = new SingleResearch({
         name: "Discard Aversion",
         hidden: ()=>(this.data.research.moreGarden < 1 ),
-        description: "Increases seed gain amount by 100%",
+        description: "You can no longer Grab a Seed you have discarded since your last grab.",
         get: () => this.data.research.research_discardAversion,
         makeTrue: () => {
             this.data.research.research_discardAversion = true;
         },
         costs: [
             { resource: this.chaosResource, count: this.ONE },
-            {resource: this.engine.difficultyResource, count: new Decimal(11)},
+            {resource: this.engine.difficultyResource, count: new Decimal(10)},
         ]
     })
     GU2: SingleResearch = new SingleResearch({
@@ -296,9 +296,9 @@ export default class TheExchange {
     //below still being worked on
 
     JU11: SingleResearch = new SingleResearch({
-        name: "100% more work gain",
+        name: "Job Work Booster",
         hidden: ()=>(this.data.research.moreGarden < 1),
-        description: "",
+        description: "100% more work gain",
         get: () => this.data.research.moreJobs1 >= 1,
         makeTrue: () => {if (this.data.research.moreJobs1 === 0) this.data.research.moreJobs1 = 1},
         costs: [
@@ -307,9 +307,9 @@ export default class TheExchange {
         ]
     })
     JU12: SingleResearch = new SingleResearch({
-        name: "100% more progress gain",
+        name: "Job Progress Booster",
         hidden: ()=>(this.data.research.moreJobs1 < 1),
-        description: "",
+        description: "100% more job progress",
         get: () => this.data.research.moreJobs2 >= 1,
         makeTrue: () => {if (this.data.research.moreJobs2 === 0) this.data.research.moreJobs2 = 1},
         costs: [
@@ -318,9 +318,9 @@ export default class TheExchange {
         ]
     })
     JU13: SingleResearch = new SingleResearch({
-        name: "Job #2",
+        name: "Egg Shaped Map",
         hidden: ()=>(this.data.research.moreJobs2 < 1),
-        description: "",
+        description: "Sets a new goal for the Swimmer Job",
         get: () => this.data.research.moreJobs3 >= 1,
         makeTrue: () => {if (this.data.research.moreJobs3 === 0) this.data.research.moreJobs3 = 1},
         costs: [

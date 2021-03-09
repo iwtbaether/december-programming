@@ -1,6 +1,7 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import { log, timeStamp } from "console";
 import { isUndefined } from "lodash";
+import { type } from "os";
 import { prependListener } from "process";
 import { Datamap } from "../Datamap";
 import Engine from "../Engine";
@@ -8,6 +9,7 @@ import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding"
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
 import { canCheat, getRandomInt, MINUTE_MS } from "../externalfns/util";
 import { SingleResearch } from "../Research";
+import JuiceLmao from "./Juice";
 
 export default class Garden {
 
@@ -17,6 +19,8 @@ export default class Garden {
     constructor(public engine: Engine) {
         this.setTempData();
     }
+
+    juice: JuiceLmao = new JuiceLmao(this.engine);
 
     get equipment() {
         return this.engine.crafting.gardeningCalcData;
@@ -92,6 +96,13 @@ export default class Garden {
         }
 
         else if (this.data.researches.doomedSeeds2) {
+            if (this.engine.datamap.crafting.research.research_discardAversion) {
+                if (this.data.adverse.includes(seed.type)) {
+
+                } else {
+                    this.data.adverse.push(seed.type);
+                }
+            }
             this.data.bag.splice(bagIndex, 1);
             this.engine.doom.gainResource(1);
 
@@ -195,6 +206,27 @@ export default class Garden {
         }
     }
 
+    zammyHarvest = () => {
+        const normalGain = this.getFruitGain();
+        const zammyGain = normalGain / 2;
+        let harvestCount = 0;
+
+        for (let index = this.data.plots.length - 1; index >= 0; index--) {
+            const plant = this.data.plots[index];
+            if (SeedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
+                this.data.plots.splice(index, 1)
+
+                this.seedTypeToResource(plant.seed.type).gainResource(zammyGain);
+                harvestCount ++;
+            }
+        }
+
+        if (harvestCount > 0) {
+            const hopperGain = this.juice.fillHopper(harvestCount * zammyGain)
+            this.juice.tickedNumbers.toHopper = hopperGain;
+        }
+    }
+
     gainSeeds = (n: DecimalSource) => {
 
         let increased = 0;
@@ -202,9 +234,9 @@ export default class Garden {
 
         let more = 1;
         more = more * this.engine.jobs.seedGainCountMult;
-        
-        let final = Decimal.times(n , (1 + increased) * more)
-        
+
+        let final = Decimal.times(n, (1 + increased) * more)
+
         this.data.seeds = this.data.seeds.add(final);
     }
 
@@ -220,7 +252,40 @@ export default class Garden {
         return base * this.fruitGainMult;
     }
 
-    getFruit(type: SeedType) {
+    seedTypeToResource = (type: SeedType): SingleResource => {
+        switch (type) {
+            case SeedType.hope: return this.hopeFruit;
+                break;
+            case SeedType.circle: return this.circularFruit;
+                break;
+            case SeedType.doom: return this.doomedFruits;
+                break;
+            case SeedType.bunch: return this.bunchedFruit;
+                break;
+            case SeedType.triangle: return this.triangularFruit;
+                break;
+            case SeedType.square:
+                return this.squareFruit;
+                break;
+            case SeedType.egg:
+                return this.eggFruit;
+                break;
+
+            case SeedType.plain:
+                return this.plainFruit;
+                break;
+            case SeedType.knowledge:
+                return this.knowledgeFruit;
+                break;
+
+            default:
+                throw new Error("no seed type?");
+
+                break;
+        }
+    }
+
+    getFruit = (type: SeedType) => {
         let gain = this.getFruitGain();
 
         switch (type) {
@@ -240,6 +305,16 @@ export default class Garden {
                 this.eggFruit.gainResource(gain);
                 break;
 
+            case SeedType.plain:
+                this.plainFruit.gainResource(gain);
+                this.data.juicin = true;
+                break;
+            case SeedType.knowledge:
+                this.knowledgeFruit.gainResource(gain);
+                this.data.juicin = true;
+                break;
+
+
             default:
                 break;
         }
@@ -250,11 +325,25 @@ export default class Garden {
         if (!this.canGetSeed()) return;
 
         let possibleTypes: SeedType[] = [SeedType.hope];
+
         if (this.data.researches.typeBunch) possibleTypes.push(SeedType.bunch);
         if (this.data.researches.typeCircle) possibleTypes.push(SeedType.circle);
         if (this.data.researches.typeSquare) possibleTypes.push(SeedType.square);
         if (this.data.researches.typeTriangle) possibleTypes.push(SeedType.triangle);
         if (this.data.researches.typeEgg) possibleTypes.push(SeedType.egg);
+
+        this.data.adverse.forEach(adverseSeedType => {
+            possibleTypes.splice(possibleTypes.indexOf(adverseSeedType), 1)
+        })
+        if (possibleTypes.length === 0) {
+            if (this.data.adverse.includes(SeedType.plain)) {
+                possibleTypes.push(SeedType.knowledge)
+            } else {
+                possibleTypes.push(SeedType.plain)
+            }
+        }
+        this.data.adverse = [];
+
         let rng = getRandomInt(0, possibleTypes.length - 1);
         //console.log(possibleTypes, rng);
 
@@ -430,6 +519,24 @@ export default class Garden {
         name: 'Egg Fruit'
     })
 
+    plainFruit: SingleResource = new SingleResource({
+        get: () => this.data.fruits.plain,
+        setDecimal: (dec) => {
+            this.data.fruits.plain = dec;
+            //calc new things
+        },
+        name: 'Plain Fruit'
+    })
+
+    knowledgeFruit: SingleResource = new SingleResource({
+        get: () => this.data.fruits.knowledge,
+        setDecimal: (dec) => {
+            this.data.fruits.knowledge = dec;
+            //calc new things
+        },
+        name: 'Knowledge Fruit'
+    })
+
     res_doomfromhope: SingleResearch = new SingleResearch({
         name: "Doomed Seeds",
         hidden: () => this.data.researches.expansion === 0,
@@ -589,16 +696,35 @@ export default class Garden {
     })
 
     cleanGarden = () => {
-        this.engine.datamap.garden = GardenData_Init();
+
+
+        if (this.engine.datamap.skillManager.fortitude.level.greaterThanOrEqualTo(2)) {
+            let saved = this.engine.datamap.garden.researches;
+            saved.typeBunch = false;
+            saved.typeCircle = false;
+            saved.typeEgg = false;
+            saved.typeSquare = false;
+            saved.typeTriangle = false;
+            saved.doomedSeeds = false;
+            saved.doomedSeeds2 = false;
+
+            this.engine.datamap.garden = GardenData_Init();
+
+            this.engine.datamap.garden.researches = saved;
+        } else {
+            this.engine.datamap.garden = GardenData_Init();
+        }
+
+        this.juice.dataReset();
         this.engine.determination.reset();
     }
 
     rebirthReset = () => {
-        
+
         this.cleanGarden();
 
         this.data.researches.progression = 1
-        this.gainSeeds ( 
+        this.gainSeeds(
             this.engine.datamap.cell.rebirth.times(24).floor()
         )
         if (this.engine.datamap.skillManager.fortitude.unlocked) {
@@ -625,6 +751,8 @@ export default class Garden {
             return `+1s base watering duration\nCurrent: ${this.waterTimeBase.div(1000).floor()}s`
         },
     })
+
+
 
     denseWater: SingleBuilding = new SingleBuilding({
         building: new SingleResource({
@@ -700,7 +828,10 @@ export enum SeedType {
     bunch,
     triangle,
     doom,
-    egg
+    egg,
+
+    plain,
+    knowledge,
 }
 
 export interface GardenSeed {
@@ -714,20 +845,26 @@ export interface GardenPlant {
     water: number;
 }
 
+export interface I_FruitDecimals {
+    hope: Decimal
+    circular: Decimal;
+    triangular: Decimal
+    bunched: Decimal;
+    square: Decimal;
+    egg: Decimal
+    doom: Decimal;
+    plain: Decimal;
+    knowledge: Decimal;
+}
+
 export interface GardenData {
     seedTimer: number;
     seeds: Decimal;
     bag: GardenSeed[];
     plots: GardenPlant[];
-    fruits: {
-        hope: Decimal
-        circular: Decimal;
-        triangular: Decimal
-        bunched: Decimal;
-        square: Decimal;
-        egg: Decimal
-        doom: Decimal;
-    }
+    adverse: SeedType[];
+    juicin: boolean;
+    fruits: I_FruitDecimals;
     buildings: {
         wateringCan: Decimal;
         denseWater: Decimal;
@@ -771,6 +908,8 @@ export function GardenData_Init(): GardenData {
         seedTimer: 0,
         seeds: ZERO,
         bag: [],
+        adverse: [],
+        juicin: false,
         plots: [],
         bagSlot1: null,
         bagSlot2: null,
@@ -792,6 +931,8 @@ export function GardenData_Init(): GardenData {
             triangular: new Decimal(0),
             egg: new Decimal(0),
             doom: new Decimal(0),
+            plain: new Decimal(0),
+            knowledge: new Decimal(0),
         },
         buildings: {
             wateringCan: new Decimal(0),
@@ -821,13 +962,7 @@ export function GardenData_Init(): GardenData {
 export function GardenData_SetDecimals(data: Datamap) {
     data.garden.seeds = new Decimal(data.garden.seeds)
 
-    data.garden.fruits.hope = new Decimal(data.garden.fruits.hope)
-    data.garden.fruits.bunched = new Decimal(data.garden.fruits.bunched)
-    data.garden.fruits.circular = new Decimal(data.garden.fruits.circular)
-    data.garden.fruits.square = new Decimal(data.garden.fruits.square)
-    data.garden.fruits.triangular = new Decimal(data.garden.fruits.triangular)
-    data.garden.fruits.doom = new Decimal(data.garden.fruits.doom)
-    data.garden.fruits.egg = new Decimal(data.garden.fruits.egg)
+    I_FruitDecimals_SetDecimals(data.garden.fruits);
 
     data.garden.buildings.wateringCan = new Decimal(data.garden.buildings.wateringCan);
     data.garden.buildings.denseWater = new Decimal(data.garden.buildings.denseWater);
@@ -835,6 +970,17 @@ export function GardenData_SetDecimals(data: Datamap) {
     data.garden.buildings.seedGeneration = new Decimal(data.garden.buildings.seedGeneration);
 }
 
+export function I_FruitDecimals_SetDecimals(someData: I_FruitDecimals) {
+    someData.bunched = new Decimal(someData.bunched);
+    someData.circular = new Decimal(someData.circular);
+    someData.doom = new Decimal(someData.doom);
+    someData.egg = new Decimal(someData.egg);
+    someData.hope = new Decimal(someData.hope);
+    someData.knowledge = new Decimal(someData.knowledge);
+    someData.plain = new Decimal(someData.plain);
+    someData.square = new Decimal(someData.square);
+    someData.triangular = new Decimal(someData.triangular);
+}
 
 export function SeedGrowthTimeRequired(seed: GardenSeed) {
     let base = TimeRequiredForSeed;

@@ -48,8 +48,8 @@ const OptionsRow = (props: { data: Datamap }) => {
     <div>
       All resource generation formulas follow the same calculations: base production * (total sum of increased) * (total product of  more)<br/>
       All increased modifiers are summed together. 10x increased from drive and 10x increased from anti-drive results in 20x / 2000% increased energy gain.<br/>
-      All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 32x.<br/>
-      A multi is just a more modifier + 100%.
+      All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 242x.<br/>
+      A multi is just a more modifier plus the 100% base more. Double is 100% more. A 4x multi is the same as 3x more.
     </div>
     <FlexRow>
     <button onClick={gEngine.energyModule.showCalcs}>

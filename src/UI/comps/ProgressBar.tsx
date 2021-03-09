@@ -9,6 +9,7 @@ export interface ProgressBarProps {
     color: string;
     bg: string;
     className?: string
+    hideP?: boolean
 }
 
 const ProgressBar: React.FC <ProgressBarProps> = (props) => {
@@ -18,7 +19,7 @@ const ProgressBar: React.FC <ProgressBarProps> = (props) => {
     return (
         <div style={{backgroundColor:props.bg}} className='pb-text'>
             <div style={{width:widthPercentStr, backgroundColor:props.color, whiteSpace:'nowrap', textAlign:'left', paddingLeft:'2px'}} className={props.className}>
-                {props.children} {widthPercentStr}
+                {props.children} {!props.hideP && <span>{widthPercentStr}</span>}
             </div>
         </div>
     )

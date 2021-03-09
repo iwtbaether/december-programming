@@ -85,6 +85,10 @@ export default class Engine extends CoreEngine {
             this.calcGloom();
         }
 
+        if (this.datamap.garden.juicin) {
+            this.garden.juice.processDelta(delta)
+        }
+
         //console.log(deltaS);
         //console.log(this.datamap.last)
     }

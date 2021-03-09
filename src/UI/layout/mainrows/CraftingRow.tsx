@@ -75,7 +75,7 @@ const CraftingRow = (props: { data: Datamap }) => {
       {data.crafting.currentCraft && <FlexColumn>
         {crafting.data.vaalProgress >= 1 && <ConfirmCommandButton
           label={'Doom Item'}
-          warning={'This has a chance to destory your item,\nand it forces a save'}
+          warning={'This has a chance to destory your item'}
           do={crafting.applyDoomToCraft}
           disabled={crafting.data.currency.doomOrbs < 1}
         />}
@@ -103,6 +103,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     {statDetails && <div>
 
       {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers} /> Energy per second from autoclickers</div>}
+      
       <div>
         {JSON.stringify(crafting.energyCalcedData)}
       </div>
@@ -115,6 +116,10 @@ const CraftingRow = (props: { data: Datamap }) => {
         </div>
         {data.crafting.equipped.doomStone && <div>{JSON.stringify(crafting.DoomAndGloomFromEQ)}</div>}
       </div>}
+      <br/>
+      <div>
+        Hey there, player. I just wanted to take this chance to thank <b>YOU</b> for playing this game.
+        </div>
     </div>}
   </div>)
 }

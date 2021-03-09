@@ -2,6 +2,7 @@ import Decimal from "break_infinity.js";
 import Achievements, { Achievements_Data, Achievements_Data_Init } from "./Achievements";
 import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
+import { JuiceData, JuiceData_Fix, JuiceData_Init } from "./garden/Juice";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
 import { Magic_Data, Magic_Data_Init } from "./skills/Magic";
@@ -34,6 +35,7 @@ export interface Datamap {
     garden: GardenData;
     crafting: CraftingData;
     magic: Magic_Data;
+    juice: JuiceData;
 }
 
 export function newDefaultMap() {
@@ -106,6 +108,7 @@ export function newDefaultMap() {
         garden: GardenData_Init(),
         crafting: CraftingData_Init(),
         magic: Magic_Data_Init(),
+        juice: JuiceData_Init(),
     }
     return map;
 }
@@ -164,6 +167,7 @@ export function setDecimals(data: Datamap) {
     GardenData_SetDecimals(data);
     JobsData_SetDecimals(data);
     SkillManager_Data_SetDecimals(data);
+    JuiceData_Fix(data);
     //data.whateverdecimal = new Decimal(whateverdecimal)
 }
 

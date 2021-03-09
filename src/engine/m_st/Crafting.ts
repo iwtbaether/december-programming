@@ -344,6 +344,22 @@ export default class Crafting {
             }
         }
     }
+    
+    //returns true if can gets fixxed
+    fixWateringCan = () => {
+        //console.log('watering can fox!');
+
+        let can = this.data.equipped.wateringCan;
+        if (can) {
+                let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.Broken)
+                if (index >= 0) {
+                    can.mods[index].mod = GardeningItemModList.AutoWater;
+                    this.setGardeningCalcedData();
+                    return true;
+                }
+        }
+        return false;
+    }
 
 
 
