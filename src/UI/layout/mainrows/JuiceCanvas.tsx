@@ -5,7 +5,7 @@ import { I_FruitDecimals } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
 
 
-class JuiceCanvas extends React.Component<{juices: I_FruitDecimals}, {}> {
+class JuiceCanvas extends React.Component<{juices: I_FruitDecimals, guide: GuideTypes}, {}> {
 
     canvasRef: React.RefObject<HTMLCanvasElement>;
     constructor(props: any) {
@@ -18,8 +18,7 @@ class JuiceCanvas extends React.Component<{juices: I_FruitDecimals}, {}> {
     }
 
     getBGColor = () => {
-        const data = gEngine.datamap;
-        switch (data.juice.guide) {
+        switch (this.props.guide) {
             case GuideTypes.Sara:
                 return 'rgb(0,0,200)'
                 break;
@@ -94,11 +93,6 @@ class JuiceCanvas extends React.Component<{juices: I_FruitDecimals}, {}> {
     render() {
         this.drawStar();
         return (<div style={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column'}}>
-            <span>
-                <button onClick={this.drawStar}>
-                Redraw
-                </button>
-            </span>
             <canvas ref={this.canvasRef} width={230} height={230} />
         </div>)
     }

@@ -5,52 +5,50 @@ import { Datamap } from "../../../../engine/Datamap";
 import { SeedType } from "../../../../engine/garden/Garden";
 import { FULL_JOBS_LIST } from "../../../../engine/Jobs";
 import FlexColumn from "../../../comps/FlexColumn";
+import FlexRow from "../../../comps/FlexRow";
+import JuiceCanvas from "../JuiceCanvas";
+import { JuiceDisplay } from "../JuiceRow";
 
 
 
 const ToDrinkPopup = (props: { data: Datamap }) => {
-    const FJL = FULL_JOBS_LIST;
-    const jobs = gEngine.jobs;
-
+    const engine = gEngine;
+    const data = props.data;
     return (
         <FlexColumn>
-            <form onSubmit={submitFruitToCrush}>
-                <select name="Fruit To Crush">
-                    <option value={SeedType.hope}>Hope</option>
-                    <option value={SeedType.circle}>Circular</option>
-                    <option value={SeedType.square}>Square</option>
-                    <option value={SeedType.bunch}>Bunched</option>
-                    <option value={SeedType.triangle}>Triangular</option>
-                    <option value={SeedType.doom}>Doom</option>
-                    <option value={SeedType.egg}>Egg</option>
-                    <option value={SeedType.plain}>Plain</option>
-                    <option value={SeedType.knowledge}>Knowledge</option>
-                </select>
-                <button>Set</button>
-            </form>
+            <FlexRow>
+                <FlexColumn>
+                    <span>
+                        CURRENT
+                    </span>
+                    <JuiceCanvas juices={data.juice.crushed} guide={data.juice.guide} />
+                    <JuiceDisplay juiceData={data.juice.crushed} />
+                </FlexColumn>
+                <FlexColumn>
+                    <span style={{width:'230px'}}>LAST</span>
+                    {(data.juice.last_crushed && data.juice.last_guide) && <React.Fragment>
+                    <JuiceCanvas juices={data.juice.last_crushed} guide={data.juice.last_guide} />
+                    <JuiceDisplay juiceData={data.juice.last_crushed} />
+                    </React.Fragment>
+                    }
+
+                </FlexColumn>
+                
+            </FlexRow>
             <span>
-                <button onClick={()=>{
-                    gEngine.garden.juice.clearCrushedFruit();
-                    gEngine.clearPopup();
-                }}>
-                    Clear
-                </button>
+                Your current crush target has been cleared. Don't forget to reset it!
             </span>
-            <span>
-                <button onClick={gEngine.clearPopup}>Close</button>
-            </span>
+            <div style={{display:'flex',justifyContent:'space-between'}}>
+            <button onClick={engine.garden.juice.finishDrink}>
+                Drink Juice & replace Last
+            </button>
+            <button onClick={engine.clearPopup}>
+                Close
+            </button>
+            </div>
         </FlexColumn>
     )
 }
 
-function submitFruitToCrush (ev:React.FormEvent<HTMLFormElement>) {
-    let selectedType = (ev.currentTarget.childNodes[0] as HTMLSelectElement).value;
-    let numType = parseInt(selectedType);
-    //console.log(SeedType[numType]);
-    gEngine.garden.juice.setCrushedFruit(numType);
-    gEngine.clearPopup();
-    
-    ev.preventDefault();
-}
 
 export default ToDrinkPopup;

@@ -186,6 +186,23 @@ export default class JuiceLmao {
         this.engine.setPopup(5);
     }
 
+    //finish drink!
+    finishDrink = () => {
+        let last_crushed = this.data.crushed;
+        let last_guide = this.data.guide;
+        this.dataReset();
+        this.data.last_crushed = last_crushed;
+        this.data.last_guide = last_guide;
+        this.calcDrinkPowers();
+        this.engine.clearPopup();
+    }
+
+    calcDrinkPowers = () => {
+        if (this.data.last_crushed) {
+
+        } else return;
+    }
+
     setCrushedFruit = (chosen : SeedType) => {
         this.data.toCrush = chosen;
         this.engine.notify();
@@ -344,6 +361,7 @@ export interface JuiceData {
     powerDecayed: Decimal;
     crushed: I_FruitDecimals;
     last_crushed?: I_FruitDecimals;
+    last_guide?: GuideTypes;
     
 }
 
@@ -386,6 +404,7 @@ export  function JuiceData_Fix (data: Datamap): Datamap {
     data.juice.powerAmount = new Decimal(data.juice.powerAmount)
 
     I_FruitDecimals_SetDecimals(data.juice.crushed)
+    if (data.juice.last_crushed) I_FruitDecimals_SetDecimals(data.juice.last_crushed);
 
     data.juice.fruitsSpentMakingPower = new Decimal(data.juice.fruitsSpentMakingPower)
     data.juice.powerDecayed = new Decimal(data.juice.powerDecayed)

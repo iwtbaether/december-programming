@@ -3,7 +3,7 @@ import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
-import { SeedType } from "../../../engine/garden/Garden";
+import { I_FruitDecimals, SeedType } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
@@ -32,11 +32,12 @@ const JuiceRow = (props: { data: Datamap }) => {
                     {juice.guide === GuideTypes.Guth && <GSelection data={data} />}
                     {juice.guide === GuideTypes.Zammy && <ZSelection data={data} />}
                      <span>
-                                <JuiceCanvas juices={juice.crushed} />
+                                <JuiceCanvas juices={juice.crushed} guide={juice.guide} />
                             </span>
                             <span>
-                                <button onClick={jClass.startDrink}>
-                                    <ChildTip>Drink current Juice and reset Juice</ChildTip>
+                                <button onClick={jClass.startDrink} disabled={totalJuice.lessThan(1000)}>
+                                    <ChildTip>Drink current Juice and reset Juice
+                                    </ChildTip>
                                     Drink Juice!
                                 </button>
                             </span>
@@ -113,16 +114,7 @@ const JuiceRow = (props: { data: Datamap }) => {
                                 <span>
                                     Juice Contents
                         </span>
-                                <ListedDecimal resource={data.juice.crushed.hope} name={'Hope '} />
-                                <ListedDecimal resource={data.juice.crushed.bunched} name={'Bunched '} />
-                                <ListedDecimal resource={data.juice.crushed.circular} name={'Circular '} />
-                                <ListedDecimal resource={data.juice.crushed.triangular} name={'Triangular '} />
-                                <ListedDecimal resource={data.juice.crushed.square} name={'Square '} />
-                                <ListedDecimal resource={data.juice.crushed.doom} name={'Doom '} />
-                                <ListedDecimal resource={data.juice.crushed.egg} name={'Egg '} />
-                                <ListedDecimal resource={data.juice.crushed.plain} name={'Plain'} />
-                                <ListedDecimal resource={data.juice.crushed.knowledge} name={'Knowledge'} />
-                                <ListedDecimal resource={totalJuice} name={'Total Juiced Fruit'} />
+                                <JuiceDisplay juiceData={juice.crushed} />
                             </span>
                             
                         </FlexColumn>
@@ -155,6 +147,27 @@ const GuideSelection = (props: { data: Datamap }) => {
             </FlexRow>
         </FlexColumn>
     )
+}
+
+export function sum_I_FruitDecimals (toSum: I_FruitDecimals): Decimal {
+    return toSum.bunched.add(toSum.circular).add(toSum.doom).add(toSum.egg).add(toSum.hope).add(toSum.knowledge).add(toSum.plain).add(toSum.square).add(toSum.triangular);
+}
+
+export const JuiceDisplay = (props: {juiceData:I_FruitDecimals}) => {
+    const juice = props.juiceData
+    const totalJuice = sum_I_FruitDecimals(juice);
+    return (<span>
+        <ListedDecimal resource={juice.hope} name={'Hope '} />
+        <ListedDecimal resource={juice.bunched} name={'Bunched '} />
+        <ListedDecimal resource={juice.circular} name={'Circular '} />
+        <ListedDecimal resource={juice.triangular} name={'Triangular '} />
+        <ListedDecimal resource={juice.square} name={'Square '} />
+        <ListedDecimal resource={juice.doom} name={'Doom '} />
+        <ListedDecimal resource={juice.egg} name={'Egg '} />
+        <ListedDecimal resource={juice.plain} name={'Plain'} />
+        <ListedDecimal resource={juice.knowledge} name={'Knowledge'} />
+        <ListedDecimal resource={totalJuice} name={'Total Juiced Fruit'} />
+    </span>)
 }
 
 const SSelection = (props: { data: Datamap }) => {
