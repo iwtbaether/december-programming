@@ -3,6 +3,7 @@ import { Datamap } from '../../../engine/Datamap';
 import EnergyPopup from '../../EnergyPopup';
 import JobXPPopup from '../../JobXPPopup';
 import WorkRecordsPopup from '../WorkRecordsPopup';
+import DidDrink from './Popups/DidDrink';
 import ToCrushPopup from './Popups/ToCrushPopup';
 import ToDrinkPopup from './Popups/ToDrinkPopup';
 
@@ -17,6 +18,7 @@ export const PopupRow = (props: { data: Datamap; }) => {
       {props.data.popupUI === 3 && <WorkRecordsPopup data={props.data} />}
       {props.data.popupUI === 4 && <ToCrushPopup data={props.data} />}
       {props.data.popupUI === 5 && <ToDrinkPopup data={props.data} />}
+      {props.data.popupUI === 6 && <DidDrink data={props.data} />}
     </div>
   </div>);
 };

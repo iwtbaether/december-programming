@@ -3,6 +3,11 @@ import { SingleManagedSkill } from "./SingleManagedSkill";
 
 export default class Patience_Skill extends SingleManagedSkill {
 
+    //GROW A MUSHROOM THAT GROWS FRUIT FORMS
+    //1. grow mushroom
+    //2, fertalize with a fruit form
+    //3. ???
+    //4. mushroom grows a new fruit form
 }
 
 export interface Patience_Skill_Extra_Data {

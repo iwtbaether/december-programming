@@ -40,6 +40,7 @@ const JuiceRow = (props: { data: Datamap }) => {
                                     </ChildTip>
                                     Drink Juice!
                                 </button>
+                                {data.juice.last_crushed && <button onClick={()=>{gEngine.setPopup(6)}}>View Powers from Juice</button>}
                             </span>
                 </div>}
 

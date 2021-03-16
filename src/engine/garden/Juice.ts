@@ -1,9 +1,11 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import { IframeHTMLAttributes } from "react";
+import { sum_I_FruitDecimals } from "../../UI/layout/mainrows/JuiceRow";
 import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import CalcedDecimal from "../externalfns/decimalInterfaces/CalcedDecimal";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
+import { percentOfNum } from "../externalfns/util";
 import { I_FruitDecimals, I_FruitDecimals_SetDecimals, SeedType } from "./Garden";
 
 export default class JuiceLmao {
@@ -38,21 +40,21 @@ export default class JuiceLmao {
                 this.engine.datamap.garden.fruits.hope = ZERO;
             }
         }
-        
+
         if (this.data.fillingHopper) {
-            let chosneFruit = this.getFuelFruit(); 
+            let chosneFruit = this.getFuelFruit();
             if (chosneFruit === undefined) {
                 //zammy is on boys!
                 this.engine.garden.zammyHarvest();
             } else {
-   
+
                 const gain = this.fillHopper(Decimal.min(chosneFruit.count, this.calced_hopperFillSpeed.current));
 
                 this.tickedNumbers.toHopper = gain;
                 chosneFruit.loseResource(gain)
                 this.data.hopperFruit = this.data.hopperFruit.add(gain)
             }
-            
+
         } else {
             this.tickedNumbers.toHopper = ZERO;
         }
@@ -62,7 +64,7 @@ export default class JuiceLmao {
     }
 
     fillHopper = (ammount: DecimalSource): Decimal => {
-        let maxCanGain = Decimal.max(0,this.calced_maxHopperFill.current.minus(this.data.hopperFruit));
+        let maxCanGain = Decimal.max(0, this.calced_maxHopperFill.current.minus(this.data.hopperFruit));
         let gain = Decimal.min(maxCanGain, ammount);
         this.data.hopperFruit = this.data.hopperFruit.add(gain)
         return gain;
@@ -87,7 +89,7 @@ export default class JuiceLmao {
         let crushed = this.data.crushed;
         let total = crushed.bunched.add(crushed.circular).add(crushed.doom).add(crushed.egg).add(crushed.hope).add(
             crushed.knowledge).add(crushed.plain).add(crushed.square).add(crushed.triangular);
-        return total; 
+        return total;
     }
 
 
@@ -102,10 +104,10 @@ export default class JuiceLmao {
         //convert fruit to power
         if (this.data.powerPlantFruit.greaterThan(0)) {
 
-            let diff = new Decimal(this.data.powerPlantFruit.log10()/4) 
+            let diff = new Decimal(this.data.powerPlantFruit.log10() / 4)
 
             this.tickedNumbers.toPower = diff.times(2);
-            
+
             //diff = Decimal.max(diff, diff.abs().div(10))
             //lose x fruit
             this.data.powerPlantFruit = this.data.powerPlantFruit.minus(diff.times(2));
@@ -116,7 +118,7 @@ export default class JuiceLmao {
         } else {
             this.tickedNumbers.toPower = ZERO;
         }
-        
+
         //power decays
         const decay = this.data.powerAmount.times(.01)
         this.tickedNumbers.toDecay = decay;
@@ -134,12 +136,12 @@ export default class JuiceLmao {
         this.calced_maxHopperFill.set();
     }
 
-    calced_hopperFillSpeed = new CalcedDecimal(()=>{
+    calced_hopperFillSpeed = new CalcedDecimal(() => {
         let calc = new Decimal(1)
         let fromRebirth = this.engine.datamap.cell.rebirth;
         return calc.add(fromRebirth);
     })
-    calced_maxHopperFill = new CalcedDecimal(()=>{
+    calced_maxHopperFill = new CalcedDecimal(() => {
         let calc = new Decimal(100)
         return calc;
     })
@@ -156,8 +158,8 @@ export default class JuiceLmao {
 
     chooseGuide = (chosen: GuideTypes) => {
         if (this.data.guide === GuideTypes.none) {
-            
-            
+
+
             //SUBTRACT GUIDE COSTS
             if (chosen === GuideTypes.Guth) {
                 this.engine.garden.plainFruit.loseResource(10000)
@@ -165,14 +167,14 @@ export default class JuiceLmao {
                 this.engine.garden.knowledgeFruit.loseResource(1);
             } else if (chosen === GuideTypes.Sara) {
                 this.engine.garden.data.fruits.knowledge = ZERO;
-                this.engine.garden.data.plots = this.engine.garden.data.plots.filter((plant)=>{
+                this.engine.garden.data.plots = this.engine.garden.data.plots.filter((plant) => {
                     return plant.seed.type !== SeedType.knowledge
                 })
-                this.engine.garden.data.bag = this.engine.garden.data.bag.filter((seed)=>{
+                this.engine.garden.data.bag = this.engine.garden.data.bag.filter((seed) => {
                     return seed.type !== SeedType.knowledge
                 })
             }
-            
+
             //set new guide
             this.data.guide = chosen;
             this.engine.notify();
@@ -197,18 +199,33 @@ export default class JuiceLmao {
         this.engine.clearPopup();
     }
 
+
+    drinkPowers: I_DrinkPowers = {
+        //base power
+        basePower: 0,
+    }
+
     calcDrinkPowers = () => {
         if (this.data.last_crushed) {
+            const crushed = this.data.last_crushed;
+            const totalJuice = sum_I_FruitDecimals(crushed);
+
+            this.drinkPowers.basePower = Decimal.log10(totalJuice);
+
+            
 
         } else return;
     }
 
-    setCrushedFruit = (chosen : SeedType) => {
+
+
+
+    setCrushedFruit = (chosen: SeedType) => {
         this.data.toCrush = chosen;
         this.engine.notify();
     }
 
-    seedTypeToJuice = (type:SeedType, gain: DecimalSource) => {
+    seedTypeToJuice = (type: SeedType, gain: DecimalSource) => {
         switch (type) {
             case SeedType.hope: this.data.crushed.hope = this.data.crushed.hope.add(gain);
                 break;
@@ -227,7 +244,7 @@ export default class JuiceLmao {
                 this.data.crushed.egg = this.data.crushed.egg.add(gain);
                 break;
 
-            case SeedType.plain: 
+            case SeedType.plain:
                 this.data.crushed.plain = this.data.crushed.plain.add(gain);
                 break;
             case SeedType.knowledge:
@@ -236,7 +253,7 @@ export default class JuiceLmao {
 
             default:
                 throw new Error("no seed type?");
-                
+
                 break;
         }
     }
@@ -334,6 +351,7 @@ export default class JuiceLmao {
 
 }
 
+
 export enum GuideTypes {
     none, Sara, Guth, Zammy
     //none is the initial state,
@@ -362,8 +380,107 @@ export interface JuiceData {
     crushed: I_FruitDecimals;
     last_crushed?: I_FruitDecimals;
     last_guide?: GuideTypes;
-    
+
 }
+
+export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
+
+    //initialize power and dp object from juice
+    const totalFruit = sum_I_FruitDecimals(crushed);
+    const basePower = Decimal.log10(totalFruit);
+    let DP: I_DrinkPowers = { basePower }
+
+    let silverPowers = getSilverPowerArray(crushed);
+    let goldPowers = getGoldPowerArray(crushed);
+
+    /**
+     const pointLengths = [
+                    percentOfNum(juices.bunched.toNumber(),starTotal)+10,
+                    percentOfNum(juices.circular.toNumber(),starTotal)+10,
+                    percentOfNum(juices.egg.toNumber(),starTotal)+10,
+                    percentOfNum(juices.square.toNumber(),starTotal)+10,
+                    percentOfNum(juices.triangular.toNumber(),starTotal)+10,
+                ]
+
+                if (juices.bunched.greaterThan(100)) drawStar2(ctx, 38, 38 * 1, 5, 20, 10, 'silver', 'silver')
+                if (juices.circular.greaterThan(100)) drawStar2(ctx, 38, 38 * 2, 5, 20, 10, 'silver', 'silver')
+                if (juices.egg.greaterThan(100)) drawStar2(ctx, 38, 38 * 3, 5, 20, 10, 'silver', 'silver')
+                if (juices.square.greaterThan(100)) drawStar2(ctx, 38, 38 * 4, 5, 20, 10, 'silver', 'silver')
+                if (juices.triangular.greaterThan(100)) drawStar2(ctx, 38, 38 * 5, 5, 20, 10, 'silver', 'silver')
+     */
+
+    //return dp object
+    return DP;
+}
+
+function getSilverPowerArray (crushed: I_FruitDecimals):[boolean,boolean,boolean,boolean,boolean] {
+    const getEm:[boolean,boolean,boolean,boolean,boolean] = [false,false,false,false,false];
+    [crushed.bunched,crushed.circular,crushed.egg,crushed.square,crushed.triangular].forEach((dec,index)=>{
+        if (dec.greaterThan(100)) getEm[index] = true
+    })
+    return getEm
+}
+
+function getGoldPowerArray (crushed: I_FruitDecimals):[boolean,boolean,boolean,boolean,boolean] {
+    const starTotal = crushed.bunched.add(crushed.circular).add(crushed.egg).add(crushed.square).add(crushed.triangular).toNumber();
+    const starPercentages = [
+        percentOfNum(crushed.bunched.toNumber(),starTotal),
+        percentOfNum(crushed.circular.toNumber(),starTotal),
+        percentOfNum(crushed.egg.toNumber(),starTotal),
+        percentOfNum(crushed.square.toNumber(),starTotal),
+        percentOfNum(crushed.triangular.toNumber(),starTotal),
+    ]
+    const getEm:[boolean,boolean,boolean,boolean,boolean] = [false,false,false,false,false];
+    starPercentages.forEach((num,index)=>{
+        if (num >= 40) getEm[index] = true
+    })
+    return getEm
+}
+
+export interface I_DrinkPowers {
+    //base power
+    basePower: number,
+
+    //silver star powers (true or false)
+    s1?: Decimal,
+    s2?: Decimal,
+    s3?: Decimal,
+    s4?: Decimal,
+    s5?: Decimal,
+
+    //gold star powers (power determined by ratio)
+    g1?: Decimal,
+    g2?: Decimal,
+    g3?: Decimal,
+    g4?: Decimal,
+    g5?: Decimal,
+
+    // hope:doom ratio power
+    hd?: Decimal,
+}
+
+/*
+drinkPowers = {
+    //base power
+    basePower: 0,
+
+    //silver star powers (true or false)
+    s1: false, 
+    s2: false,
+    s3: false,
+    s4: false,
+    s5: false,
+
+    //gold star powers (power determined by ratio)
+    g1: ZERO,
+    g2: ZERO,
+    g3: ZERO,
+    g4: ZERO,
+    g5: ZERO,
+
+    // hope:doom ratio power
+    hd: ZERO,
+}*/
 
 const ZERO = new Decimal(0)
 
@@ -394,8 +511,8 @@ export function JuiceData_Init(): JuiceData {
     }
 }
 
-export  function JuiceData_Fix (data: Datamap): Datamap {
-    
+export function JuiceData_Fix(data: Datamap): Datamap {
+
     data.juice.hopperFruit = new Decimal(data.juice.hopperFruit)
     data.juice.hopperLevel = new Decimal(data.juice.hopperLevel)
     data.juice.pipe_hopper_powerPlant_level = new Decimal(data.juice.pipe_hopper_powerPlant_level)
@@ -408,8 +525,8 @@ export  function JuiceData_Fix (data: Datamap): Datamap {
 
     data.juice.fruitsSpentMakingPower = new Decimal(data.juice.fruitsSpentMakingPower)
     data.juice.powerDecayed = new Decimal(data.juice.powerDecayed)
-    
-    
+
+
     return data;
 }
 
