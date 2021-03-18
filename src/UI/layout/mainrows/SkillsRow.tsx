@@ -52,6 +52,18 @@ const SkillsRow = (props: { data: Datamap }) => {
                     unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying', isUnlocked: false, doUnlock: () => { } }}
                     skill={manager.skills.fortitude}
                 />
+                
+                <SingleSkillDiv 
+                    unlock={{ source: props.data.cell.rebirth, goal: TEN, ulString: 'Reach Rebirth Level', isUnlocked: false, doUnlock: () => { } }}
+                    skill={manager.skills.spirituality}
+                />
+                <SingleSkillDiv
+                    unlock={{ source: ZERO, goal: ONE, ulString: 'Get A Spellbook', isUnlocked: false, doUnlock: () => { } }}
+                    skill={manager.skills.magic}
+                />
+                <span style={{ textAlign: "center" }}>
+                MEST
+                </span>
                 <SingleSkillDiv
                     unlock={{ source: ZERO, goal: ONEK, ulString: 'Own Spaces', isUnlocked: false, doUnlock: () => { } }}
                     skill={manager.skills.matter}
@@ -67,14 +79,6 @@ const SkillsRow = (props: { data: Datamap }) => {
                 <SingleSkillDiv 
                     unlock={{ source: ZERO, goal: ONE, ulString: 'Skip a Day', isUnlocked: false, doUnlock: () => { } }}
                     skill={manager.skills.time}
-                />
-                <SingleSkillDiv 
-                    unlock={{ source: props.data.cell.rebirth, goal: TEN, ulString: 'Reach Rebirth Level', isUnlocked: false, doUnlock: () => { } }}
-                    skill={manager.skills.spirituality}
-                />
-                <SingleSkillDiv
-                    unlock={{ source: ZERO, goal: ONE, ulString: 'Get A Spellbook', isUnlocked: false, doUnlock: () => { } }}
-                    skill={manager.skills.magic}
                 />
             </FlexColumn>
             
@@ -96,9 +100,13 @@ interface SingleSkillDivProps {
 
 
 const SingleSkillDiv = (props: SingleSkillDivProps) => {
-    const locked = !props.skill.getData().unlocked;
+    const skillData = props.skill.getData();
+    const locked = !skillData.unlocked;
     const disabled = props.unlock.goal.greaterThan(props.unlock.source);
     const color = DICT_name_to_color[props.skill.name];
+
+    const displayLevel = skillData.level.add(1);
+
     let current, goal;
     if (locked) {
         current = props.unlock.source;
@@ -147,7 +155,7 @@ const SingleSkillDiv = (props: SingleSkillDivProps) => {
                         {props.unlock.ulString}
                     </span>}
                     {!locked && <span style={{ color:color}}>
-                        {`Level: ${props.skill.getData().level.toNumber()}`}
+                        {`Level: ${displayLevel.toNumber()}`}
                     </span>}
                     <span>
                         <DisplayDecimal decimal={current} />/<DisplayDecimal decimal={goal} />

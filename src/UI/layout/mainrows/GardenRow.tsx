@@ -2,7 +2,7 @@ import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
 import { canCheat, percentOf } from "../../../engine/externalfns/util";
-import { TimeRequiredForSeed, GardenSeed, SeedType, GardenPlant, SeedGrowthTimeRequired } from "../../../engine/garden/Garden";
+import { TimeRequiredForSeed, GardenSeed, SeedType, GardenPlant } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
 import { SingleBuildingUI } from "../../BuildingsUI";
 import FlexColumn from "../../comps/FlexColumn";
@@ -173,7 +173,7 @@ const NewSeedDisplay = (props: { seed: GardenSeed, index: number, canPlantSeed: 
 const NewPlotDisplay = (props: { plant: GardenPlant, index: number }) => {
     const engine = gEngine;
 
-    const req = SeedGrowthTimeRequired(props.plant.seed);
+    const req = engine.garden.seedGrowthTimeRequired(props.plant.seed);
     const growthPErcent = percentOf(props.plant.plantTimer, req);
     const waterTime = engine.garden.waterTimeBase.times(engine.garden.waterTimeMulti).toNumber();
     const waterPercent = percentOf(props.plant.water, waterTime);

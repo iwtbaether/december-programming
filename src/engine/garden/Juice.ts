@@ -4,13 +4,18 @@ import { sum_I_FruitDecimals } from "../../UI/layout/mainrows/JuiceRow";
 import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import CalcedDecimal from "../externalfns/decimalInterfaces/CalcedDecimal";
+import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
-import { percentOfNum } from "../externalfns/util";
+import { moreDecimal, percentOfNum } from "../externalfns/util";
 import { I_FruitDecimals, I_FruitDecimals_SetDecimals, SeedType } from "./Garden";
 
 export default class JuiceLmao {
     constructor(public engine: Engine) {
 
+    }
+
+    setup(){
+        this.calcDrinkPowers();
     }
 
     tickLength = 10000; //10,000 ms || 10 seconds
@@ -26,7 +31,8 @@ export default class JuiceLmao {
     tickedNumbers = {
         toHopper: ZERO,
         toPlant: ZERO,
-        toPower: ZERO,
+        usedPPF: ZERO,
+        powerGain: ZERO,
         toDecay: ZERO,
         crushed: ZERO,
     }
@@ -63,6 +69,11 @@ export default class JuiceLmao {
         this.crushFruit();
     }
 
+    drinkPowers: I_DrinkPowers = {
+        //base power
+        basePower: 0,
+    }
+
     fillHopper = (ammount: DecimalSource): Decimal => {
         let maxCanGain = Decimal.max(0, this.calced_maxHopperFill.current.minus(this.data.hopperFruit));
         let gain = Decimal.min(maxCanGain, ammount);
@@ -94,7 +105,11 @@ export default class JuiceLmao {
 
 
     hopperToPlant = () => {
-        let diff = this.data.hopperFruit.times(.01);
+        let pipeSize = new Decimal(.01);
+        if (this.data.pipe_hopper_powerPlant_level.greaterThan(0)) {
+            pipeSize = moreDecimal(pipeSize,this.data.pipe_hopper_powerPlant_level.times(.01))
+        }
+        let diff = this.data.hopperFruit.times(pipeSize);
         this.tickedNumbers.toPlant = diff;
         this.data.hopperFruit = this.data.hopperFruit.minus(diff);
         this.data.powerPlantFruit = this.data.powerPlantFruit.add(diff)
@@ -104,19 +119,28 @@ export default class JuiceLmao {
         //convert fruit to power
         if (this.data.powerPlantFruit.greaterThan(0)) {
 
-            let diff = new Decimal(this.data.powerPlantFruit.log10() / 4)
+            let diff = new Decimal(this.data.powerPlantFruit.log10() / 4).max(0);
+            //if ppf is under 1 this returns a -. need to fix.;
 
-            this.tickedNumbers.toPower = diff.times(2);
+            const usedPPF = this.tickedNumbers.usedPPF = diff.times(2);
 
             //diff = Decimal.max(diff, diff.abs().div(10))
             //lose x fruit
-            this.data.powerPlantFruit = this.data.powerPlantFruit.minus(diff.times(2));
+            this.data.powerPlantFruit = this.data.powerPlantFruit.minus(usedPPF);
             // x div 2 gets wasted
             this.data.fruitsSpentMakingPower = this.data.fruitsSpentMakingPower.add(diff);
             // x div 2 goes to power
-            this.data.powerAmount = this.data.powerAmount.add(diff)
+            let powerGain = diff;
+            if (this.drinkPowers.g1) {
+                powerGain = powerGain.add(powerGain.times(this.drinkPowers.g1));
+            }
+            if (this.data.powerPlantLevel.greaterThan(0)) {
+                powerGain = moreDecimal(powerGain, this.data.powerPlantLevel.times(.01))
+            }
+            this.data.powerAmount = this.data.powerAmount.add(powerGain)
+            this.tickedNumbers.powerGain = powerGain
         } else {
-            this.tickedNumbers.toPower = ZERO;
+            this.tickedNumbers.usedPPF = ZERO;
         }
 
         //power decays
@@ -142,7 +166,13 @@ export default class JuiceLmao {
         return calc.add(fromRebirth);
     })
     calced_maxHopperFill = new CalcedDecimal(() => {
-        let calc = new Decimal(100)
+        let calc = new Decimal(100);
+        if (this.data.hopperLevel.greaterThan(0)) {
+            calc = calc.add(this.data.hopperLevel.times(10))
+        }
+        if (this.drinkPowers.s4) {
+            calc = calc.times(this.drinkPowers.s4)
+        };
         return calc;
     })
 
@@ -184,7 +214,7 @@ export default class JuiceLmao {
     }
 
     startDrink = () => {
-        this.clearCrushedFruit();
+        //this.clearCrushedFruit();
         this.engine.setPopup(5);
     }
 
@@ -200,20 +230,27 @@ export default class JuiceLmao {
     }
 
 
-    drinkPowers: I_DrinkPowers = {
-        //base power
-        basePower: 0,
-    }
+    
+
+
 
     calcDrinkPowers = () => {
         if (this.data.last_crushed) {
             const crushed = this.data.last_crushed;
-            const totalJuice = sum_I_FruitDecimals(crushed);
+            let DP = calcDrink(crushed)
+            this.drinkPowers = DP
 
-            this.drinkPowers.basePower = Decimal.log10(totalJuice);
-
+            this.engine.garden.setFruitGainMulti();
+            this.engine.calcGloom();
+            this.calced_maxHopperFill.set();
+            this.engine.jobs.calcJobSpeed();
+            
+            //g1 auto
+            this.engine.garden.setPlantSpeedMult();
             
 
+            this.engine.calcEnergy();
+        
         } else return;
     }
 
@@ -349,6 +386,69 @@ export default class JuiceLmao {
         name: 'Juide of Doom'
     })
 
+    powerResource: SingleResource = new SingleResource({
+        get: () => this.data.powerAmount,
+        setDecimal: (dec) => this.data.powerAmount = dec,
+        name: 'Power'
+    })
+
+    hopperLevel: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Big Hopper',
+            get: () => this.engine.datamap.juice.hopperLevel,
+            setDecimal: (dec) => {
+                this.engine.datamap.juice.hopperLevel = dec;
+                this.calced_maxHopperFill.set();
+            },
+        }),
+        costs: [
+            { expo: { initial: 20, coefficient: 1.5 }, resource: this.powerResource },
+        ],
+        description: `More Fruit can be stored in the hopper`,
+        hidden: () => false,
+        outcome: () => {
+            return `+10 Base Hopper Size`
+        },
+    })
+
+    pipeLevel: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Slightly Bigger Pipe',
+            get: () => this.engine.datamap.juice.pipe_hopper_powerPlant_level,
+            setDecimal: (dec) => {
+                this.engine.datamap.juice.pipe_hopper_powerPlant_level = dec;
+                //calc???
+            },
+        }),
+        costs: [
+            { expo: { initial: 20, coefficient: 1.5 }, resource: this.powerResource },
+        ],
+        description: `Increases the ammount of Fruits piped`,
+        hidden: () => false,
+        outcome: () => {
+            return `1% increased Fruits piped per level`
+        },
+    })
+
+    powerplantLevel: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            name: 'Powerplant Level',
+            get: () => this.engine.datamap.juice.powerPlantLevel,
+            setDecimal: (dec) => {
+                this.engine.datamap.juice.powerPlantLevel = dec;
+                //calc???
+            },
+        }),
+        costs: [
+            { expo: { initial: 20, coefficient: 1.5 }, resource: this.powerResource },
+        ],
+        description: `Inreases Power Generation`,
+        hidden: () => false,
+        outcome: () => {
+            return `1% increased Power Generation per level`
+        },
+    })
+
 }
 
 
@@ -387,11 +487,52 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
 
     //initialize power and dp object from juice
     const totalFruit = sum_I_FruitDecimals(crushed);
-    const basePower = Decimal.log10(totalFruit);
+    const basePower = Decimal.log10(totalFruit) - 1;
     let DP: I_DrinkPowers = { basePower }
 
     let silverPowers = getSilverPowerArray(crushed);
-    let goldPowers = getGoldPowerArray(crushed);
+    let goldPowersAndValues = getGoldPowerArray(crushed);
+    let goldPowers = goldPowersAndValues.getEm;
+    let goldValues = goldPowersAndValues.sPD;
+
+    //bcest
+    if (silverPowers[0] === true) {
+        DP.s1 = Decimal.times(1.1, basePower)
+    }
+    if (silverPowers[1] === true) {
+        DP.s2 = Decimal.times(.9, basePower);
+    }
+    if (silverPowers[2] === true) {
+        DP.s3 = Decimal.times(.95, basePower);
+    }
+    if (silverPowers[3] === true) {
+        DP.s4 = Decimal.times(1.05, basePower);
+    }
+    if (silverPowers[4] === true) {
+        DP.s5 = ZERO;
+    }
+
+    if (goldPowers[0] === true) {
+        DP.g1 = (goldValues[0].times(basePower));
+    }
+    if (goldPowers[1] === true) {
+        DP.g2 = (goldValues[1].times(basePower));
+    }
+    if (goldPowers[2] === true) {
+        DP.g3 = (goldValues[2].times(basePower));
+    }
+    if (goldPowers[3] === true) {
+        DP.g4 = (goldValues[3].times(basePower));
+    }
+    if (goldPowers[4] === true) {
+        DP.g5 = Decimal.max( Decimal.log10(goldValues[4].times(basePower)) , 1 );
+    }
+
+    const sumHD = crushed.hope.add(crushed.doom)
+    if (sumHD.greaterThan(0)) {
+        DP.hd = crushed.hope.div(crushed.doom.add(crushed.hope))
+    }   
+    
 
     /**
      const pointLengths = [
@@ -421,20 +562,20 @@ function getSilverPowerArray (crushed: I_FruitDecimals):[boolean,boolean,boolean
     return getEm
 }
 
-function getGoldPowerArray (crushed: I_FruitDecimals):[boolean,boolean,boolean,boolean,boolean] {
-    const starTotal = crushed.bunched.add(crushed.circular).add(crushed.egg).add(crushed.square).add(crushed.triangular).toNumber();
-    const starPercentages = [
-        percentOfNum(crushed.bunched.toNumber(),starTotal),
-        percentOfNum(crushed.circular.toNumber(),starTotal),
-        percentOfNum(crushed.egg.toNumber(),starTotal),
-        percentOfNum(crushed.square.toNumber(),starTotal),
-        percentOfNum(crushed.triangular.toNumber(),starTotal),
+function getGoldPowerArray (crushed: I_FruitDecimals) {
+    const starTotal = crushed.bunched.add(crushed.circular).add(crushed.egg).add(crushed.square).add(crushed.triangular);
+    const sPD = [
+        Decimal.div(crushed.bunched, starTotal),
+        Decimal.div(crushed.circular, starTotal),
+        Decimal.div(crushed.egg, starTotal),
+        Decimal.div(crushed.square, starTotal),
+        Decimal.div(crushed.triangular, starTotal),
     ]
     const getEm:[boolean,boolean,boolean,boolean,boolean] = [false,false,false,false,false];
-    starPercentages.forEach((num,index)=>{
-        if (num >= 40) getEm[index] = true
+    sPD.forEach((dec,index)=>{
+        if (dec.greaterThanOrEqualTo(.3)) getEm[index] = true
     })
-    return getEm
+    return {getEm, sPD}
 }
 
 export interface I_DrinkPowers {

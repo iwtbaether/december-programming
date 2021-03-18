@@ -18,7 +18,7 @@ function GardeningModAndValueToString(mod: GardeningItemModList, value: number):
             return `+1 Garden Plot`
             break;
         case GardeningItemModList.DoomRate:
-            return `${value}% Doom Seed Find`
+            return `+${value}% Doom Seed Find`
             break;
         case GardeningItemModList.FruitGainBase:
             return `+${(value * .1).toFixed(1)} Base Fruit Gain`

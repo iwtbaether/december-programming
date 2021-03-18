@@ -112,7 +112,7 @@ const UnlockMagic = (props: {unlockStateOne: number}) => {
   </span>
 }
 
-const Discord = () => {
+export const Discord = () => {
   return (
     <a target="_blank" href="https://discord.gg/F63vNBN">
       Discord

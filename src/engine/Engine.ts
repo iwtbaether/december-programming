@@ -45,7 +45,13 @@ export default class Engine extends CoreEngine {
         setDecimal: (d) => {
             this.datamap.cell.gloom = d;
         },
-        calculateGain: ()=>this.datamap.cell.gloomGen1.add(this.datamap.cell.gloomGen1E).times(this.datamap.cell.aewf)
+        calculateGain: ()=>{
+            let old = this.datamap.cell.gloomGen1.add(this.datamap.cell.gloomGen1E).times(this.datamap.cell.aewf)
+            if (this.garden.juice.drinkPowers.s2) {
+                old = old.times(this.garden.juice.drinkPowers.s2);
+            }
+            return old;
+        }
     })
 
     theExchange: TheExchange =new TheExchange(this);
@@ -328,6 +334,10 @@ export default class Engine extends CoreEngine {
         if (this.crafting.DoomAndGloomFromEQ.MoreDoomGain > 0) {
             gainedDoom = gainedDoom.times(this.crafting.DoomAndGloomFromEQ.MoreDoomGain)
         }
+        const dp = this.garden.juice.drinkPowers;
+        if (dp.hd) {
+            gainedDoom = gainedDoom.add(gainedDoom.times( Decimal.minus(1,dp.hd).times(dp.basePower)));
+        }
         return gainedDoom;
     }
     clearDoom = () => {
@@ -376,10 +386,11 @@ export default class Engine extends CoreEngine {
         this.datamap.cell.aewf = this.datamap.cell.aewf.add(1);
 
         this.crafting.reset();
-        //this.garden.resetGarden();
+        this.garden.resetGarden();
         this.jobs.realReset();
         this.clearDoom();
         this.resetGloom()
+
         this.clearEnergy();
 
         if (this.datamap.skillManager.fortitude.unlocked) {
@@ -708,6 +719,7 @@ export default class Engine extends CoreEngine {
         //console.log('i fixed the bug');
         if (!canCheat) this.datamap.autosave =true;
         
+        this.garden.juice.setup();
         this.crafting.calc();
         //console.log('EXTRALOAD');
         this.calcEnergy();

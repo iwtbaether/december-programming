@@ -178,7 +178,7 @@ export default class Garden {
 
                     plot.water -= extra;
                 } else if (this.equipment.autoWater) {
-                    if (SeedGrowthTimeRequired(plot.seed) > plot.plantTimer) {
+                    if (this.seedGrowthTimeRequired(plot.seed) > plot.plantTimer) {
                         let rng = getRandomInt(1, 100)
                         if (rng === 100) this.engine.crafting.breakWateringCan();
                         this.waterPlantQuietly(index);
@@ -197,7 +197,7 @@ export default class Garden {
 
     quietHarvest = (index: number) => {
         const plant = this.data.plots[index];
-        if (SeedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
+        if (this.seedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
             this.data.plots.splice(index, 1)
             this.getFruit(plant.seed.type)
             if (this.data.researches.progression === 2) {
@@ -213,7 +213,7 @@ export default class Garden {
 
         for (let index = this.data.plots.length - 1; index >= 0; index--) {
             const plant = this.data.plots[index];
-            if (SeedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
+            if (this.seedGrowthTimeRequired(plant.seed) <= plant.plantTimer) {
                 this.data.plots.splice(index, 1)
 
                 this.seedTypeToResource(plant.seed.type).gainResource(zammyGain);
@@ -323,6 +323,10 @@ export default class Garden {
 
     getSeed = () => {
         if (!this.canGetSeed()) return;
+
+        if (this.engine.skillManager.skills.spirituality.isUnlocked()) {
+            this.engine.skillManager.skills.spirituality.gainXP(1);
+        }
 
         let possibleTypes: SeedType[] = [SeedType.hope];
 
@@ -577,6 +581,9 @@ export default class Garden {
         if (this.equipment.plantGrowthMulti !== 1) {
             mult = mult * this.equipment.plantGrowthMulti;
         }
+        if (this.juice.drinkPowers.g2) {
+            mult = mult + mult * this.juice.drinkPowers.g2.toNumber();
+        }
         this.plantSpeedMult = mult;
     }
 
@@ -609,6 +616,9 @@ export default class Garden {
         scaled += 1;
         if (this.equipment.fruitGainMulti !== 1) {
             scaled = scaled * this.equipment.fruitGainMulti;
+        }
+        if (this.juice.drinkPowers.s1) {
+            scaled = scaled * this.juice.drinkPowers.s1.toNumber();
         }
         this.fruitGainMult = scaled;
     }
@@ -694,6 +704,15 @@ export default class Garden {
             { resource: this.squareFruit, count: new Decimal(50) },
         ]
     })
+
+    seedGrowthTimeRequired(seed: GardenSeed) {
+        let base = TimeRequiredForSeed;
+        let mult = seed.type + 1;
+        if (this.juice.drinkPowers.s1) {
+            mult = mult * this.juice.drinkPowers.s1.toNumber();
+        }
+        return base * mult;
+    }
 
     cleanGarden = () => {
 
@@ -980,10 +999,4 @@ export function I_FruitDecimals_SetDecimals(someData: I_FruitDecimals) {
     someData.plain = new Decimal(someData.plain);
     someData.square = new Decimal(someData.square);
     someData.triangular = new Decimal(someData.triangular);
-}
-
-export function SeedGrowthTimeRequired(seed: GardenSeed) {
-    let base = TimeRequiredForSeed;
-    let mult = seed.type + 1;
-    return base * mult;
 }

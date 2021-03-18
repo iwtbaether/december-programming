@@ -43,6 +43,9 @@ export default class EnergyModule {
         let base = this.energyPerClick;
         let count = this.energyEquipmentMods.clicksPerSecond;
         this.clickerCount = count + this.engine.datamap.cell.d4.toNumber();
+        if (this.engine.garden.juice.drinkPowers.g4) {
+            this.clickerCount = this.clickerCount * (1+this.engine.garden.juice.drinkPowers.g4.toNumber())
+        }
         this.energyGainFromAutoClickers = Decimal.times(this.clickerCount,base);
     }
 
@@ -74,6 +77,11 @@ export default class EnergyModule {
         if (this.engine.theExchange.EU1.info.get()) { mult4 = moreDecimal(mult4, 1) }
         if (this.engine.theExchange.EU2.info.get()) { mult4 = moreDecimal(mult4, 1) }
         if (this.engine.theExchange.EU3.info.get()) { mult4 = moreDecimal(mult4, 1) }
+
+        const dp = this.engine.garden.juice.drinkPowers;
+        if (dp.hd) {
+            mult4 = mult4.add(mult4.times(dp.hd.times(dp.basePower)))
+        }
 
         this.totalEnergyGainMore = mult4.times(mult2).times(mult3).times(this.energyEquipmentMods.moreGain);
         this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);

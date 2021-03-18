@@ -34,6 +34,7 @@ export default class Crafting {
     }
 
     makeCatalyst = (size: number) => {
+        this.clearCraft();
         if (this.data.currency.transmutes < 1) return;
 
         this.data.currency.transmutes--;
@@ -46,6 +47,8 @@ export default class Crafting {
     }
 
     makeRandomGardeningEquipment = () => {
+        this.clearCraft();
+
         if (this.data.currency.transmutes < 1) return;
         this.data.currency.transmutes--;
         this.engine.save();
@@ -105,12 +108,12 @@ export default class Crafting {
 
             if ([1, 2, 3].includes(type)) {
                 const cata = this.data.currentCraft as EnergyItem;
-                if (cata.mods.length >= maxMods(cata)) return;
+                if (cata.mods.length >= this.maxMods(cata)) return;
                 this.data.currency.augmentations--;
                 this.data.currentCraft = addRandomEnergyMod(cata);
             } else if ([5, 6, 7].includes(type)) {
                 const item = this.data.currentCraft as GardeningItem;
-                if (item.mods.length > maxMods(item)) return;
+                if (item.mods.length > this.maxMods(item)) return;
                 this.data.currency.augmentations--;
                 this.data.currentCraft = addRandomGardeningMod(item);
             }
@@ -120,6 +123,7 @@ export default class Crafting {
     }
 
     clearCraft = () => {
+        if (this.data.currentCraft === null) return;
         if (this.data.currentCraft?.doomed) this.gainDoomShards(5)
         this.data.currentCraft = null;
         this.getRandomCurrency();
@@ -287,6 +291,31 @@ export default class Crafting {
         return base;
     }
 
+    maxMods = (item: ItemData): number => {
+        if (item.itemType === ItemTypes.LargeEnergyItem) return 3;
+        if (item.itemType === ItemTypes.MediumEnergyItem) return 2;
+        if (item.itemType === ItemTypes.SmallEnergyItem) return 1;
+        if (item.itemType === ItemTypes.MagicSecateurs) {
+            if (this.engine.garden.juice.drinkPowers.s5) {
+                return 2 + 1;
+            }
+            return 2;
+        }
+        if (item.itemType === ItemTypes.MagicWateringCan) {
+            if (this.engine.garden.juice.drinkPowers.s5) {
+                return 2 + 1;
+            }
+            return 2;
+        }
+        if (item.itemType === ItemTypes.GardeningHat) {
+            if (this.engine.garden.juice.drinkPowers.s5) {
+                return 3 + 1;
+            }
+            return 3;
+        }
+        return 0;
+    }
+
     calcGardeningEquipment = () => {
         let base: GardeningItemValus = {
             autoHarvest: false,
@@ -339,6 +368,7 @@ export default class Crafting {
             let unbroken = can.mods.findIndex(mod => mod.mod === GardeningItemModList.NeverBreak)
             if (unbroken < 0) {
                 let index = can.mods.findIndex(mod => mod.mod === GardeningItemModList.AutoWater)
+                if (index === -1) return;
                 can.mods[index].mod = GardeningItemModList.Broken;
                 this.setGardeningCalcedData();
             }
@@ -550,6 +580,8 @@ function modifyGardeningItemValues(mod: GardeningItemMod, values: GardeningItemV
             break;
     }
 
+    
+
     return values;
 }
 
@@ -678,6 +710,7 @@ function makeGardeningItem(): GardeningItem {
 
     if (gEngine.theExchange.CU1.true && rollForUnique() && chosen === ItemTypes.MagicWateringCan) {
         if (chosen === ItemTypes.MagicWateringCan) {
+            //CRIMSON'S SUPPORTER UNIQUE #1
             item.mods.push({ mod: GardeningItemModList.NeverBreak, value: 1 })
             item.mods.push({ mod: GardeningItemModList.AutoWater, value: 1 })
             item.unique = 1;
@@ -707,7 +740,7 @@ function getEnergyModMaxValue(mod: EnergyItemModList): number {
 }
 
 function addRandomEnergyMod(item: EnergyItem, bypass?: boolean): EnergyItem {
-    if (!bypass) if (item.mods.length >= maxMods(item)) return item;
+    if (!bypass) if (item.mods.length >= gEngine.crafting.maxMods(item)) return item;
 
     let exclusions = getEnergyModExclusions(item)
 
@@ -735,6 +768,7 @@ function addRandomEnergyMod(item: EnergyItem, bypass?: boolean): EnergyItem {
 }
 
 function getGardenModMaxValue(mod: GardeningItemModList): number {
+    let bonus = (gEngine.garden.juice.drinkPowers.g5)?gEngine.garden.juice.drinkPowers.g5.toNumber():0
     switch (mod) {
         case GardeningItemModList.AutoHarvest:
         case GardeningItemModList.AutoPlant:
@@ -744,19 +778,19 @@ function getGardenModMaxValue(mod: GardeningItemModList): number {
             return 1;
             break;
         case GardeningItemModList.WateringDurationBase:
-            return 600;
+            return 600 + bonus;
             break;
         case GardeningItemModList.FruitGainBase:
-            return 20;
+            return 20 + bonus;
             break;
         default:
-            return 10;
+            return 10 + bonus;
             break;
     }
 }
 
 function addRandomGardeningMod(item: GardeningItem, bypass?: boolean): GardeningItem {
-    if (!bypass) if (item.mods.length >= maxMods(item)) return item;
+    if (!bypass) if (item.mods.length >= gEngine.crafting.maxMods(item)) return item;
 
     let baseList = [
         GardeningItemModList.BiggerBag,
@@ -816,15 +850,6 @@ function getRandomDoomMod(): DoomStoneMod {
     return newMod;
 }
 
-export function maxMods(item: ItemData): number {
-    if (item.itemType === ItemTypes.LargeEnergyItem) return 3;
-    if (item.itemType === ItemTypes.MediumEnergyItem) return 2;
-    if (item.itemType === ItemTypes.SmallEnergyItem) return 1;
-    if (item.itemType === ItemTypes.MagicSecateurs) return 2;
-    if (item.itemType === ItemTypes.MagicWateringCan) return 2;
-    if (item.itemType === ItemTypes.GardeningHat) return 3;
-    return 0;
-}
 
 function getEnergyModExclusions(item: EnergyItem): EnergyItemModList[] {
     let exclusions: EnergyItemModList[] = [];
@@ -888,7 +913,12 @@ export enum ItemTypes {
     MagicWateringCan,
     MagicSecateurs,
     GardeningHat,
-    PatiencePeace,
+    PatienceMushroom,
+    CircularForm,
+    BunchedForm,
+    EggForm,
+    SquareForm,
+    TriangleForm,
 }
 
 

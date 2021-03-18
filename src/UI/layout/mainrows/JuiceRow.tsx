@@ -5,6 +5,7 @@ import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
 import { I_FruitDecimals, SeedType } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
+import { SingleBuildingUI } from "../../BuildingsUI";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
 import ProgressBar from "../../comps/ProgressBar";
@@ -31,17 +32,19 @@ const JuiceRow = (props: { data: Datamap }) => {
                 {juice.guide === GuideTypes.Sara && <SSelection data={data} />}
                     {juice.guide === GuideTypes.Guth && <GSelection data={data} />}
                     {juice.guide === GuideTypes.Zammy && <ZSelection data={data} />}
-                     <span>
-                                <JuiceCanvas juices={juice.crushed} guide={juice.guide} />
-                            </span>
-                            <span>
-                                <button onClick={jClass.startDrink} disabled={totalJuice.lessThan(1000)}>
-                                    <ChildTip>Drink current Juice and reset Juice
-                                    </ChildTip>
+                    <span>
+                        <JuiceCanvas juices={juice.crushed} guide={juice.guide} />
+                    </span>
+                    <span>
+                        <button onClick={jClass.startDrink} disabled={totalJuice.lessThan(1000)}>
+                            <ChildTip>
+                                Drink current Juice and reset Juice<br />
+                                <ProgressBar current={totalJuice} max={1000} bg='black'  color='white'/>
+                            </ChildTip>
                                     Drink Juice!
                                 </button>
-                                {data.juice.last_crushed && <button onClick={()=>{gEngine.setPopup(6)}}>View Powers from Juice</button>}
-                            </span>
+                        {data.juice.last_crushed && <button onClick={() => { gEngine.setPopup(6) }}>View Powers from Juice</button>}
+                    </span>
                 </div>}
 
                 {juice.guide !== GuideTypes.none && <FlexColumn>
@@ -90,10 +93,10 @@ const JuiceRow = (props: { data: Datamap }) => {
 
                                     </ChildTip>
                         some
-                        </span> fruit in the Power Plant to Power. (-<DisplayDecimal decimal={jClass.tickedNumbers.toPower} /> fruit last tick)
+                        </span> fruit in the Power Plant to Power. (-<DisplayDecimal decimal={jClass.tickedNumbers.usedPPF} /> fruit last tick)
                     </span>
                             <span className='yellow-text' style={{ fontSize: '2em' }}>
-                                Power: <DisplayDecimal decimal={juice.powerAmount} /> (+<DisplayDecimal decimal={jClass.tickedNumbers.toPower.div(2)} /> power last tick)
+                                Power: <DisplayDecimal decimal={juice.powerAmount} /> (+<DisplayDecimal decimal={jClass.tickedNumbers.powerGain} /> power last tick)
                     </span>
                             <span>
                                 1% of power decays per tick. <DisplayDecimal decimal={juice.powerDecayed} /> total Power decayed. (<DisplayDecimal decimal={jClass.tickedNumbers.toDecay} /> last tick)
@@ -105,6 +108,9 @@ const JuiceRow = (props: { data: Datamap }) => {
                                 <button onClick={() => { gEngine.setPopup(4) }}>
                                     Select Fruit To Crush
                         </button>
+                                {data.juice.toCrush !== null && <button onClick={jClass.clearCrushedFruit}>Clear</button>}
+                            </span>
+                            <span>
                                 {data.juice.toCrush === null && <span> No crush target</span>}
                                 {data.juice.toCrush !== null && <span> Crushing: {SeedType[data.juice.toCrush].toUpperCase()} FRUIT (+<DisplayDecimal decimal={jClass.tickedNumbers.crushed} /> last tick)</span>}
                             </span>
@@ -117,9 +123,18 @@ const JuiceRow = (props: { data: Datamap }) => {
                         </span>
                                 <JuiceDisplay juiceData={juice.crushed} />
                             </span>
-                            
+
                         </FlexColumn>
                     </FlexRow>
+
+                    {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(9) && <div>
+                        <div>
+                            Juicer Upgrades
+                        </div>
+                        <SingleBuildingUI building={jClass.hopperLevel} />
+                        <SingleBuildingUI building={jClass.pipeLevel} />
+                        <SingleBuildingUI building={jClass.powerplantLevel} />
+                    </div>}
 
                 </FlexColumn>}
 
@@ -146,23 +161,25 @@ const GuideSelection = (props: { data: Datamap }) => {
                 <GSelection data={data} />
                 <ZSelection data={data} />
             </FlexRow>
+            {data.juice.last_crushed && <button onClick={() => { gEngine.setPopup(6) }}>View Powers from Juice</button>}
+            
         </FlexColumn>
     )
 }
 
-export function sum_I_FruitDecimals (toSum: I_FruitDecimals): Decimal {
+export function sum_I_FruitDecimals(toSum: I_FruitDecimals): Decimal {
     return toSum.bunched.add(toSum.circular).add(toSum.doom).add(toSum.egg).add(toSum.hope).add(toSum.knowledge).add(toSum.plain).add(toSum.square).add(toSum.triangular);
 }
 
-export const JuiceDisplay = (props: {juiceData:I_FruitDecimals}) => {
+export const JuiceDisplay = (props: { juiceData: I_FruitDecimals }) => {
     const juice = props.juiceData
     const totalJuice = sum_I_FruitDecimals(juice);
     return (<span>
         <ListedDecimal resource={juice.hope} name={'Hope '} />
-        <ListedDecimal resource={juice.bunched} name={'Bunched '} />
         <ListedDecimal resource={juice.circular} name={'Circular '} />
-        <ListedDecimal resource={juice.triangular} name={'Triangular '} />
         <ListedDecimal resource={juice.square} name={'Square '} />
+        <ListedDecimal resource={juice.bunched} name={'Bunched '} />
+        <ListedDecimal resource={juice.triangular} name={'Triangular '} />
         <ListedDecimal resource={juice.doom} name={'Doom '} />
         <ListedDecimal resource={juice.egg} name={'Egg '} />
         <ListedDecimal resource={juice.plain} name={'Plain'} />

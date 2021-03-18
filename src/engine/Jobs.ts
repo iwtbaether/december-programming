@@ -71,6 +71,9 @@ export default class Jobs {
         const jsMult2 = this.data.notReset.upgrades.jobSpeed.add(1);
         let jsMult3 = this.engine.garden.gardenJobSpeedMult;
         if (this.engine.theExchange.JU12.true) { jsMult3 = jsMult3.times(2) }
+        if (this.engine.garden.juice.drinkPowers.s3) {
+            jsMult3 = jsMult3.times(this.engine.garden.juice.drinkPowers.s3);
+        }
         this.calced.finalJobSpeedMult = jsMult1.times(jsMult2).times(jsMult3);
         const precap = this.calced.finalBaseJobSpeed.times(this.calced.finalJobSpeedMult)
 
@@ -193,6 +196,9 @@ export default class Jobs {
         let pp = this.data.jobProgress;
         let mult = Decimal.add(1, Decimal.times(.1, this.data.notReset.upgrades.workFromPrestige))
         if (this.engine.theExchange.JU11.true) mult = mult.times(2);
+        if (this.engine.garden.juice.drinkPowers.g3) {
+            mult = this.engine.garden.juice.drinkPowers.g3.add(1).times(mult);
+        }
         return pp.times(mult);
     }
 

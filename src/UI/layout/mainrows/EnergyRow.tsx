@@ -99,7 +99,7 @@ export const EnergyRow = (props: { data: Datamap; energy: Decimal; }) => {
               {data.cell.aewf.greaterThan(0) && ('Is reset down to 1 on Difficulty Up')}
             </TipFC2>
           <ConfirmBasicCommandButton {...gEngine.gUL3}>
-            Resets Energy, Doom, Crafting, Jobs<br />
+            Resets Energy, Doom, Crafting, Garden, Jobs<br />
         Gives +1 Base Gloom
       </ConfirmBasicCommandButton>
             </span>

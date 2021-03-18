@@ -24,3 +24,9 @@ export function DecimalToString (decimal: Decimal): string {
 
     return str;
 }
+
+export const DisplayDecimalAsPercent: React.FC<{decimal: Decimal}> = (props) => (
+    <span className='DisplayDecimal'>
+        {props.decimal.times(100).floor().toString()}%
+    </span>
+)

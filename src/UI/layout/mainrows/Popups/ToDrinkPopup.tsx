@@ -35,9 +35,6 @@ const ToDrinkPopup = (props: { data: Datamap }) => {
                 </FlexColumn>
                 
             </FlexRow>
-            <span>
-                Your current crush target has been cleared. Don't forget to reset it!
-            </span>
             <div style={{display:'flex',justifyContent:'space-between'}}>
             <button onClick={engine.garden.juice.finishDrink}>
                 Drink Juice & replace Last

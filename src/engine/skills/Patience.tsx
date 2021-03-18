@@ -3,6 +3,8 @@ import { SingleManagedSkill } from "./SingleManagedSkill";
 
 export default class Patience_Skill extends SingleManagedSkill {
 
+
+
     //GROW A MUSHROOM THAT GROWS FRUIT FORMS
     //1. grow mushroom
     //2, fertalize with a fruit form
@@ -11,11 +13,19 @@ export default class Patience_Skill extends SingleManagedSkill {
 }
 
 export interface Patience_Skill_Extra_Data {
+    usedTokens: number;
 
+    //timer bases -- USE THIS INSTEAD OF ADDING WIH DELTA
+    lastReset: number;
+    lastMushroom: number
 }
 
-export function Patience_Skill_Extra_Data_Init () {
-
+export function Patience_Skill_Extra_Data_Init (): Patience_Skill_Extra_Data {
+    return {
+        usedTokens: 0,
+        lastReset: 0,
+        lastMushroom: 0,
+    }
 }
 
 export interface IDV2 extends ItemData {

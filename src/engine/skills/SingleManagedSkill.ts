@@ -22,4 +22,22 @@ export class SingleManagedSkill {
         let data = this.getData();
         data.xp = Decimal.floor(data.xp.add(gained));
     };
+
+    isUnlocked = () => {
+        return this.getData().unlocked;
+    }
+
+    canLevel = ():boolean => {
+        return this.getData().xp.greaterThanOrEqualTo(this.reqXP);
+    }
+
+    levelUp = () => {
+        if (this.canLevel()) {
+            let data = this.getData();
+            data.xp = data.xp.minus(this.reqXP);
+            data.level = data.level.add(1);
+            this.setReqXP();
+            this.manager.engine.notify();
+        } else return;
+    }
 }

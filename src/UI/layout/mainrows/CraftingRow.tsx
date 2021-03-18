@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
-import { EnergyItem, maxMods, DoomStone, ItemData, GardeningItem, EnergyItemMod, ItemTypes, GardeningItemMod, DoomStoneMod, unEqItemType } from "../../../engine/m_st/Crafting";
+import { EnergyItem, DoomStone, ItemData, GardeningItem, EnergyItemMod, ItemTypes, GardeningItemMod, DoomStoneMod, unEqItemType } from "../../../engine/m_st/Crafting";
 import { EnergyItemModList } from "../../../engine/m_st/ModLists";
 import ConfirmCommandButton from "../../comps/ConfirmCommandButton";
 import FlexColumn from "../../comps/FlexColumn";
@@ -133,7 +133,7 @@ const EnergyItemDisplay = (props: { item: EnergyItem }) => {
       <UnEqMe it={props.item.itemType}/>
 
       <br />
-    Size {maxMods(props.item)}
+    Size {gEngine.crafting.maxMods(props.item)}
     </div>
     <div className='EnergyModList'>
       {props.item.mods.map((mod, index) => <EnergyModDisplay key={index} mod={mod} />)}
@@ -219,27 +219,27 @@ function EnergyModAndValueToString(mod: EnergyItemModList, value: number): strin
       break;
 
     case EnergyItemModList.ClickMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Clicking Energy Gain`
+      return `${(value * 10).toFixed(0)}% More Clicking Energy Gain`
       break;
 
     case EnergyItemModList.ClicksPerSecond:
-      return `${value.toFixed(1)} Autoclickers`
+      return `+${value.toFixed(0)} Autoclickers`
       break;
 
     case EnergyItemModList.HoverMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Hovering Energy Gain`
+      return `${(value * 10).toFixed(0)}% More Hovering Energy Gain`
       break;
 
     case EnergyItemModList.IncreasedGain:
-      return `+${value.toFixed(1)}x Increased Energy Gain`
+      return `+${value.toFixed(0)}x Increased Energy Gain`
       break;
 
     case EnergyItemModList.MoreGain:
-      return `x${(value * .1 + 1).toFixed(1)} More Energy Gain`
+      return `${(value * 10).toFixed(0)}% More Energy Gain`
       break;
 
     case EnergyItemModList.PassiveMore:
-      return `x${(value * .1 + 1).toFixed(1)} More Passive Energy Gain`
+      return `x${(value * 10).toFixed(0)}% More Passive Energy Gain`
       break;
 
     default:
@@ -350,7 +350,7 @@ const UnEqMe = (props: {it: ItemTypes}) => {
 
 function craftToModCount(item: ItemData | null) {
   if (item) {
-    let max = maxMods(item);
+    let max = gEngine.crafting.maxMods(item);
     if ((item as any).mods) {
       let min = (item as any).mods.length;
       return `${min}/${max}`
