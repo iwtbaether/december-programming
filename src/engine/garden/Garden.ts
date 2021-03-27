@@ -147,10 +147,9 @@ export default class Garden {
         delta = delta * this.gardenSpeedMulti.toNumber();
 
         if (this.equipment.autoPlant) {
-            if (this.data.bag.length > 0) {
-                if (this.canPlantSeed()) {
-                    this.quietPlantSeed(0);
-                }
+            let seedsToPlant = 1 + this.juice.data.trades[3];
+            for (let index = 0; index < seedsToPlant; index++) {
+                this.quietPlantSeed(0);
             }
         }
 

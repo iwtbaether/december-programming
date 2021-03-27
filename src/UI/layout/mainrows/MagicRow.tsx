@@ -1,21 +1,44 @@
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
+import { GuideTypes } from "../../../engine/garden/Juice";
 import { CEX } from "../../../engine/TheExchange";
 import CheatDiv from "../../comps/CheatDiv";
 import { ListedNumber } from "../../ListedResourceClass";
 
+const spellBookNames = [
+    'Not Influence',
+    'Sara',
+    'Guth',
+    'Zammy'
+]
+
+const coloredClasses = [
+    '',
+    'blue-text blue-border',
+    'green-text green-border',
+    'red-text red-border'
+]
+
 const MagicRow = (props: { data: Datamap }) => {
     const currency = props.data.crafting.currency
     const exchange = gEngine.theExchange;
+    
     return (
         <div style={{display:'flex',flexDirection:'column', marginLeft:'10px',gap:'10px'}}>
             <span style={{fontWeight:'bold'}}>
             Magic - coming soon to a reset (8) near you
             </span>
+            {props.data.magic.spellbook && 
+            <div>
+            <span className={coloredClasses[props.data.magic.spellbook]}>
+                Spellbook: {spellBookNames[props.data.magic.spellbook]}
+            </span>
+            </div>
+            }
             <CheatDiv>
                 <button onClick={()=>{
-                    gEngine.datamap.unlocksStates.magic = false;
+                    //gEngine.datamap.unlocksStates.magic = false;
                     gEngine.notify();
                 }}>
                     Lock magic

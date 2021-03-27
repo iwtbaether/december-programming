@@ -2,8 +2,11 @@ import Decimal, { DecimalSource } from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../../..";
 import { Datamap } from "../../../../engine/Datamap";
+import Patience_Skill, { SpiritualityLevelUnlocks } from "../../../../engine/skills/Patience";
 import { SingleManagedSkill } from "../../../../engine/skills/SingleManagedSkill";
 import FlexColumn from "../../../comps/FlexColumn";
+import FlexRow from "../../../comps/FlexRow";
+import ProgressBar from "../../../comps/ProgressBar";
 import { ChildTip } from "../../../comps/TipFC";
 import { DICT_name_to_color } from "../SkillsRow";
 
@@ -52,22 +55,43 @@ const ChosenGuide = (props: { data: Datamap }) => {
 export default ChosenGuide;
 
 const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
-  const skillData = props.chosenSkill.getData();
-  const color = DICT_name_to_color[props.chosenSkill.name]
+  const patience = props.chosenSkill as Patience_Skill;
 
-  return (<div>
-    This is the {props.chosenSkill.name} guide!<br />
+  const skillData = props.chosenSkill.getData();
+  const data2 = patience.data2
+  const color = DICT_name_to_color[props.chosenSkill.name];
+  const now = Date.now();
+
+  return (<FlexColumn>
     <div>
       <b>Gain Patience Experience</b> when you prestige a job with at least 1M progress.
     </div>
     <div>
       Patience levels give Patience Currency that can be used to make Patience Items.
     </div>
-    {skillData.level.eq(0) && <div>
-      Patience level 1? Ouch. Was Patience your first skill?
-    </div>}
-  </div>)
+      <ProgressBar current={now-data2.lastClaim} max={patience.tokenTimer} bg='black' color='wheat' />
+    <FlexRow>
+      <button disabled={!patience.canClaim()} onClick={patience.claimTokens}>
+        Claim PC
+      </button>
+      <span>
+        Current PC: {data2.mtx}
+      </span>
+    </FlexRow>
+    <FlexRow>
+      <div style={{border:`1px solid ${color}`}}>
+        Mushrooms 
+      </div>
+      <div style={{border:`1px solid ${color}`}}>
+        Forms
+      </div>
+
+    </FlexRow>
+
+  </FlexColumn>)
 }
+
+
 
 const FortitudeGuide = (props: { skill: SingleManagedSkill }) => {
   const level = props.skill.getData().level;
@@ -83,24 +107,26 @@ const FortitudeGuide = (props: { skill: SingleManagedSkill }) => {
       </ChildTip>significant resets
     </span>.
     </div>
+    <div style={{display:'flex',flexDirection:'column'}}>
     <ColorIfGtoE
       text={'Level 1: Keep Exchange Upgrades'}
       color={color}
       base={level}
       compare={0}
-    />
+      />
     <ColorIfGtoE
       text={'Level 2: Keep Some Job XP Upgrades'}
       color={color}
       base={level}
       compare={1}
-    />
+      />
     <ColorIfGtoE
       text={'Level 3: Keep Some Garden Upgrades'}
       color={color}
       base={level}
       compare={2}
-    />
+      />
+      </div>
 
   </FlexColumn>)
 }
@@ -111,30 +137,31 @@ const SpiritualityGuide = (props: { chosenSkill: SingleManagedSkill }) => {
   const color = DICT_name_to_color[props.chosenSkill.name]
 
   return (<FlexColumn>
-    <div>
-      This is the {props.chosenSkill.name} guide!
-    </div>
+    
     <div>
       Gain Spirituality XP each time you grab a seed.
     </div>
-    <div style={{display:'flex',flexDirection:'column'}}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
 
-    <ColorIfGtoE text={'Level 1: Unlock Juice Trades'}
-      color={color} base={level} compare={0}
+      <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.juicerUpgrades + 1}: Unlock Juicer Upgrades`}
+        color={color} base={level} compare={SpiritualityLevelUnlocks.juicerUpgrades}
+        />
+      <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.juiceTrades + 1}: Unlock Juice Trades`}
+        color={color} base={level} compare={SpiritualityLevelUnlocks.juiceTrades}
       />
-    <ColorIfGtoE text={'Level 10: Unlock Juicer Upgrades'}
-      color={color} base={level} compare={9}
+      <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.juiceEarlyUnlock + 1}: Unlock Juice without Harvesting a special fruit`}
+        color={color} base={level} compare={SpiritualityLevelUnlocks.juiceEarlyUnlock} hideBefore={0}
       />
-    <ColorIfGtoE text={'Level 20: Unlock Juice without Harvesting a special fruit'}
-      color={color} base={level} compare={19} hideBefore={9}
-    />
+      {/** 
+     
     <ColorIfGtoE text={'Level 30: Unlock Juice Items'}
       color={color} base={level} compare={29} hideBefore={19}
       />
     <ColorIfGtoE text={'Level 40: Unlock Juicer Crafting'}
       color={color} base={level} compare={39} hideBefore={29}
       />
-      </div>
+    */}
+    </div>
 
   </FlexColumn>)
 }

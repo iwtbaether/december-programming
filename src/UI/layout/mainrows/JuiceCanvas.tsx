@@ -182,8 +182,8 @@ function drawStar2(ctx: CanvasRenderingContext2D,cx: number,cy: number,spikes: n
     ctx.lineTo(cx,cy-spikesRadi[0]);
     ctx.closePath();
     ctx.lineWidth=5;
-    ctx.strokeStyle='blue';
+    ctx.strokeStyle='gold';
     ctx.stroke();
-    ctx.fillStyle='skyblue';
+    ctx.fillStyle='purple';
     ctx.fill();
   }

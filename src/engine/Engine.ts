@@ -62,7 +62,6 @@ export default class Engine extends CoreEngine {
     jobs: Jobs = new Jobs(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
     skillManager: SkillManager = new SkillManager(this);
-    magic: Magic = new Magic(this);
 
 
     handleKey = (key:string) => this.hotkeyManager.handle(key);

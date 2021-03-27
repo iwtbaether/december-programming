@@ -45,39 +45,39 @@ const SkillsRow = (props: { data: Datamap }) => {
                 Thetan
                 </span>
                 <SingleSkillDiv 
-                    unlock={{ source: props.data.jobs.jobProgress, goal: FOURM, ulString: 'Reach Size', isUnlocked: patienceUnlocked, doUnlock: () => { patienceUnlocked = true } }}
+                    unlock={{ source: props.data.jobs.jobProgress, goal: FOURM, ulString: 'Reach Size' }}
                     skill={manager.skills.patience}
                 />
                 <SingleSkillDiv 
-                    unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: props.data.cell.swimmerNumber, goal: ONEK, ulString: 'Keep Trying',  }}
                     skill={manager.skills.fortitude}
                 />
                 
                 <SingleSkillDiv 
-                    unlock={{ source: props.data.cell.rebirth, goal: TEN, ulString: 'Reach Rebirth Level', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: props.data.cell.rebirth, goal: TEN, ulString: 'Reach Rebirth Level',  }}
                     skill={manager.skills.spirituality}
                 />
                 <SingleSkillDiv
-                    unlock={{ source: ZERO, goal: ONE, ulString: 'Get A Spellbook', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: (props.data.magic.spellbook !== null)?ONE:ZERO, goal: ONE, ulString: 'Get A Spellbook', }}
                     skill={manager.skills.magic}
                 />
                 <span style={{ textAlign: "center" }}>
                 MEST
                 </span>
                 <SingleSkillDiv
-                    unlock={{ source: ZERO, goal: ONEK, ulString: 'Own Spaces', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: ZERO, goal: ONEK, ulString: 'Own Spaces',  }}
                     skill={manager.skills.matter}
                 />
                 <SingleSkillDiv 
-                    unlock={{ source: props.data.cell.aewf, goal: TEN, ulString: 'Reach Gloom Level', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: props.data.cell.aewf, goal: TEN, ulString: 'Reach Gloom Level', }}
                     skill={manager.skills.energy}
                 />
                 <SingleSkillDiv 
-                    unlock={{ source: ZERO, goal: ONE, ulString: 'Achieve Presence', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: ZERO, goal: ONE, ulString: 'Achieve Presence',  }}
                     skill={manager.skills.space}
                 />
                 <SingleSkillDiv 
-                    unlock={{ source: ZERO, goal: ONE, ulString: 'Skip a Day', isUnlocked: false, doUnlock: () => { } }}
+                    unlock={{ source: ZERO, goal: ONE, ulString: 'Skip a Day',   }}
                     skill={manager.skills.time}
                 />
             </FlexColumn>
@@ -93,7 +93,7 @@ const SkillsRow = (props: { data: Datamap }) => {
 export default SkillsRow;
 
 interface SingleSkillDivProps {
-    unlock: { source: Decimal, goal: Decimal, ulString: string, doUnlock: VoidFunction, isUnlocked: boolean },
+    unlock: { source: Decimal, goal: Decimal, ulString: string },
     skill: SingleManagedSkill;
 }
 

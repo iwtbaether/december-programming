@@ -64,8 +64,8 @@ export function getNavs (data:Datamap) {
   if (data.unlocksStates.one >= 4) navs.push([6, 'Crafting'])
   if (data.unlocksStates.one >= 5) navs.push([3, 'Garden'])
   if (data.unlocksStates.one >= 6) navs.push([5, 'Jobs'])
-  if (data.unlocksStates.magic === true) navs.push([8, 'Magic'])
   if (data.skillManager.manager.unlocked) navs.push([9, 'Skills'])
+  if (data.skillManager.magic.unlocked) navs.push([8, 'Magic'])
   return navs;
 }
 

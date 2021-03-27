@@ -41,7 +41,7 @@ export default class HotkeyManager {
                 if (gEngine.datamap.unlocksStates.one >= 6) gEngine.silentSetNav(5);
                 break;
             case '6':
-                if (data.unlocksStates.magic) gEngine.silentSetNav(8)
+                //if (data.unlocksStates.magic) gEngine.silentSetNav(8)
                 break;
             case 'd':
                 

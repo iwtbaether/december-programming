@@ -1,5 +1,6 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import { IframeHTMLAttributes } from "react";
+import { gEngine } from "../..";
 import { sum_I_FruitDecimals } from "../../UI/layout/mainrows/JuiceRow";
 import { Datamap } from "../Datamap";
 import Engine from "../Engine";
@@ -8,11 +9,14 @@ import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding"
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
 import { moreDecimal, percentOfNum } from "../externalfns/util";
 import { I_FruitDecimals, I_FruitDecimals_SetDecimals, SeedType } from "./Garden";
+import JuiceTradeManager from "./JuiceTradeManager";
 
 export default class JuiceLmao {
     constructor(public engine: Engine) {
 
     }
+
+    tradeManger: JuiceTradeManager = new JuiceTradeManager(this);
 
     setup(){
         this.calcDrinkPowers();
@@ -133,6 +137,9 @@ export default class JuiceLmao {
             let powerGain = diff;
             if (this.drinkPowers.g1) {
                 powerGain = powerGain.add(powerGain.times(this.drinkPowers.g1));
+            }
+            if (this.data.trades[2]) {
+                powerGain = moreDecimal(powerGain, this.data.trades[2]*.1)
             }
             if (this.data.powerPlantLevel.greaterThan(0)) {
                 powerGain = moreDecimal(powerGain, this.data.powerPlantLevel.times(.01))
@@ -320,6 +327,20 @@ export default class JuiceLmao {
         this.engine.datamap.juice = JuiceData_Init();
     }
 
+    clearCurrentJuice = () => {
+        this.engine.datamap.juice.crushed = {
+            bunched: ZERO,
+            circular: ZERO,
+            doom: ZERO,
+            egg: ZERO,
+            hope: ZERO,
+            knowledge: ZERO,
+            plain: ZERO,
+            square: ZERO,
+            triangular: ZERO
+        }
+    }
+
     hopeJuide: SingleResource = new SingleResource({
         get: () => this.data.crushed.hope,
         setDecimal: (dec) => this.data.crushed.hope = dec,
@@ -473,7 +494,9 @@ export interface JuiceData {
     powerPlantFruit: Decimal;
     powerPlantLevel: Decimal;
     powerAmount: Decimal;
-
+    trades: [number,number,number,
+            number,number,number,
+            number,number,number,]
     //waste stats
     fruitsSpentMakingPower: Decimal;
     powerDecayed: Decimal;
@@ -487,8 +510,15 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
 
     //initialize power and dp object from juice
     const totalFruit = sum_I_FruitDecimals(crushed);
-    const basePower = Decimal.log10(totalFruit) - 1;
+    let basePower = Decimal.log10(totalFruit) - 1;
+    const trades = gEngine.datamap.juice.trades;
+
+    if (trades[7]) {
+        basePower = basePower * (1+trades[7]*.1)
+    }
+
     let DP: I_DrinkPowers = { basePower }
+
 
     let silverPowers = getSilverPowerArray(crushed);
     let goldPowersAndValues = getGoldPowerArray(crushed);
@@ -496,41 +526,54 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
     let goldValues = goldPowersAndValues.sPD;
 
     //bcest
+    let silverBase = basePower;
+    if (trades[4]) {
+        silverBase = silverBase * (1+trades[4]*.1)
+    }
     if (silverPowers[0] === true) {
-        DP.s1 = Decimal.times(1.1, basePower)
+        DP.s1 = Decimal.times(1.1, silverBase)
     }
     if (silverPowers[1] === true) {
-        DP.s2 = Decimal.times(.9, basePower);
+        DP.s2 = Decimal.times(.9, silverBase);
     }
     if (silverPowers[2] === true) {
-        DP.s3 = Decimal.times(.95, basePower);
+        DP.s3 = Decimal.times(.95, silverBase);
     }
     if (silverPowers[3] === true) {
-        DP.s4 = Decimal.times(1.05, basePower);
+        DP.s4 = Decimal.times(1.05, silverBase);
     }
     if (silverPowers[4] === true) {
         DP.s5 = ZERO;
     }
 
+    let goldBase = basePower;
+    if (trades[5]) {
+        goldBase = goldBase * (1+trades[5]*.1)
+    }
+
     if (goldPowers[0] === true) {
-        DP.g1 = (goldValues[0].times(basePower));
+        DP.g1 = (goldValues[0].times(goldBase));
     }
     if (goldPowers[1] === true) {
-        DP.g2 = (goldValues[1].times(basePower));
+        DP.g2 = (goldValues[1].times(goldBase));
     }
     if (goldPowers[2] === true) {
-        DP.g3 = (goldValues[2].times(basePower));
+        DP.g3 = (goldValues[2].times(goldBase));
     }
     if (goldPowers[3] === true) {
-        DP.g4 = (goldValues[3].times(basePower));
+        DP.g4 = (goldValues[3].times(goldBase));
     }
     if (goldPowers[4] === true) {
-        DP.g5 = Decimal.max( Decimal.log10(goldValues[4].times(basePower)) , 1 );
+        DP.g5 = Decimal.max( Decimal.log10(goldValues[4].times(goldBase)) , 1 );
     }
 
     const sumHD = crushed.hope.add(crushed.doom)
     if (sumHD.greaterThan(0)) {
-        DP.hd = crushed.hope.div(crushed.doom.add(crushed.hope))
+        let borderEffect = crushed.hope.div(crushed.doom.add(crushed.hope))
+        if (trades[8]) {
+            borderEffect = moreDecimal(borderEffect, trades[8] * .1)
+        }
+        DP.hd = borderEffect;
     }   
     
 
@@ -648,7 +691,10 @@ export function JuiceData_Init(): JuiceData {
             plain: ZERO,
             square: ZERO,
             triangular: ZERO
-        }
+        },
+        trades: [0,0,0,
+                0,0,0,
+                0,0,0]
     }
 }
 

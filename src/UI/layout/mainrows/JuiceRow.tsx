@@ -5,6 +5,7 @@ import { Datamap } from "../../../engine/Datamap";
 import { canCheat } from "../../../engine/externalfns/util";
 import { I_FruitDecimals, SeedType } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
+import { SpiritualityLevelUnlocks } from "../../../engine/skills/Patience";
 import { SingleBuildingUI } from "../../BuildingsUI";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
@@ -38,13 +39,20 @@ const JuiceRow = (props: { data: Datamap }) => {
                     <span>
                         <button onClick={jClass.startDrink} disabled={totalJuice.lessThan(1000)}>
                             <ChildTip>
-                                Drink current Juice and reset Juice<br />
+                                Drink current Juice and move onto a new Juicer<br />
                                 <ProgressBar current={totalJuice} max={1000} bg='black'  color='white'/>
                             </ChildTip>
                                     Drink Juice!
                                 </button>
                         {data.juice.last_crushed && <button onClick={() => { gEngine.setPopup(6) }}>View Powers from Juice</button>}
                     </span>
+                    {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(SpiritualityLevelUnlocks.juiceTrades) && <FlexRow>
+                        <button onClick={()=>{gEngine.setPopup(7)}}>
+                            <ChildTip>Trade FRESH juice to your guide for new treasures</ChildTip>
+                            Juice Trades 
+                        </button>
+                        
+                    </FlexRow>}
                 </div>}
 
                 {juice.guide !== GuideTypes.none && <FlexColumn>
@@ -76,7 +84,7 @@ const JuiceRow = (props: { data: Datamap }) => {
                             <span>
                                 Pipes carry [1%] of Fruit per tick to the powerplant (+<DisplayDecimal decimal={jClass.tickedNumbers.toPlant} /> last tick)
                     </span>
-                            <span>
+                            <span style={{fontSize:'1.2em'}}>
                                 Fruit in Powerplant: <DisplayDecimal decimal={juice.powerPlantFruit} />
                             </span>
                             <span>
@@ -127,7 +135,7 @@ const JuiceRow = (props: { data: Datamap }) => {
                         </FlexColumn>
                     </FlexRow>
 
-                    {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(9) && <div>
+                    {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(SpiritualityLevelUnlocks.juicerUpgrades) && <div>
                         <div>
                             Juicer Upgrades
                         </div>

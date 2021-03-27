@@ -30,7 +30,6 @@ export interface Datamap {
         three: number,
         four: number,
         five: number,
-        magic: boolean,
     };
     garden: GardenData;
     crafting: CraftingData;
@@ -99,7 +98,6 @@ export function newDefaultMap() {
             one: 0,
             three: 0,
             two: 0,
-            magic: false,
         },
 
 

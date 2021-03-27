@@ -3,7 +3,7 @@ import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
-import Patience_Skill from "./Patience";
+import Patience_Skill, { Patience_Skill_Extra_Data, Patience_Skill_Extra_Data_Init } from "./Patience";
 import { SingleManagedSkill } from "./SingleManagedSkill";
 
 export default class SkillManager {
@@ -93,6 +93,7 @@ export interface SkillManager_Data {
     magic: Skill_Data;
 
     patience: Skill_Data;
+    patience_extra: Patience_Skill_Extra_Data;
     fortitude: Skill_Data;
     
     //unused
@@ -110,6 +111,7 @@ export function SkillManager_Data_Init (): SkillManager_Data {
         magic: Skill_Data_Init(),
 
         patience: Skill_Data_Init(),
+        patience_extra: Patience_Skill_Extra_Data_Init(),
         fortitude: Skill_Data_Init(),
 
         poeCrafting: Skill_Data_Init(),
