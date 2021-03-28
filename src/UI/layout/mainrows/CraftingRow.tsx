@@ -30,7 +30,7 @@ const CraftingRow = (props: { data: Datamap }) => {
         <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'} />
         <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'} />
         {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'} />}
-        {data.crafting.vaalProgress >= 1 && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
+        {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
         </div>
         <span>Get 5 random basic currency each time you accept Doom</span>
         {(data.unlocksStates.one < 7 && data.unlocksStates.one > 5 ) && <span> You can equip one Catalyst of each size</span>}
@@ -73,7 +73,7 @@ const CraftingRow = (props: { data: Datamap }) => {
         </div>
       </FlexRow>}
       {data.crafting.currentCraft && <FlexColumn>
-        {crafting.data.vaalProgress >= 1 && <ConfirmCommandButton
+        {data.doomResearch.gloomShard && <ConfirmCommandButton
           label={'Doom Item'}
           warning={'This has a chance to destory your item'}
           do={crafting.applyDoomToCraft}
@@ -239,7 +239,7 @@ function EnergyModAndValueToString(mod: EnergyItemModList, value: number): strin
       break;
 
     case EnergyItemModList.PassiveMore:
-      return `x${(value * 10).toFixed(0)}% More Passive Energy Gain`
+      return `${(value * 10).toFixed(0)}% More Passive Energy Gain`
       break;
 
     default:

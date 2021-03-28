@@ -1,7 +1,8 @@
 import { ItemData, ItemTypes, ModData } from "../m_st/Crafting";
 import { SingleManagedSkill } from "./SingleManagedSkill";
 
-export default class Patience_Skill extends SingleManagedSkill {
+export default class Patience_Skill_2 extends SingleManagedSkill {
+
 
     useTokenGetLoot = () => {
         //first token always gives mushroom

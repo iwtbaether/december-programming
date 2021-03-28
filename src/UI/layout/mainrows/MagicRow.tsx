@@ -23,6 +23,8 @@ const coloredClasses = [
 const MagicRow = (props: { data: Datamap }) => {
     const currency = props.data.crafting.currency
     const exchange = gEngine.theExchange;
+    //const mClass = gEngine.skillManager.skills.magic;
+    //Max Mana: {mClass.name}
     
     return (
         <div style={{display:'flex',flexDirection:'column', marginLeft:'10px',gap:'10px'}}>
@@ -36,6 +38,8 @@ const MagicRow = (props: { data: Datamap }) => {
             </span>
             </div>
             }
+            <span>
+            </span>
             <CheatDiv>
                 <button onClick={()=>{
                     //gEngine.datamap.unlocksStates.magic = false;

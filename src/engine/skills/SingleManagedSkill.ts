@@ -1,13 +1,15 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
-import SkillManager, { Skill_Data, levelToXPReq } from "./SkillManager";
+import Engine from "../Engine";
+import { Skill_Data, levelToXPReq } from "./SkillManager";
 
 
 export class SingleManagedSkill {
-    constructor(public manager: SkillManager, public getData: () => Skill_Data, public name: string) {
+    constructor(public engine: Engine, public getData: () => Skill_Data, public name: string) {
     }
 
+
     open = () => {
-        this.manager.openSkill(this);
+        this.engine.skillManager.openSkill(this);
     };
 
     setReqXP = () => {
@@ -37,7 +39,8 @@ export class SingleManagedSkill {
             data.xp = data.xp.minus(this.reqXP);
             data.level = data.level.add(1);
             this.setReqXP();
-            this.manager.engine.notify();
+            this.engine.notify();
         } else return;
     }
 }
+

@@ -15,7 +15,6 @@ import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
 import Crafting from "./m_st/Crafting";
 import Research from "./Research";
-import Magic from "./skills/Magic";
 import SkillManager from "./skills/SkillManager";
 import TheExchange from "./TheExchange";
 

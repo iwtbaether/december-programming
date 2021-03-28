@@ -135,7 +135,6 @@ export default class Crafting {
 
     gainDoomShards = (gain: number) => {
         if ((this.data.currency.doomShards += gain) >= 20) {
-            if (this.data.vaalProgress === 0) this.data.vaalProgress = 1;
             this.data.currency.doomOrbs += Math.floor(this.data.currency.doomShards / 20);
             this.data.currency.doomShards = this.data.currency.doomShards % 20;
         }
@@ -597,7 +596,6 @@ export interface CraftingData {
         doomStone: DoomStone | null;
     };
     currency: CraftingCurrency;
-    vaalProgress: number;
     research: {
         moreEnergy: number;
         moreDoom: number;
@@ -652,7 +650,6 @@ export function CraftingData_Init(): CraftingData {
             doomOrbs: 0,
             chaos: 0
         },
-        vaalProgress: 0,
         research: {
             moreEnergy: 0,
             moreDoom: 0,

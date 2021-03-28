@@ -3,6 +3,7 @@ import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
+import Magic_Skill from "./Magic";
 import Patience_Skill, { Patience_Skill_Extra_Data, Patience_Skill_Extra_Data_Init } from "./Patience";
 import { SingleManagedSkill } from "./SingleManagedSkill";
 
@@ -27,19 +28,21 @@ export default class SkillManager {
     skills = {
 
         
-        matter: new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.matter,'Matter'),
-        energy: new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.energy,'Energy'),
-        space: new  SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.space,'Space'),
-        time:  new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.time,'Time'),
+        matter: new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.matter,'Matter'),
+        energy: new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.energy,'Energy'),
+        space: new  SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.space,'Space'),
+        time:  new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.time,'Time'),
         
-        spirituality: new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.spiritualGardening,'Spirituality'),
-        magic:  new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.magic,'Magic'),
+        spirituality: new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.spiritualGardening,'Spirituality'),
+        magic:  new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.magic,'Magic'),
         
-        patience: new Patience_Skill(this, ()=>this.engine.datamap.skillManager.patience,'Patience'),
-        fortitude: new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.fortitude,'Fortitude'),
+        patience: new Patience_Skill(this.engine, ()=>this.engine.datamap.skillManager.patience,'Patience'),
+        fortitude: new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.fortitude,'Fortitude'),
         
-        poeCrafting:new SingleManagedSkill(this, ()=>this.engine.datamap.skillManager.poeCrafting,'Creation'),
+        poeCrafting:new SingleManagedSkill(this.engine, ()=>this.engine.datamap.skillManager.poeCrafting,'Creation'),
     }
+
+    //magic = new Magic_Skill(this.engine, ()=>this.engine.datamap.skillManager.magic, 'Magic');
 
 
 
