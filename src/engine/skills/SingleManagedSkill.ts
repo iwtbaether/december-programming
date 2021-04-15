@@ -1,11 +1,12 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import Engine from "../Engine";
-import { Skill_Data, levelToXPReq } from "./SkillManager";
+import { Skill_Data, levelToXPReq } from "./MiscSkill";
 
 
 export class SingleManagedSkill {
     constructor(public engine: Engine, public getData: () => Skill_Data, public name: string) {
     }
+
 
 
     open = () => {

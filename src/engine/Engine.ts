@@ -13,6 +13,7 @@ import { canCheat, HOUR_MS, moreDecimal } from "./externalfns/util";
 import Garden from "./garden/Garden";
 import HotkeyManager from "./HotkeyManager";
 import Jobs from "./Jobs";
+import GloomManager from "./modules/GloomManager";
 import Crafting from "./m_st/Crafting";
 import Research from "./Research";
 import SkillManager from "./skills/SkillManager";
@@ -49,6 +50,10 @@ export default class Engine extends CoreEngine {
             if (this.garden.juice.drinkPowers.s2) {
                 old = old.times(this.garden.juice.drinkPowers.s2);
             }
+            
+            if (this.gloomManger.gloomMulti.current.greaterThan(1)) { 
+                old = old.times(this.gloomManger.gloomMulti.current);
+        }
             return old;
         }
     })
@@ -61,6 +66,7 @@ export default class Engine extends CoreEngine {
     jobs: Jobs = new Jobs(this);
     hotkeyManager: HotkeyManager = new HotkeyManager(this);
     skillManager: SkillManager = new SkillManager(this);
+    gloomManger: GloomManager =new GloomManager(this);
 
 
     handleKey = (key:string) => this.hotkeyManager.handle(key);
@@ -91,6 +97,9 @@ export default class Engine extends CoreEngine {
 
         if (this.datamap.garden.juicin) {
             this.garden.juice.processDelta(delta)
+        }
+        if (this.datamap.skillManager.magic.unlocked) {
+            this.skillManager.skills.magic.magicDelta(deltaS);
         }
 
         //console.log(deltaS);
@@ -725,6 +734,9 @@ export default class Engine extends CoreEngine {
         this.antiEnergyResource.calculate();
         this.garden.setTempData();
         this.jobs.setTempData();
+
+        this.gloomManger.extraLoad();
+        this.skillManager.skills.patience.extraLoad();
     }
   
     clearPopup = () => {

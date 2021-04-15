@@ -2,16 +2,14 @@ import Decimal from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
-import { lockSkill, UnlockSkill } from "../../../engine/skills/SkillManager";
+import { GuideTypes } from "../../../engine/garden/Juice";
+import { UnlockSkill, lockSkill } from "../../../engine/skills/MiscSkill";
 import { SingleManagedSkill } from "../../../engine/skills/SingleManagedSkill";
-import { CEX } from "../../../engine/TheExchange";
 import CheatDiv from "../../comps/CheatDiv";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
 import ProgressBar from "../../comps/ProgressBar";
 import DisplayDecimal from "../../DisplayDecimal";
-import { ListedNumber } from "../../ListedResourceClass";
-import { NewSingleResearchUI, SingleResearchUI } from "../../ResearchUI";
 import ChosenGuide from "./SkillGuides/ChosenGuide";
 
 const ZERO = new Decimal(0);
@@ -34,12 +32,11 @@ export const DICT_name_to_color: {[index:string]:string} = {
 
 }
 
-let patienceUnlocked: boolean = false;
 
 const SkillsRow = (props: { data: Datamap }) => {
     const manager = gEngine.skillManager
     return (
-        <FlexRow>
+        <div style={{display:'flex',flexWrap:'nowrap',gap:'5px'}}>
             <FlexColumn>
                 <span style={{ textAlign: "center" }}>
                 Thetan
@@ -58,7 +55,7 @@ const SkillsRow = (props: { data: Datamap }) => {
                     skill={manager.skills.spirituality}
                 />
                 <SingleSkillDiv
-                    unlock={{ source: (props.data.magic.spellbook !== null)?ONE:ZERO, goal: ONE, ulString: 'Get A Spellbook', }}
+                    unlock={{ source: (props.data.magic.spellbook !== GuideTypes.none)?ONE:ZERO, goal: ONE, ulString: 'Get A Spellbook', }}
                     skill={manager.skills.magic}
                 />
                 <span style={{ textAlign: "center" }}>
@@ -86,7 +83,7 @@ const SkillsRow = (props: { data: Datamap }) => {
                   
                 <ChosenGuide data={props.data}/>
             </FlexColumn>}
-        </FlexRow>
+        </div>
     )
 }
 
@@ -172,7 +169,3 @@ const SingleSkillDiv = (props: SingleSkillDivProps) => {
     )
 }
 
-const SSD_Style: React.CSSProperties = {
-    border: '1px solid',
-
-}

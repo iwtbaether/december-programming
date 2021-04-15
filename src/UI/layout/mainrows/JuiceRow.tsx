@@ -190,8 +190,8 @@ export const JuiceDisplay = (props: { juiceData: I_FruitDecimals }) => {
         <ListedDecimal resource={juice.triangular} name={'Triangular '} />
         <ListedDecimal resource={juice.doom} name={'Doom '} />
         <ListedDecimal resource={juice.egg} name={'Egg '} />
-        <ListedDecimal resource={juice.plain} name={'Plain'} />
-        <ListedDecimal resource={juice.knowledge} name={'Knowledge'} />
+        {/*<ListedDecimal resource={juice.plain} name={'Plain'} />
+        <ListedDecimal resource={juice.knowledge} name={'Knowledge'} />*/}
         <ListedDecimal resource={totalJuice} name={'Total Juiced Fruit'} />
     </span>)
 }

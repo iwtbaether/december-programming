@@ -20,7 +20,13 @@
 }
 
 .TipFC2 {
-    @extend .TipFC
+    @extend .TipFC;
+}
+
+.TipFC2L {
+    @extend .TipFC;
+    right: 5px;
+    left: auto;
 }
 
 :hover > .TipFC {
@@ -28,5 +34,9 @@
 }
 
 :hover > * > .TipFC2 {
+    display: initial;
+}
+
+:hover > * > .TipFC2L {
     display: initial;
 }

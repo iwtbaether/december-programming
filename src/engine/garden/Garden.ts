@@ -7,8 +7,9 @@ import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
-import { canCheat, getRandomInt, MINUTE_MS } from "../externalfns/util";
+import { canCheat, getRandomInt, MINUTE_MS, moreDecimal } from "../externalfns/util";
 import { SingleResearch } from "../Research";
+import { SpiritualityLevelUnlocks } from "../skills/Patience";
 import JuiceLmao from "./Juice";
 
 export default class Garden {
@@ -35,7 +36,6 @@ export default class Garden {
         this.setFruitGainMulti();
         this.setGardenJobSpeedMult();
         this.setGardenSpeedMulti();
-
     }
 
     calcBagSlots = () => {
@@ -74,7 +74,10 @@ export default class Garden {
 
             if (this.data.researches.doomedSeeds) {
                 const rng = getRandomInt(1, 100);
-                if (rng <= this.doomChance()) {
+                const chance = this.doomChance();
+                if (canCheat) console.log(rng, chance);
+                
+                if (rng <= chance) {
                     this.getSeedType(SeedType.doom)
                 }
             }
@@ -216,7 +219,7 @@ export default class Garden {
                 this.data.plots.splice(index, 1)
 
                 this.seedTypeToResource(plant.seed.type).gainResource(zammyGain);
-                harvestCount ++;
+                harvestCount++;
             }
         }
 
@@ -285,23 +288,47 @@ export default class Garden {
     }
 
     getFruit = (type: SeedType) => {
-        let gain = this.getFruitGain();
+        let gain = new Decimal(this.getFruitGain());
+        //let pp = this.engine.skillManager.skills.patience.powers;
+        let pp2 = this.engine.skillManager.skills.patience.totalFormPowers;
 
         switch (type) {
             case SeedType.hope:
                 this.hopeFruit.gainResource(gain);
                 break;
             case SeedType.circle:
+                gain = moreDecimal(gain, pp2.circular.weightGain);
+                gain = moreDecimal(gain, pp2.circular.moreOfType * .1)
                 this.circularFruit.gainResource(gain);
+                this.setbcestDependants();
                 break;
             case SeedType.doom: this.doomedFruits.gainResource(gain); break;
-            case SeedType.bunch: this.bunchedFruit.gainResource(gain); break;
-            case SeedType.triangle: this.triangularFruit.gainResource(gain); break;
+            case SeedType.bunch:
+                gain = moreDecimal(gain, pp2.bunched.weightGain);
+                gain = moreDecimal(gain, pp2.bunched.moreOfType * .1)
+
+                this.bunchedFruit.gainResource(gain);
+                this.setbcestDependants();
+                break;
+            case SeedType.triangle:
+                gain = moreDecimal(gain, pp2.triangular.weightGain);
+                gain = moreDecimal(gain, pp2.triangular.moreOfType * .1)
+                this.triangularFruit.gainResource(gain);
+                this.setbcestDependants();
+                break;
             case SeedType.square:
+                gain = moreDecimal(gain, pp2.square.weightGain);
+                gain = moreDecimal(gain, pp2.square.moreOfType * .1)
+
                 this.squareFruit.gainResource(gain);
+                this.setbcestDependants();
                 break;
             case SeedType.egg:
+                gain = moreDecimal(gain, pp2.triangular.weightGain);
+                gain = moreDecimal(gain, pp2.triangular.moreOfType * .1)
+
                 this.eggFruit.gainResource(gain);
+                this.setbcestDependants();
                 break;
 
             case SeedType.plain:
@@ -318,6 +345,11 @@ export default class Garden {
                 break;
         }
         this.setTempData();
+    }
+
+    setbcestDependants = () => {
+        this.engine.skillManager.skills.patience.setPowersFromFruit();
+
     }
 
     getSeed = () => {
@@ -619,6 +651,11 @@ export default class Garden {
         if (this.juice.drinkPowers.s1) {
             scaled = scaled * this.juice.drinkPowers.s1.toNumber();
         }
+        if (this.engine.skillManager) {
+            if (this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.fruit.greaterThanOrEqualTo(0)) {
+                scaled = scaled + scaled * this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.fruit.times(.01).toNumber();
+            }
+        }
         this.fruitGainMult = scaled;
     }
 
@@ -704,13 +741,90 @@ export default class Garden {
         ]
     })
 
-    seedGrowthTimeRequired(seed: GardenSeed) {
-        let base = TimeRequiredForSeed;
-        let mult = seed.type + 1;
+    seedGrowthTimes: number[] = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+    ]
+
+    setSeedTimes = () => {
+        for (let index = 0; index < this.seedGrowthTimes.length; index++) {
+            this.seedGrowthTimes[index] = this.getSingleSeedTime(index)
+        }
+    }
+
+    getSingleSeedTime = (seedType: SeedType) => {
+        const base = TimeRequiredForSeed;
+        let mult = seedType + 1;
         if (this.juice.drinkPowers.s1) {
             mult = mult * this.juice.drinkPowers.s1.toNumber();
         }
+
+        if (this.engine.datamap.skillManager.patience.unlocked) {
+
+            /*
+            let pp = this.engine.skillManager.skills.patience.powers;
+            const mults = [
+                pp.addWeights.b,
+                pp.addWeights.c,
+                pp.addWeights.e,
+                pp.addWeights.s,
+                pp.addWeights.t,
+            ] */
+            let pp2 = this.engine.skillManager.skills.patience.totalFormPowers;
+            const mults2 = [
+                pp2.bunched.weightGain,
+                pp2.circular.weightGain,
+                pp2.egg.weightGain,
+                pp2.square.weightGain,
+                pp2.triangular.weightGain,
+            ]
+            if (seedType === SeedType.bunch) mult = mult + mult * mults2[0]
+            if (seedType === SeedType.circle) mult = mult + mult * mults2[1]
+            if (seedType === SeedType.egg) mult = mult + mult * mults2[2]
+            if (seedType === SeedType.square) mult = mult + mult * mults2[3]
+            if (seedType === SeedType.triangle) mult = mult + mult * mults2[4]
+        }
         return base * mult;
+    }
+
+    seedGrowthTimeRequired(seed: GardenSeed) {
+        return this.seedGrowthTimes[seed.type];
+        /**
+         * 
+        let base = TimeRequiredForSeed;
+        let mult = seed.type + 1;
+        //OPTIMIZE ME
+        if (this.juice.drinkPowers.s1) {
+            mult = mult * this.juice.drinkPowers.s1.toNumber();
+        }
+
+        //HOLY FUCK THIS IS BAD
+        if (this.engine.datamap.skillManager.patience.unlocked) {
+
+            let pp = this.engine.skillManager.skills.patience.powers;
+            const mults = [
+                pp.addWeights.b,
+                pp.addWeights.c,
+                pp.addWeights.e,
+                pp.addWeights.s,
+                pp.addWeights.t,
+            ]
+            if (seed.type === SeedType.bunch) mult = mult + mult * mults[0]
+            if (seed.type === SeedType.circle) mult = mult + mult * mults[1]
+            if (seed.type === SeedType.egg) mult = mult + mult * mults[2]
+            if (seed.type === SeedType.square) mult = mult + mult * mults[3]
+            if (seed.type === SeedType.triangle) mult = mult + mult * mults[4]
+        }
+        return base * mult;
+         */
+
     }
 
     cleanGarden = () => {
@@ -733,6 +847,10 @@ export default class Garden {
             this.engine.datamap.garden = GardenData_Init();
         }
 
+        if (this.engine.datamap.skillManager.spiritualGardening.level.greaterThanOrEqualTo(SpiritualityLevelUnlocks.startingHope)) {
+            this.hopeFruit.gainResource(this.engine.datamap.skillManager.spiritualGardening.level)
+        }
+
         this.juice.dataReset();
         this.engine.determination.reset();
     }
@@ -748,6 +866,7 @@ export default class Garden {
         if (this.engine.datamap.skillManager.fortitude.unlocked) {
             this.engine.skillManager.skills.fortitude.gainXP(1)
         }
+        this.setbcestDependants();
         this.setTempData();
     }
 

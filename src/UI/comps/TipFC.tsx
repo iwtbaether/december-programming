@@ -26,11 +26,13 @@ export const TipFC2: React.FC<{}> = (props) => {
 export default TipFC;
 
 
-export const ChildTip: React.FC<{}> = (props) => {
+export const ChildTip: React.FC<{goLeft?: boolean}> = (props) => {
+    let cn ='TipFC2';
+    if (props.goLeft) cn = cn +'L'
     return (
         <span style={{position:'relative'}}>
 
-        <div className='TipFC2'>
+        <div className={cn}>
             {props.children}
         </div>
         </span>

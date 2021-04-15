@@ -9,6 +9,7 @@ import FlexRow from "../../../comps/FlexRow";
 import ProgressBar from "../../../comps/ProgressBar";
 import { ChildTip } from "../../../comps/TipFC";
 import { DICT_name_to_color } from "../SkillsRow";
+import PatienceGuide from "./PatienceGuide";
 
 const ChosenGuide = (props: { data: Datamap }) => {
   const m = gEngine.skillManager
@@ -54,42 +55,7 @@ const ChosenGuide = (props: { data: Datamap }) => {
 
 export default ChosenGuide;
 
-const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
-  const patience = props.chosenSkill as Patience_Skill;
 
-  const skillData = props.chosenSkill.getData();
-  const data2 = patience.data2
-  const color = DICT_name_to_color[props.chosenSkill.name];
-  const now = Date.now();
-
-  return (<FlexColumn>
-    <div>
-      <b>Gain Patience Experience</b> when you prestige a job with at least 1M progress.
-    </div>
-    <div>
-      Patience levels give Patience Currency that can be used to make Patience Items.
-    </div>
-      <ProgressBar current={now-data2.lastClaim} max={patience.tokenTimer} bg='black' color='wheat' />
-    <FlexRow>
-      <button disabled={!patience.canClaim()} onClick={patience.claimTokens}>
-        Claim PC
-      </button>
-      <span>
-        Current PC: {data2.mtx}
-      </span>
-    </FlexRow>
-    <FlexRow>
-      <div style={{border:`1px solid ${color}`}}>
-        Mushrooms 
-      </div>
-      <div style={{border:`1px solid ${color}`}}>
-        Forms
-      </div>
-
-    </FlexRow>
-
-  </FlexColumn>)
-}
 
 
 
@@ -139,7 +105,7 @@ const SpiritualityGuide = (props: { chosenSkill: SingleManagedSkill }) => {
   return (<FlexColumn>
     
     <div>
-      Gain Spirituality XP each time you grab a seed.
+      <b>Gain Spirituality XP</b> each time you grab a seed.
     </div>
     <div style={{ display: 'flex', flexDirection: 'column' }}>
 
@@ -149,8 +115,11 @@ const SpiritualityGuide = (props: { chosenSkill: SingleManagedSkill }) => {
       <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.juiceTrades + 1}: Unlock Juice Trades`}
         color={color} base={level} compare={SpiritualityLevelUnlocks.juiceTrades}
       />
+      <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.startingHope + 1}: Start with ${level.toString()} Hope Fruit`}
+        color={color} base={level} compare={SpiritualityLevelUnlocks.startingHope}
+      />
       <ColorIfGtoE text={`Level ${SpiritualityLevelUnlocks.juiceEarlyUnlock + 1}: Unlock Juice without Harvesting a special fruit`}
-        color={color} base={level} compare={SpiritualityLevelUnlocks.juiceEarlyUnlock} hideBefore={0}
+        color={color} base={level} compare={SpiritualityLevelUnlocks.juiceEarlyUnlock}
       />
       {/** 
      

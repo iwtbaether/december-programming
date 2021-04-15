@@ -1,11 +1,11 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
 import Achievements, { Achievements_Data, Achievements_Data_Init } from "./Achievements";
 import { DoomResearchData, DoomResearchData_Init } from "./DoomResearches";
 import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Garden";
 import { JuiceData, JuiceData_Fix, JuiceData_Init } from "./garden/Juice";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
-import { Magic_Data, Magic_Data_Init } from "./skills/Magic";
+import { Magic_Data, Magic_Data_Init, fixMagic } from "./skills/MagicTypes";
 import { SkillManager_Data, SkillManager_Data_Init, SkillManager_Data_SetDecimals } from "./skills/SkillManager";
 import TheExchange, { TheExchange_Data, TheExchange_Data_Init } from "./TheExchange";
 
@@ -166,7 +166,17 @@ export function setDecimals(data: Datamap) {
     JobsData_SetDecimals(data);
     SkillManager_Data_SetDecimals(data);
     JuiceData_Fix(data);
+    fixMagic(data);
+
     //data.whateverdecimal = new Decimal(whateverdecimal)
+    data.skillManager.patience_extra.peace = new Decimal(data.skillManager.patience_extra.peace);
+    data.skillManager.patience_extra.peaceSpends.formAugPower = new Decimal(data.skillManager.patience_extra.peaceSpends.formAugPower);
+    data.skillManager.patience_extra.peaceSpends.persistantAutoclickers = new Decimal(data.skillManager.patience_extra.peaceSpends.persistantAutoclickers);
 }
 
 const ZERO = new Decimal(0);
+
+//doesnt work lol
+function fixD (fixMe: DecimalSource) {
+    fixMe = new Decimal(fixMe)
+}

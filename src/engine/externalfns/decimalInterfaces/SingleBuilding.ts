@@ -81,6 +81,17 @@ export class SingleBuilding {
         this.info.building.info.setDecimal(new Decimal(0));
     }
 
+    refund = () => {
+        const purchased = this.count;
+        const ZERO = new Decimal(0)
+        this.info.costs.forEach((cost, costIndex)=>{
+            let paidSoFar = expoI_buyNCost(cost.expo, ZERO, purchased);
+            cost.resource.gainResource(paidSoFar);
+        })
+        this.reset();
+        //let paidSoFar = expoI_buyNCost(this,)
+    }
+
     //return 0 = no
     //return 1 = yes
     //return 2 = capped

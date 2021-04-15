@@ -83,6 +83,10 @@ export default class EnergyModule {
             mult4 = mult4.add(mult4.times(dp.hd.times(dp.basePower)))
         }
 
+        if (this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.energy.greaterThan(0)) {
+            mult4 = moreDecimal(mult4, this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.energy.times(.01))
+        }
+
         this.totalEnergyGainMore = mult4.times(mult2).times(mult3).times(this.energyEquipmentMods.moreGain);
         this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);
     }

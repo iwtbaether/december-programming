@@ -38,8 +38,8 @@ const JuiceTrades = (props: { data: Datamap }) => {
             <JuiceRecipe {...JR_FiveSilver} able={canTrade.fiveS} /> 
             <JuiceRecipe {...JR_ThreeGold} able={canTrade.threeG} /> 
             <JuiceRecipe {...JR_MaxStars} able={canTrade.fiveSThreeG} /> 
-            <JuiceRecipe {...JR_BalancedStar} able={canTrade.balancedShapes} /> 
-            <JuiceRecipe {...JR_VeryGray} able={canTrade.balancedShade} />
+            {/*<JuiceRecipe {...JR_BalancedStar} able={canTrade.balancedShapes} /> 
+            <JuiceRecipe {...JR_VeryGray} able={canTrade.balancedShade} />*/}
         </FlexRow>
         <FlexRow>
             <button onClick={engine.clearPopup}>
@@ -93,14 +93,14 @@ const JuiceRecipe = (props: JuiceRecipesProps) => {
 }
 
 const JR_SpellBook: JuiceRecipesProps = {
-    name: 'Influenced Spellbook [TODO]',
+    name: 'Influenced Spellbook',
     cost: '1k total Fruit',
     outcome: 'A spellbook that can have generic and guide specific spells',
     tradeID: 0 
 }
 
 const JR_SpellBookRepent: JuiceRecipesProps = {
-    name: 'Absolution [TODO]',
+    name: 'Absolution',
     cost: 'Repentance, all magical knowledge, 10k total fruit',
     outcome: 'Your Guide will help you cast away your current Spellbook',
     tradeID: 1
@@ -115,42 +115,42 @@ const JR_GuidePower: JuiceRecipesProps = {
 
 const JR_ThreeSilver: JuiceRecipesProps = {
     name: 'Tricky',
-    cost: '3 Silver Stars, No Gold Stars',
+    cost: '3 Silver Stars, No Gold Stars, 1k total Fruit',
     outcome: 'Auto Plant plants 5 more seed per second',
     tradeID: 3
 }
 
 const JR_FiveSilver: JuiceRecipesProps = {
     name: 'Max and Min',
-    cost: '5 Silver Stars, No Gold Stars',
+    cost: '5 Silver Stars, No Gold Stars, 1k total Fruit',
     outcome: '10% More Silver Star Effect',
     tradeID: 4
 }
 
 const JR_ThreeGold: JuiceRecipesProps = {
     name: 'Min and Max',
-    cost: 'No Silver Stars, 3 Gold Stars',
+    cost: 'No Silver Stars, 3 Gold Stars, 1k total Fruit',
     outcome: '10% More Gold Star Effect',
     tradeID: 5
 }
 
 const JR_MaxStars: JuiceRecipesProps = {
     name: 'Max and Max',
-    cost: '5 Silver Stars, 3 Gold Stars',
+    cost: '5 Silver Stars, 3 Gold Stars, 1k total Fruit',
     outcome: '10% More Hopper Storage',
     tradeID: 6
 }
 
 const JR_BalancedStar: JuiceRecipesProps = {
-    name: 'Balance',
-    cost: 'A Star with 5 points of near equal length',
+    name: 'Balance [TODO]',
+    cost: 'A Star with 5 points of near equal length, 1k total Fruit',
     outcome: '10% More Juice Strength',
     tradeID: 7
 }
 
 const JR_VeryGray: JuiceRecipesProps = {
-    name: 'Very Gray',
-    cost: `A very gray border`,
+    name: 'Very Gray [TODO]',
+    cost: `A very gray border, 1k total Fruit`,
     outcome: '10% More Juice Border Effect',
     tradeID: 8
 }

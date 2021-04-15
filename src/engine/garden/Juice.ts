@@ -32,6 +32,11 @@ export default class JuiceLmao {
         }
     }
 
+    unlockJuice = () => {
+        this.engine.datamap.garden.juicin = true;
+        this.engine.notify();
+    }
+
     tickedNumbers = {
         toHopper: ZERO,
         toPlant: ZERO,
@@ -92,12 +97,14 @@ export default class JuiceLmao {
         let onePercentOfPower = this.data.powerAmount.times(.01)
         let resourceCount = fruitResource.count;
         let toUse = Decimal.min(onePercentOfPower, resourceCount);
+        let madeJuice = toUse;
+        madeJuice = madeJuice.times(this.juiceGainMulti.current);
 
-        this.tickedNumbers.crushed = toUse;
+        this.tickedNumbers.crushed = madeJuice;
 
         this.data.powerAmount = this.data.powerAmount.minus(toUse);
         fruitResource.loseResource(toUse);
-        this.seedTypeToJuice(tc, toUse);
+        this.seedTypeToJuice(tc, madeJuice);
     }
 
     getTotalJuice = () => {
@@ -255,12 +262,20 @@ export default class JuiceLmao {
             //g1 auto
             this.engine.garden.setPlantSpeedMult();
             
+            this.engine.garden.setSeedTimes();
 
             this.engine.calcEnergy();
         
         } else return;
     }
 
+    juiceGainMulti: CalcedDecimal = new CalcedDecimal(()=>{
+        let base = new Decimal(1);
+        if (this.engine.skillManager?.skills.patience.totalFormPowers.totalExtraPowers.juice.greaterThan(0)) {
+            base = moreDecimal(base, this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.juice.times(.01))
+        }
+        return base;
+    })
 
 
 

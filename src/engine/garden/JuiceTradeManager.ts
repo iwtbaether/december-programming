@@ -24,16 +24,17 @@ export default class JuiceTradeManager {
         const totalFruit = sum_I_FruitDecimals(juice);
         let powers = calcDrink(juice);
 
-        this.tradeStatus.oneK = totalFruit.greaterThanOrEqualTo(1000);
+        const oneK = totalFruit.greaterThanOrEqualTo(1000);
+        this.tradeStatus.oneK = oneK
         this.tradeStatus.tenK = totalFruit.greaterThanOrEqualTo(10000);
 
         let SS = getSilverStarCount(powers);
         let GS = getGoldStarCount(powers);
 
-        this.tradeStatus.threeS = (SS === 3 && GS === 0)
-        this.tradeStatus.fiveS = (SS === 5 && GS === 0)
-        this.tradeStatus.threeG = (GS === 3 && SS === 0)
-        this.tradeStatus.fiveSThreeG = (SS === 5 && GS === 3)
+        this.tradeStatus.threeS = (SS === 3 && GS === 0) && oneK
+        this.tradeStatus.fiveS = (SS === 5 && GS === 0) && oneK
+        this.tradeStatus.threeG = (GS === 3 && SS === 0) && oneK
+        this.tradeStatus.fiveSThreeG = (SS === 5 && GS === 3) && oneK
 
         const spellbookIsInfluenced = (spellbook: null | GuideTypes) => {
             if (spellbook === null) return false;
@@ -41,11 +42,22 @@ export default class JuiceTradeManager {
             return true;
         }
 
-        this.tradeStatus.book = this.tradeStatus.oneK && this.juice.engine.datamap.magic.spellbook === null;
+        this.tradeStatus.book = this.tradeStatus.oneK && (this.juice.engine.datamap.magic.spellbook === null);
         this.tradeStatus.absolution = this.tradeStatus.tenK && spellbookIsInfluenced(this.juice.engine.datamap.magic.spellbook)
+
+        this.tradeStatus.balancedShade = juice.hope.minus(juice.doom).abs().lessThan(1);
+        //const sumPoints = juice.bunched.add(juice.square).add(juice.circular).add(juice.egg).add(juice.triangular).div(5);
+
+
 
 
         return this.tradeStatus;
+    }
+
+    absolution = () => {
+        const dm = this.juice.engine.datamap;
+        dm.magic.spellbook = GuideTypes.none;
+        dm.skillManager.magic.unlocked = false;
     }
 
     tryTrade = (trade: juiceTrade_Enum) => {
@@ -62,6 +74,7 @@ export default class JuiceTradeManager {
                 case juiceTrade_Enum.absolution:
                 if (this.tradeStatus.absolution) {
                     this.juice.clearCurrentJuice();
+                    this.absolution();
                     // REMOVE BOOK;
                     this.juice.data.trades[trade] = this.juice.data.trades[trade] + 1;
                 }

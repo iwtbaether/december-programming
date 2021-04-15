@@ -23,8 +23,8 @@ const ToCrushPopup = (props: { data: Datamap }) => {
                     <option value={SeedType.triangle}>Triangular</option>
                     <option value={SeedType.doom}>Doom</option>
                     <option value={SeedType.egg}>Egg</option>
-                    <option value={SeedType.plain}>Plain</option>
-                    <option value={SeedType.knowledge}>Knowledge</option>
+                    {false &&<option value={SeedType.plain}>Plain</option>}
+                    {false && <option value={SeedType.knowledge}>Knowledge</option>}
                 </select>
                 <button>Set</button>
             </form>

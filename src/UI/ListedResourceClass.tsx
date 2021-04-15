@@ -1,4 +1,5 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
+import { min } from "lodash";
 import React from "react";
 import { SingleResource } from "../engine/externalfns/decimalInterfaces/SingleResource";
 import DisplayDecimal from "./DisplayDecimal";
@@ -37,8 +38,12 @@ const ListedResourceClass: React.FC<{ resource: SingleResource}> = (props) => {
 export default ListedResourceClass;
 
 
-export const ListedDecimal: React.FC<{ resource: Decimal, name: string, ps?: Decimal}> = (props) => {
+export const ListedDecimal: React.FC<{ resource: Decimal, name: string, ps?: Decimal, min?: DecimalSource}> = (props) => {
 
+    if (props.min !== undefined) {
+        if (props.resource.lessThanOrEqualTo(props.min)) return null;
+    }
+    
     return (
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
             <span style={{ marginRight: '5px' }} className='resourceColor'>
@@ -58,8 +63,10 @@ export const ListedDecimal: React.FC<{ resource: Decimal, name: string, ps?: Dec
     )
 }
 
-export const ListedNumber: React.FC<{ resource: number, name: string,middle?:boolean}> = (props) => {
-
+export const ListedNumber: React.FC<{ resource: number, name: string,middle?:boolean,min?:number}> = (props) => {
+    if (props.min !== undefined) {
+        if (props.min >= props.resource) return null;
+    }
     return (
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '380px' }} className='ListedResourceClass'>
             <span style={{ marginRight: '5px' }} className='resourceColor'>

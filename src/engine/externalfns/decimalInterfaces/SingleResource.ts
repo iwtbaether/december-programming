@@ -36,9 +36,6 @@ export class SingleResource {
             //console.log('count over cap');
             
             this.info.setDecimal(this.cap)
-        } else {
-            //console.log('calced not over cap');
-            
         }
     };
 

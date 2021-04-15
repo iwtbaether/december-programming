@@ -4,6 +4,7 @@ import { Datamap } from "../../../engine/Datamap";
 import { canCheat, percentOf } from "../../../engine/externalfns/util";
 import { TimeRequiredForSeed, GardenSeed, SeedType, GardenPlant } from "../../../engine/garden/Garden";
 import { GuideTypes } from "../../../engine/garden/Juice";
+import { SpiritualityLevelUnlocks } from "../../../engine/skills/Patience";
 import { SingleBuildingUI } from "../../BuildingsUI";
 import FlexColumn from "../../comps/FlexColumn";
 import FlexRow from "../../comps/FlexRow";
@@ -102,6 +103,9 @@ const GardenRow = (props: { data: Datamap }) => {
                             <NewSingleResearchUI research={engine.garden.res_doomfromhope} />
                             <NewSingleResearchUI research={engine.garden.res_seedtype_egg} />
                             <NewSingleResearchUI research={engine.garden.res_doomedDiscard} />
+                            <button hidden={data.skillManager.spiritualGardening.level.lessThan(SpiritualityLevelUnlocks.juiceEarlyUnlock)} onClick={garden.juice.unlockJuice}  >
+                                Unlock Juice 
+                            </button>
 
 
                         </React.Fragment>}

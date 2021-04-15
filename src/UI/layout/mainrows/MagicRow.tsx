@@ -1,10 +1,14 @@
+import Decimal from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
+import { canCheat } from "../../../engine/externalfns/util";
 import { GuideTypes } from "../../../engine/garden/Juice";
-import { CEX } from "../../../engine/TheExchange";
 import CheatDiv from "../../comps/CheatDiv";
-import { ListedNumber } from "../../ListedResourceClass";
+import FlexRow from "../../comps/FlexRow";
+import ProgressBar from "../../comps/ProgressBar";
+import DisplayDecimal from "../../DisplayDecimal";
+import { DICT_name_to_color } from "./SkillsRow";
 
 const spellBookNames = [
     'Not Influence',
@@ -21,28 +25,46 @@ const coloredClasses = [
 ]
 
 const MagicRow = (props: { data: Datamap }) => {
-    const currency = props.data.crafting.currency
-    const exchange = gEngine.theExchange;
-    //const mClass = gEngine.skillManager.skills.magic;
-    //Max Mana: {mClass.name}
-    
+    const mClass = gEngine.skillManager.skills.magic;
+    const currentMana = props.data.magic.currentMana;
+
     return (
-        <div style={{display:'flex',flexDirection:'column', marginLeft:'10px',gap:'10px'}}>
-            <span style={{fontWeight:'bold'}}>
-            Magic - coming soon to a reset (8) near you
-            </span>
-            {props.data.magic.spellbook && 
-            <div>
-            <span className={coloredClasses[props.data.magic.spellbook]}>
-                Spellbook: {spellBookNames[props.data.magic.spellbook]}
-            </span>
-            </div>
-            }
-            <span>
+        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '10px', gap: '10px' }}>
+            <span style={{ fontWeight: 'bold' }}>
+                Magic - Requires a Spellbook.. and mana...
             </span>
             <CheatDiv>
-                <button onClick={()=>{
-                    //gEngine.datamap.unlocksStates.magic = false;
+
+                <FlexRow>
+                    <button onClick={() => { props.data.magic.spellbook = GuideTypes.none }}>clear book</button>
+                    <button onClick={() => { props.data.magic.spellbook = GuideTypes.Sara }}>s book</button>
+                    <button onClick={() => { props.data.magic.spellbook = GuideTypes.Guth }}>g book</button>
+                    <button onClick={() => { props.data.magic.spellbook = GuideTypes.Zammy }}>z book</button>
+                </FlexRow>
+            </CheatDiv>
+            {props.data.magic.spellbook !== GuideTypes.none &&
+                <div>
+                    <span className={coloredClasses[props.data.magic.spellbook]}>
+                        Spellbook: {spellBookNames[props.data.magic.spellbook]}
+                    </span>
+                </div>
+            }
+            <span>
+                Mana: <DisplayDecimal decimal={currentMana} />/<DisplayDecimal decimal={mClass.maxMana.current} />
+            </span>
+            <CheatDiv>
+                <FlexRow>
+                    <button onClick={()=>{props.data.magic.currentMana = new Decimal(0)}}>
+                        clear mana
+                    </button>
+                </FlexRow>
+            </CheatDiv>
+            <div style={{ width: '100px' }}>
+                <ProgressBar color={DICT_name_to_color[mClass.name]} max={mClass.maxMana.current} current={currentMana} bg={'black'} />
+            </div>
+            <CheatDiv>
+                <button onClick={() => {
+                    gEngine.datamap.skillManager.magic.unlocked = false;
                     gEngine.notify();
                 }}>
                     Lock magic
@@ -108,7 +130,7 @@ const MagicRow = (props: { data: Datamap }) => {
                     lmao rs xp formula. can use skill level to determine max mana / mana regen instead of spells increasing it. each level can give a point to assign to one or the other.
                 </li>
                 <li>
-                    "spiritual juicer" to transform fruits into "traits" of _________ for eventual ________ (garden reset #2 lol) 
+                    "spiritual juicer" to transform fruits into "traits" of _________ for eventual ________ (garden reset #2 lol)
                 </li>
                 <li>
                     make some "end" to job #1 somewhere in reset 8/9+ (currently testing) that unlocks jobs #2, the _________.
@@ -120,7 +142,7 @@ const MagicRow = (props: { data: Datamap }) => {
                             "purchase" a new manager with 1 copper orb.
                         </li>
                         <li>
-                            3 managers are show as options, red fairy, green fairy, white fairy 
+                            3 managers are show as options, red fairy, green fairy, white fairy
                         </li>
                         <li>red fairy harvests fruit at half their gain, green fairy grabs seeds from your bag but takes a cut, white fairy plants seeds but can't find doom</li>
                     </ul>
@@ -134,9 +156,4 @@ export default MagicRow;
 
 
 
-const GERow: React.FC<{}> = (props) => (
-    <div style={{display:'flex',flexDirection:'column'}}>
-        {props.children}
-    </div>
-)
 
