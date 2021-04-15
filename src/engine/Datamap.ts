@@ -6,6 +6,7 @@ import { JuiceData, JuiceData_Fix, JuiceData_Init } from "./garden/Juice";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
 import { Magic_Data, Magic_Data_Init, fixMagic } from "./skills/MagicTypes";
+import { fixPatienceDecimals } from "./skills/Patience";
 import { SkillManager_Data, SkillManager_Data_Init, SkillManager_Data_SetDecimals } from "./skills/SkillManager";
 import TheExchange, { TheExchange_Data, TheExchange_Data_Init } from "./TheExchange";
 
@@ -167,11 +168,9 @@ export function setDecimals(data: Datamap) {
     SkillManager_Data_SetDecimals(data);
     JuiceData_Fix(data);
     fixMagic(data);
+    fixPatienceDecimals(data);
 
     //data.whateverdecimal = new Decimal(whateverdecimal)
-    data.skillManager.patience_extra.peace = new Decimal(data.skillManager.patience_extra.peace);
-    data.skillManager.patience_extra.peaceSpends.formAugPower = new Decimal(data.skillManager.patience_extra.peaceSpends.formAugPower);
-    data.skillManager.patience_extra.peaceSpends.persistantAutoclickers = new Decimal(data.skillManager.patience_extra.peaceSpends.persistantAutoclickers);
 }
 
 const ZERO = new Decimal(0);

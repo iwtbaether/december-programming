@@ -1,4 +1,5 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
+import { Datamap } from "../Datamap";
 import { SingleBuilding } from "../externalfns/decimalInterfaces/SingleBuilding";
 import { SingleResource } from "../externalfns/decimalInterfaces/SingleResource";
 import { canCheat, getRandomInt, randomEnum, randomEnumFromListWithExclusions } from "../externalfns/util";
@@ -831,6 +832,12 @@ export interface Patience_Skill_Extra_Data {
     //timer bases -- USE THIS INSTEAD OF ADDING WIH DELTA
     lastClaim: number;
     lastMushroom: number;
+}
+
+export function fixPatienceDecimals (data: Datamap) {
+    data.skillManager.patience_extra.peace = new Decimal(data.skillManager.patience_extra.peace);
+    data.skillManager.patience_extra.peaceSpends.formAugPower = new Decimal(data.skillManager.patience_extra.peaceSpends.formAugPower);
+    data.skillManager.patience_extra.peaceSpends.persistantAutoclickers = new Decimal(data.skillManager.patience_extra.peaceSpends.persistantAutoclickers);
 }
 
 export function Patience_Skill_Extra_Data_Init(): Patience_Skill_Extra_Data {
