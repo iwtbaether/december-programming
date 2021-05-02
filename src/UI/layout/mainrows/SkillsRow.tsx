@@ -94,6 +94,10 @@ interface SingleSkillDivProps {
     skill: SingleManagedSkill;
 }
 
+interface SimpleSkillDivProps {
+    skill: SingleManagedSkill;
+}
+
 
 
 const SingleSkillDiv = (props: SingleSkillDivProps) => {
@@ -168,4 +172,45 @@ const SingleSkillDiv = (props: SingleSkillDivProps) => {
         </div>
     )
 }
+
+
+export const SimpleSkillDiv = (props: SimpleSkillDivProps) => {
+    const skillData = props.skill.getData();
+    const locked = !skillData.unlocked;
+    if (locked) return null;
+
+    
+
+    const color = DICT_name_to_color[props.skill.name];
+
+    const displayLevel = skillData.level.add(1);
+
+    const current = skillData.xp;
+    const goal = props.skill.reqXP;
+
+    return (
+        <div style={{ border: `2px solid ${color}`, padding: '2px', width: '222px' }}>
+            <div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <span style={{ color: color, fontSize: '1.3em' }}>
+                        {props.skill.name}
+                    </span>
+
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {<span style={{ color:color}}>
+                        {`Level: ${displayLevel.toNumber()}`}
+                    </span>}
+                    <span>
+                        <DisplayDecimal decimal={current} />/<DisplayDecimal decimal={goal} />
+                    </span>
+                </div>
+                <ProgressBar current={current} max={goal} bg={'black'} color={color} />
+            </div>
+        </div>
+    )
+
+}
+
 

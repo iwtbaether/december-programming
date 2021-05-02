@@ -2,6 +2,7 @@ import Decimal, { DecimalSource } from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../../..";
 import { Datamap } from "../../../../engine/Datamap";
+import Magic_Skill from "../../../../engine/skills/Magic";
 import Patience_Skill, { SpiritualityLevelUnlocks } from "../../../../engine/skills/Patience";
 import { SingleManagedSkill } from "../../../../engine/skills/SingleManagedSkill";
 import FlexColumn from "../../../comps/FlexColumn";
@@ -29,6 +30,10 @@ const ChosenGuide = (props: { data: Datamap }) => {
 
     case m.skills.spirituality:
       innerDiv = <SpiritualityGuide chosenSkill={m.skills.spirituality} />
+      break;
+    
+    case m.skills.magic:
+      innerDiv = <MagicGuide chosenSkill={m.skills.magic} />
       break;
 
     default:
@@ -135,12 +140,74 @@ const SpiritualityGuide = (props: { chosenSkill: SingleManagedSkill }) => {
   </FlexColumn>)
 }
 
+const MagicGuide = (props: { chosenSkill: Magic_Skill }) => {
+  const skillData = props.chosenSkill.getData();
+  const unlocks = props.chosenSkill.levelOfUnlocks;
+  const level = skillData.level;
+  const color = DICT_name_to_color[props.chosenSkill.name]
+
+  return (<FlexColumn>
+    
+    <div>
+      <b>Gain Magic XP</b> from casting spells.
+    </div>
+    <FlexRow>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+      <span style={{textAlign:'center', fontWeight:"bold"}}>
+        Spell Unlocks
+      </span>
+
+      <ColorIfGtoE text={`Level ${unlocks.growSkip+1}: Chulsaeng`}
+        color={color} base={level} compare={unlocks.growSkip}
+        />
+
+
+<ColorIfGtoE text={`Level ${unlocks.gardenTimeSkip+1}: Won-Ye`}
+        color={color} base={level} compare={unlocks.gardenTimeSkip}
+        />
+<ColorIfGtoE text={`Level ${unlocks.energyTimeSkip+1}: Eneo Ja Ijeu`}
+        color={color} base={level} compare={unlocks.energyTimeSkip}
+        />
+
+<ColorIfGtoE text={`Level ${unlocks.seedCreation+1}: Ssi`}
+        color={color} base={level} compare={unlocks.seedCreation}
+        />
+
+<ColorIfGtoE text={`Level ${unlocks.juiceTicks+1}: Abchag`}
+        color={color} base={level} compare={unlocks.juiceTicks}
+        />
+
+        <span style={{textAlign:'center', fontWeight:"bold"}}>
+        Stat Bonuses
+        </span>
+
+<ColorIfGtoE text={`Level ${unlocks.maxMana+1}: Max Mana x${level.times(.1).add(1).toString()}`}
+        color={color} base={level} compare={unlocks.maxMana}
+        />
+
+<ColorIfGtoE text={`Level ${unlocks.manaRegen+1}: Mana Regen x${level.times(.1).add(1).toString()}`}
+        color={color} base={level} compare={unlocks.manaRegen}
+        />
+
+      
+    </div>
+        <FlexColumn>
+          <button onClick={()=>{gEngine.setNav(8)}}>
+            Use Magic
+          </button>
+        </FlexColumn>
+      </FlexRow>
+
+  </FlexColumn>)
+}
+
 const ColorIfGtoE = (props: { text: string, color: string, base: Decimal, compare: DecimalSource, hideBefore?: DecimalSource }) => {
   const { text, color, base, compare, hideBefore } = props;
   if (hideBefore) if (props.base.lessThan(hideBefore)) return null;
   const colored = base.greaterThanOrEqualTo(compare);
 
   return <span style={colored ? { color: color } : {}}>
-    {text}
+   {text}
   </span>
 }

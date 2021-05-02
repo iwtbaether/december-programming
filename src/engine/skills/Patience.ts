@@ -203,6 +203,8 @@ export default class Patience_Skill extends SingleManagedSkill {
         //things that then rely on just form data;
         this.engine.garden.setSeedTimes();
 
+        // [TODOTODOTODO]
+
         //todo
         // D, E , F, G , J , M , P , W 
         //DONE 
@@ -642,10 +644,83 @@ export default class Patience_Skill extends SingleManagedSkill {
         costs: [
             {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
         ],
-        description: '+1 Base Mushroom Power',
+        description: 'Mushrooms produce larger changes',
         hidden: ()=>false,
-        outcome: ()=>'',
+        outcome: ()=>'Flowered Forms have +1 base change',
     })
+
+    building_persistantAutoclickers: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            get: ()=>{return this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers},
+            setDecimal: (dec)=>{this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers = dec},
+            name: 'Persistant Autoclickers'
+        }),
+        costs: [
+            {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
+        ],
+        description: 'An autoclicker that survives resets, neat!',
+        hidden: ()=>false,
+        outcome: ()=>'+1 Base Autoclickers',
+    })
+
+
+    building_currencyGain: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            get: ()=>{return this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers},
+            setDecimal: (dec)=>{this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers = dec},
+            name: 'Reset Currency'
+        }),
+        costs: [
+            {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
+        ],
+        description: 'More currency gained when accepting Doom',
+        hidden: ()=>false,
+        outcome: ()=>'50% more currency per level',
+    })
+
+    building_pcGain: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            get: ()=>{return this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers},
+            setDecimal: (dec)=>{this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers = dec},
+            name: 'PC Gain'
+        }),
+        costs: [
+            {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
+        ],
+        description: 'More PC gained when claiming PC',
+        hidden: ()=>false,
+        outcome: ()=>'50% more PC per level',
+    })
+
+    building_peaceGain: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            get: ()=>{return this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers},
+            setDecimal: (dec)=>{this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers = dec},
+            name: 'Peace Gain'
+        }),
+        costs: [
+            {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
+        ],
+        description: 'More Peace gained from discarding Patience Items',
+        hidden: ()=>false,
+        outcome: ()=>'+1 Base Peace',
+    })
+
+    building_energyGain: SingleBuilding = new SingleBuilding({
+        building: new SingleResource({
+            get: ()=>{return this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers},
+            setDecimal: (dec)=>{this.engine.datamap.skillManager.patience_extra.peaceSpends.persistantAutoclickers = dec},
+            name: 'Energy Gain'
+        }),
+        costs: [
+            {resource: this.peacource, expo: {initial: 1,coefficient: 2}}
+        ],
+        description: 'An autoclicker that survives resets, neat!',
+        hidden: ()=>false,
+        outcome: ()=>'+1 Base Autoclickers',
+    })
+
+    
 
 
     //GROW A MUSHROOM THAT GROWS FRUIT FORMS
@@ -811,8 +886,15 @@ export interface Patience_Skill_Extra_Data {
     peaceSpends: {
         formAugPower: Decimal;
         persistantAutoclickers: Decimal;
+        
         manaShroms: boolean;
+        shroomChance: boolean;
+        shroomCrafting: boolean;
 
+        pcGain: Decimal;
+        peaceGain: Decimal;
+        energyGain: Decimal;
+        currencyGain: Decimal;
     }
 
     equipedShroom?: PShroom;
@@ -855,6 +937,14 @@ export function Patience_Skill_Extra_Data_Init(): Patience_Skill_Extra_Data {
             formAugPower: new Decimal(0),
             persistantAutoclickers: new Decimal(0),
             manaShroms: false,
+            shroomChance: false,
+            shroomCrafting: false,
+
+            currencyGain: new Decimal(0),
+            energyGain: new Decimal(0),
+            pcGain: new Decimal(0),
+            peaceGain: new Decimal(0),
+
         },
         peace: new Decimal(0),
     }

@@ -50,6 +50,11 @@ const SpendPeacePopup = (props: { data: Datamap }) => {
                     Upgrades
                 </span>
                 <SingleBuildingUI building={patience.building_FormAugmentaionPower}  />
+                <SingleBuildingUI building={patience.building_persistantAutoclickers}  />
+                <SingleBuildingUI building={patience.building_pcGain}  />
+                <SingleBuildingUI building={patience.building_peaceGain}  />
+                <SingleBuildingUI building={patience.building_currencyGain}  />
+                <SingleBuildingUI building={patience.building_energyGain}  />
                 <button>
                     Form Augmentation Power
                 </button>

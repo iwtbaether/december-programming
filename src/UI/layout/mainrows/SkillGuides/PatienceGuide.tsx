@@ -251,7 +251,7 @@ function DisplayPFormMod(mod: MDV2): string {
     if (mod.mod === PForm_Mods.powerFromBase) return `Power Gain Lv${mod.value}`;
     if (mod.mod === PForm_Mods.energyFromBase) return `Energy Gain Lv.${mod.value}`;
 
-    if (mod.mod === PForm_Mods.spores) return `${mod.value} Spores - Come tell me in discord.`;
+    if (mod.mod === PForm_Mods.spores) return `${mod.value} Spore${(mod.value>1)?'s':''}`;
 
     else return (`ERROR ${PForm_Mods[mod.mod]}: ${mod.value}`)
 }
