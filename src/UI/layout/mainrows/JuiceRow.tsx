@@ -15,6 +15,7 @@ import DisplayDecimal from "../../DisplayDecimal";
 import { ListedDecimal } from "../../ListedResourceClass";
 import FruitResources from "./FruitResources";
 import JuiceCanvas from "./JuiceCanvas";
+import { spellBookNames } from "./MagicRow";
 import { DICT_name_to_color } from "./SkillsRow";
 
 const JuiceRow = (props: { data: Datamap }) => {
@@ -203,7 +204,7 @@ const SSelection = (props: { data: Datamap }) => {
         <div className='blue-text blue-border' style={{ padding: '3px' }}>
             <FlexColumn>
                 <span style={{ textAlign: 'center', fontSize: '1.5em' }}>
-                    Guide Sara
+                    Guide {spellBookNames[1]}
                                 </span>
                 <span>
                     <b>Disables</b> your ability to discard seeds
@@ -230,7 +231,7 @@ const GSelection = (props: { data: Datamap }) => {
         <div className='green-text green-border' style={{ padding: '3px' }}>
             <FlexColumn>
                 <span style={{ textAlign: 'center', fontSize: '1.5em' }}>
-                    Guide Trixie
+                    Guide {spellBookNames[2]}
                     </span>
                 <span>
                     Repairs Watering Cans with Hope Fruit
@@ -257,7 +258,7 @@ const ZSelection = (props: { data: Datamap }) => {
         <div className='red-text red-border' style={{ padding: '3px' }}>
             <FlexColumn>
                 <span style={{ textAlign: 'center', fontSize: '1.5em' }}>
-                    Guide Rakozam
+                    Guide {spellBookNames[3]}
                     </span>
                 <span>
                     Hiring Fee: 1 Fruit of Knowledge

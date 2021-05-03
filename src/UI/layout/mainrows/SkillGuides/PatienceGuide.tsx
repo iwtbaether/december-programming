@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { gEngine } from "../../../..";
 import { ItemTypes } from "../../../../engine/m_st/Crafting";
 import Patience_Skill, { SingleFormPower } from "../../../../engine/skills/Patience";
@@ -14,6 +14,7 @@ import DisplayNumber from "../../../DisplayNumber";
 import { ListedNumber } from "../../../ListedResourceClass";
 import { OpenPopup } from "../Popups/ClosePopup";
 import { DICT_name_to_color } from "../SkillsRow";
+import { ColorIfGtoE } from "./ChosenGuide";
 import './PatienceGuide.scss'
 
 
@@ -29,6 +30,10 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
 
     const cost = patience.getLootBoxCost();
 
+    const [tab, chooseTab] = useState(0)
+    const setTab0 = ()=>{chooseTab(0)}
+    const setTab1 = ()=>{chooseTab(1)}
+
     return (
         <div style={{ display: 'flex', flexDirection: 'row', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' }}>
 
@@ -39,8 +44,8 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
                 <div>
                     Patience levels generate Patience Currency that can be used to make Patience Items.
                 </div>
+                {tab === 0 && <React.Fragment>
                 <ProgressBar current={now - data2.lastClaim} max={patience.tokenTimer} bg='black' color='wheat' />
-                
                 <FlexRow>
                     <FlexColumn>
                         <button disabled={!patience.canClaim()} onClick={patience.claimTokens}>
@@ -49,7 +54,7 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
                         <button onClick={patience.useTokenGetLoot} disabled={data2.mtx < cost}>
                             Get PC Box Cost: {cost}
                         </button>
-                        <button>
+                        <button onClick={setTab1}>
                             Patience Levels
                         </button>
                     </FlexColumn>
@@ -144,6 +149,20 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
                     </div>
                 </div>}
 
+                </React.Fragment>}
+                {tab === 1 && <FlexColumn>
+                    <div>
+                        <button onClick={setTab0}>
+                            Go To Shrooms
+                        </button>
+                    </div>
+                    <ColorIfGtoE
+      text={`Level 1: Get ${skillData.level.add(1).toString()} (1 per level) PC per claim`}
+      color={color}
+      base={skillData.level}
+      compare={0}
+      />
+                </FlexColumn>}
 
 
             </FlexColumn>
@@ -170,7 +189,9 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
 
             </FlexColumn>
 
+
         </div>
+
 
     )
 }

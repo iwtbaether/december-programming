@@ -300,3 +300,28 @@ a {
     color: $blue;
     text-decoration: underline;
 }
+
+.ShowSpellInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.SpellExpando {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.SpellExpandoStats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.EffectWindow {
+    width: 500px;
+}

@@ -1,4 +1,4 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
 import React from "react";
 import { gEngine } from "../../..";
 import { Datamap } from "../../../engine/Datamap";
@@ -118,7 +118,7 @@ const JobsRow = (props: { data: Datamap }) => {
     <span style={{display:'flex',gap:'5px'}}>
       <span style={{width:'400px'}}>
       <ProgressBar current={data.jobs.jobProgress} max={goal} bg='black' color='orange'>
-        Goal: <DisplayDecimal decimal={goal} /> {selectedJob.unitsLabel}, Progress:
+        Goal: <DisplayDecimal decimal={goal} /> { selectedJob.unitsLabel}, Progress:
       </ProgressBar>
       </span>
       <span>
@@ -132,6 +132,40 @@ const JobsRow = (props: { data: Datamap }) => {
   </FlexColumn>)
 }
 
+export const MakesJobsProgressBar = (props: { data: Datamap }) => {
+  
+  //O(1)
+  const data = props.data;
+  const jobs = gEngine.jobs;
+
+  //O(n)
+  const postResistance = jobs.calced.finalJobSpeed.div(jobs.data.jobProgress.add(1).times(jobs.calced.finalResitanceDiv));
+  const chargeSpeed = jobs.getChargeSpeed();
+  const goal = jobs.currentGoal();
+  const cap = jobs.getCap();
+
+  const speedWCharge = postResistance.add(chargeSpeed);
+
+
+  const finalSpeed = Decimal.min(cap,speedWCharge);
+
+  const ETA = goal.sub(jobs.data.jobProgress).div(finalSpeed)
+
+  return <JobProgressBar current={data.jobs.jobProgress} goal={goal} job={data.jobs.notReset.jobID} ETA={ETA} /> 
+}
+
+const JobProgressBar = (props: {current: DecimalSource, goal: Decimal, job: number, ETA: DecimalSource}) => {
+  return (<span style={{display:'flex',gap:'5px'}}>
+  <span style={{width:'400px'}}>
+  <ProgressBar current={props.current} max={props.goal} bg='black' color='orange'>
+    Goal: <DisplayDecimal decimal={props.goal} /> {FULL_JOBS_LIST[props.job].unitsLabel}, Progress:
+  </ProgressBar>
+  </span>
+  <span>
+  ETA: <CalETA ETAs={props.ETA}/> 
+  </span>
+  </span>)
+}
 
 
 export default JobsRow;

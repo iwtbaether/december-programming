@@ -14,14 +14,14 @@ import SpellsRow from "./MagicRows/SpellsRow";
 import TodoRow from "./MagicRows/TodoRow";
 import { DICT_name_to_color, SimpleSkillDiv } from "./SkillsRow";
 
-const spellBookNames = [
+export const spellBookNames = [
     'Not Influence',
     'Sara',
-    'Guth',
-    'Zammy'
+    'Trixie',
+    'Rakozam'
 ]
 
-const coloredClasses = [
+export const coloredClasses = [
     '',
     'blue-text blue-border',
     'green-text green-border',
@@ -36,6 +36,7 @@ const MagicRow = (props: { data: Datamap }) => {
     const mClass = gEngine.skillManager.skills.magic;
     const currentMana = props.data.magic.currentMana;
     const [tab, setTab] = useState(0)
+    const [spells, setSpells] = useState(mClass.spellBook);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '10px', gap: '10px' }}>
@@ -54,13 +55,6 @@ const MagicRow = (props: { data: Datamap }) => {
                     <button onClick={() => { props.data.magic.spellbook = GuideTypes.Zammy }}>z book</button>
                 </FlexRow>
             </CheatDiv>
-            {props.data.magic.spellbook !== GuideTypes.none &&
-                <div>
-                    <span className={coloredClasses[props.data.magic.spellbook]}>
-                        Spellbook: {spellBookNames[props.data.magic.spellbook]}
-                    </span>
-                </div>
-            }
             <FlexColumn>
 
             <span>
@@ -88,7 +82,11 @@ const MagicRow = (props: { data: Datamap }) => {
                 </button>
             </CheatDiv>
             <FlexRow>
-                <button onClick={()=>{setTab(1)}}>
+                <button onClick={()=>{
+                    mClass.setSpellbook();
+                    setSpells(mClass.spellBook)
+                    setTab(1)
+                }}>
                     Spells
                 </button>
                 <button onClick={()=>{setTab(2)}}>
@@ -101,7 +99,7 @@ const MagicRow = (props: { data: Datamap }) => {
             <span style={{ fontWeight: 'bold', fontSize:'1.5em', color:MagicColor }}>
                 {TabNames[tab]}
             </span>
-            {tab===1 && <SpellsRow data={props.data}/>}
+            {tab===1 && <SpellsRow data={props.data} spells={spells}/>}
             {tab===2 && <EquipmentRow data={props.data}/>}
             {tab === 3 &&
                     <TodoRow data={props.data}/>

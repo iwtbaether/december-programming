@@ -146,6 +146,8 @@ const MagicGuide = (props: { chosenSkill: Magic_Skill }) => {
   const level = skillData.level;
   const color = DICT_name_to_color[props.chosenSkill.name]
 
+  const manaRegenBonus = Decimal.max(0, level.minus(18)).times(.1).add(1)
+
   return (<FlexColumn>
     
     <div>
@@ -186,7 +188,7 @@ const MagicGuide = (props: { chosenSkill: Magic_Skill }) => {
         color={color} base={level} compare={unlocks.maxMana}
         />
 
-<ColorIfGtoE text={`Level ${unlocks.manaRegen+1}: Mana Regen x${level.times(.1).add(1).toString()}`}
+<ColorIfGtoE text={`Level ${unlocks.manaRegen+1}: Mana Regen x${manaRegenBonus.toString()}`}
         color={color} base={level} compare={unlocks.manaRegen}
         />
 
@@ -202,7 +204,7 @@ const MagicGuide = (props: { chosenSkill: Magic_Skill }) => {
   </FlexColumn>)
 }
 
-const ColorIfGtoE = (props: { text: string, color: string, base: Decimal, compare: DecimalSource, hideBefore?: DecimalSource }) => {
+export const ColorIfGtoE = (props: { text: string, color: string, base: Decimal, compare: DecimalSource, hideBefore?: DecimalSource }) => {
   const { text, color, base, compare, hideBefore } = props;
   if (hideBefore) if (props.base.lessThan(hideBefore)) return null;
   const colored = base.greaterThanOrEqualTo(compare);
