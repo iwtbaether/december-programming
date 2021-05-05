@@ -140,6 +140,7 @@ export const MakesJobsProgressBar = (props: { data: Datamap }) => {
 
   //O(n)
   const postResistance = jobs.calced.finalJobSpeed.div(jobs.data.jobProgress.add(1).times(jobs.calced.finalResitanceDiv));
+
   const chargeSpeed = jobs.getChargeSpeed();
   const goal = jobs.currentGoal();
   const cap = jobs.getCap();
@@ -148,18 +149,36 @@ export const MakesJobsProgressBar = (props: { data: Datamap }) => {
 
 
   const finalSpeed = Decimal.min(cap,speedWCharge);
+  /*
+  console.log('final speed',finalSpeed);
+  console.log('post resistance',postResistance);
+  console.log('charge',chargeSpeed);
+  console.log('cap',cap);
+  */
+  
 
   const ETA = goal.sub(jobs.data.jobProgress).div(finalSpeed)
 
-  return <JobProgressBar current={data.jobs.jobProgress} goal={goal} job={data.jobs.notReset.jobID} ETA={ETA} /> 
+  return <JobProgressBar current={data.jobs.jobProgress} goal={goal} job={data.jobs.notReset.jobID} /> 
 }
 
-const JobProgressBar = (props: {current: DecimalSource, goal: Decimal, job: number, ETA: DecimalSource}) => {
-  return (<span style={{display:'flex',gap:'5px'}}>
+const JobProgressBar = (props: {current: DecimalSource, goal: Decimal, job: number}) => {
+  return (
   <span style={{width:'400px'}}>
   <ProgressBar current={props.current} max={props.goal} bg='black' color='orange'>
     Goal: <DisplayDecimal decimal={props.goal} /> {FULL_JOBS_LIST[props.job].unitsLabel}, Progress:
   </ProgressBar>
+  </span>
+  )
+}
+
+const JobProgressStats = (props: {current: DecimalSource, job: number, ETA: DecimalSource, finalSpeed: Decimal}) => {
+  return (<span style={{display:'flex',gap:'5px',flexDirection:'column'}}>
+    <span>
+    Speed: <DisplayDecimal decimal={props.finalSpeed}/>
+    </span>
+  <span>
+    Current Progress: <DisplayDecimal decimal={new Decimal(props.current)} />
   </span>
   <span>
   ETA: <CalETA ETAs={props.ETA}/> 
@@ -167,6 +186,38 @@ const JobProgressBar = (props: {current: DecimalSource, goal: Decimal, job: numb
   </span>)
 }
 
+export const MakesJobsProgressBarAndStats = (props: { data: Datamap }) => {
+  
+  //O(1)
+  const data = props.data;
+  const jobs = gEngine.jobs;
+  const current = data.jobs.jobProgress;
+
+  //O(n)
+  const postResistance = jobs.calced.finalJobSpeed.div(current.add(1).times(jobs.calced.finalResitanceDiv));
+
+  const chargeSpeed = jobs.getChargeSpeed();
+  const goal = jobs.currentGoal();
+  const cap = jobs.getCap();
+
+  const speedWCharge = postResistance.add(chargeSpeed);
+  const job = data.jobs.notReset.jobID;
+
+  const finalSpeed = Decimal.min(cap,speedWCharge);
+  /*
+  console.log('final speed',finalSpeed);
+  console.log('post resistance',postResistance);
+  console.log('charge',chargeSpeed);
+  console.log('cap',cap);
+  */
+  
+
+  const ETA = goal.sub(current).div(finalSpeed)
+  return (<React.Fragment>
+    <JobProgressBar current={current} goal={goal} job={job} /> 
+    <JobProgressStats {...{job, current, ETA, finalSpeed}} />
+  </React.Fragment>)
+}
 
 export default JobsRow;
 

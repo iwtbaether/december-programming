@@ -13,6 +13,17 @@ import DisplayNumber from "../../DisplayNumber";
 import { ListedNumber } from "../../ListedResourceClass";
 import IITEM_STRINGS from "../ItemStrings";
 
+export const CraftingResourceColumn = (props: { data: Datamap }) => {
+  const {data} = props;
+  const crafting = gEngine.crafting;
+  return (<div>
+    <span>Currency:</span>
+    <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'} />
+    <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'} />
+    {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'} />}
+    {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
+  </div>)
+}
 
 const CraftingRow = (props: { data: Datamap }) => {
   const [statDetails, setStatDetails] = useState(false);
@@ -21,21 +32,12 @@ const CraftingRow = (props: { data: Datamap }) => {
   const crafting = gEngine.crafting;
   return (<div>
     <FlexRow>
-      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, flexBasis: '240px', gap:'5px' }}>
-        <div>
-
-        <span>
-        Currency:
-        </span>
-        <ListedNumber resource={crafting.data.currency.transmutes} name={'Creation'} />
-        <ListedNumber resource={crafting.data.currency.augmentations} name={'Enchantment'} />
-        {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomShards} name={'Doom Shard'} />}
-        {data.doomResearch.gloomShard && <ListedNumber resource={crafting.data.currency.doomOrbs} name={'Doom Pog'} />}
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, flexBasis: '240px', gap: '5px' }}>
+        <CraftingResourceColumn {...{data}}/>
         <span>Get 5 random basic currency each time you accept Doom</span>
-        {(data.unlocksStates.one < 7 && data.unlocksStates.one > 5 ) && <span> You can equip one Catalyst of each size</span>}
-        {data.unlocksStates.one >= 8 && <button onClick={()=>{gEngine.setNav(7)}}>
-            Visit The Exchange
+        {(data.unlocksStates.one < 7 && data.unlocksStates.one > 5) && <span> You can equip one Catalyst of each size</span>}
+        {data.unlocksStates.one >= 8 && <button onClick={() => { gEngine.setNav(7) }}>
+          Visit The Exchange
           </button>}
       </div>
       {<FlexColumn>
@@ -63,13 +65,14 @@ const CraftingRow = (props: { data: Datamap }) => {
           <button onClick={crafting.equipCurrentCraft}>
             Equip Current Craft
     </button>
-          <button onClick={crafting.clearCraft}>
-            Clear Current Craft
-      <TipFC tip={'Get some currency, Start a new craft'} />
-          </button>
+                   <ConfirmCommandButton
+          label={'Sell Current Craft'}
+          warning={'This destroys your item and gives you currency\nShift+Click to bypass these warnings'}
+          do={crafting.clearCraft}
+        />
         </FlexColumn>
         <div>
-        <ItemDisplay item={data.crafting.currentCraft} />
+          <ItemDisplay item={data.crafting.currentCraft} />
         </div>
       </FlexRow>}
       {data.crafting.currentCraft && <FlexColumn>
@@ -83,7 +86,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     </FlexRow>
     <br />
     Equipped:<br />
-    <div style={{ display: 'flex', flexDirection: 'row',flexWrap:'wrap' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
       {data.crafting.equipedEnergyItem && <ItemDisplay item={data.crafting.equipedEnergyItem} />}<br />
       {data.crafting.equipedMedEnergyItem && <ItemDisplay item={data.crafting.equipedMedEnergyItem} />}<br />
       {data.crafting.equipedSmallEnergyItem && <ItemDisplay item={data.crafting.equipedSmallEnergyItem} />}<br />
@@ -103,7 +106,7 @@ const CraftingRow = (props: { data: Datamap }) => {
     {statDetails && <div>
 
       {gEngine.energyModule.energyGainFromAutoClickers.notEquals(0) && <div><DisplayDecimal decimal={gEngine.energyModule.energyGainFromAutoClickers} /> Energy per second from autoclickers</div>}
-      
+
       <div>
         {JSON.stringify(crafting.energyCalcedData)}
       </div>
@@ -116,7 +119,7 @@ const CraftingRow = (props: { data: Datamap }) => {
         </div>
         {data.crafting.equipped.doomStone && <div>{JSON.stringify(crafting.DoomAndGloomFromEQ)}</div>}
       </div>}
-      <br/>
+      <br />
       <div>
         Hey there, player. I just wanted to take this chance to thank <b>YOU</b> for playing this game.
         </div>
@@ -130,7 +133,7 @@ const EnergyItemDisplay = (props: { item: EnergyItem }) => {
   return (<div className={'EnergyItemDisplay'}>
     <div className='ItemTitle'>
       <span className={props.item.doomed ? 'DoomedText' : ""}>Energy Catalyst</span>
-      <UnEqMe it={props.item.itemType}/>
+      <UnEqMe it={props.item.itemType} />
 
       <br />
     Size {gEngine.crafting.maxMods(props.item)}
@@ -145,57 +148,57 @@ const DoomItemDisplay = (props: { item: DoomStone }) => {
   return (<div className={'DoomItemDisplay'}>
     <div className='ItemTitle'>
       <span className={props.item.doomed ? 'DoomedText' : ""}>Doom Stone</span>
-      <UnEqMe it={props.item.itemType}/>
+      <UnEqMe it={props.item.itemType} />
 
     </div>
-       <DoomModDisplay mod={props.item.doomMod}/>
-      {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod}/>}
-      {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod}/>}
+    <DoomModDisplay mod={props.item.doomMod} />
+    {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod} />}
+    {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod} />}
 
   </div>)
 }
 
 const DoomItemModsList = (props: { item: DoomStone }) => {
   return (<div className={'DoomItemModsList'}>
-       <DoomModDisplay mod={props.item.doomMod}/>
-      {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod}/>}
-      {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod}/>}
+    <DoomModDisplay mod={props.item.doomMod} />
+    {props.item.energyMod && <EnergyModDisplay mod={props.item.energyMod} />}
+    {props.item.gardeningMod && <GardeningModDisplay mod={props.item.gardeningMod} />}
 
   </div>)
 }
 
 
-const ItemDisplay =   (props: { item: ItemData }) => {
+const ItemDisplay = (props: { item: ItemData }) => {
   //if (props.item.itemType === 1) return <EnergyItemDisplay item={props.item as EnergyItem} />
   //if (props.item.itemType === 2) return <EnergyItemDisplay item={props.item as EnergyItem} />
   //if (props.item.itemType === 3) return <EnergyItemDisplay item={props.item as EnergyItem} />
   //if (props.item.itemType === 4) return <DoomItemDisplay item={props.item as DoomStone} />
   //if ([5, 6, 7].includes(props.item.itemType)) return <GardeningItemDisplay item={props.item as GardeningItem} />
-  
+
   let base = '';
-  if ([1,2,3].includes(props.item.itemType)) base = 'Energy';
+  if ([1, 2, 3].includes(props.item.itemType)) base = 'Energy';
   else if ([4].includes(props.item.itemType)) base = 'Doom';
-  else if ([5,6,7].includes(props.item.itemType)) base = 'Gardening';
+  else if ([5, 6, 7].includes(props.item.itemType)) base = 'Gardening';
   else return (<span>error</span>);
 
   return (<div className={`${base}ItemDisplay`}>
     <div className={'ItemTitle'}>
       {props.item.unique && <span className='UniqueIcon'>★<ChildTip>This is a unique item with set enchantments</ChildTip></span>}
-      <span style={{flexGrow:1}} className={props.item.doomed ? 'DoomedText' : ""}>
+      <span style={{ flexGrow: 1 }} className={props.item.doomed ? 'DoomedText' : ""}>
         {getItemName(props.item.itemType, props.item.unique)}
       </span>
       <span>
-      <UnEqMe it={props.item.itemType}/>
+        <UnEqMe it={props.item.itemType} />
       </span>
     </div>
-    <div className={props.item.unique? 'UniqueModWindow ModWindow':'ModWindow'}>
-    {[5,6,7].includes(props.item.itemType) && <div className='GardeningModList'>
-      {(props.item as GardeningItem).mods.map((mod, index) => <GardeningModDisplay key={index} mod={mod} />)}
-    </div>}
-    {[1,2,3].includes(props.item.itemType) && <div className='EnergyModList'>
-      {(props.item as EnergyItem).mods.map((mod, index) => <EnergyModDisplay key={index} mod={mod} />)}
-    </div>}
-    {(props.item as DoomStone).itemType === 4 && <DoomItemModsList item={props.item as DoomStone} />}
+    <div className={props.item.unique ? 'UniqueModWindow ModWindow' : 'ModWindow'}>
+      {[5, 6, 7].includes(props.item.itemType) && <div className='GardeningModList'>
+        {(props.item as GardeningItem).mods.map((mod, index) => <GardeningModDisplay key={index} mod={mod} />)}
+      </div>}
+      {[1, 2, 3].includes(props.item.itemType) && <div className='EnergyModList'>
+        {(props.item as EnergyItem).mods.map((mod, index) => <EnergyModDisplay key={index} mod={mod} />)}
+      </div>}
+      {(props.item as DoomStone).itemType === 4 && <DoomItemModsList item={props.item as DoomStone} />}
     </div>
   </div>)
 }
@@ -255,7 +258,7 @@ const GardeningItemDisplay = (props: { item: GardeningItem }) => {
         {gItemName(props.item.itemType)}
       </span>
 
-      <UnEqMe it={props.item.itemType}/>
+      <UnEqMe it={props.item.itemType} />
     </div>
     <div className='GardeningModList'>
       {props.item.mods.map((mod, index) => <GardeningModDisplay key={index} mod={mod} />)}
@@ -290,7 +293,7 @@ function getItemName(it: ItemTypes, unique?: number): string {
       case 1:
         return 'Unbreakable Broken Watering Can'
         break;
-    
+
       default:
         return 'unique error'
         break;
@@ -339,10 +342,10 @@ const DoomModDisplay = (props: { mod: DoomStoneMod }) => {
   </div>)
 }
 
-const UnEqMe = (props: {it: ItemTypes}) => {
+const UnEqMe = (props: { it: ItemTypes }) => {
   if (gEngine.datamap.crafting.currentCraft) return null;
   return (
-    <button style={{alignSelf:'flex-end',border:'none',background:'none',height:'0px',color:'black',textAlign:'right'}} onClick={()=>{unEqItemType(props.it)}}>
+    <button style={{ alignSelf: 'flex-end', border: 'none', background: 'none', height: '0px', color: 'black', textAlign: 'right' }} onClick={() => { unEqItemType(props.it) }}>
       x
     </button>
   )

@@ -42,7 +42,7 @@ export default class JuiceTradeManager {
             return true;
         }
 
-        this.tradeStatus.book = this.tradeStatus.oneK && (this.juice.engine.datamap.magic.spellbook === null);
+        this.tradeStatus.book = this.tradeStatus.oneK && (this.juice.engine.datamap.magic.spellbook === GuideTypes.none);
         this.tradeStatus.absolution = this.tradeStatus.tenK && spellbookIsInfluenced(this.juice.engine.datamap.magic.spellbook)
 
         this.tradeStatus.balancedShade = juice.hope.minus(juice.doom).abs().lessThan(1);

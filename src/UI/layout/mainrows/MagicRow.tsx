@@ -70,6 +70,9 @@ const MagicRow = (props: { data: Datamap }) => {
             <div style={{ width: '100px' }}>
                 <ProgressBar color={DICT_name_to_color[mClass.name]} max={mClass.maxMana.current} current={currentMana} bg={'black'} />
             </div>
+            <span>
+                Mana Regen: +<DisplayDecimal decimal={mClass.manaRegen.current}/> /s
+            </span>
             </FlexColumn>
             </FlexRow>
 

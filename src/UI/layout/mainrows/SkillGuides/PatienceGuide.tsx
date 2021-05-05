@@ -15,7 +15,6 @@ import { ListedNumber } from "../../../ListedResourceClass";
 import { OpenPopup } from "../Popups/ClosePopup";
 import { DICT_name_to_color } from "../SkillsRow";
 import { ColorIfGtoE } from "./ChosenGuide";
-import './PatienceGuide.scss'
 
 
 const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
@@ -210,12 +209,24 @@ const PShroomDisplay = (props: { item: PShroom }) => {
 }
 
 const PItemWrapper = (props: { title: string, modStrings: string[] }) => {
-    return (<div style={{ border: `1px solid lightgreen`, margin: '3px', padding: '3px', display: 'flex', gap: '3px', flexDirection: 'column', textAlign: 'center' }} className='PItemWrapper'>
-        <div style={{ borderBottom: '1px solid lightgreen', textAlign: 'center' }}>
+    return (<div className='PItemWrapper'>
+        <div>
             {props.title}
         </div>
         {props.modStrings.map((modstring, index) => <span key={`modstring${index}`}>
             {modstring}
+        </span>)}
+    </div>)
+}
+
+
+export const ItemWrapper = (props: { title: string, modsStrings?: string[], className: string }) => {
+    return (<div className={props.className}>
+        <div>
+            {props.title}
+        </div>
+        {props.modsStrings && props.modsStrings.map((mod, index) => <span key={`modstring${index}`}>
+            {mod}
         </span>)}
     </div>)
 }

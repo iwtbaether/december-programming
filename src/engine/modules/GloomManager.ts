@@ -14,7 +14,7 @@ export default class GloomManager {
 
     gloomMulti: CalcedDecimal = new CalcedDecimal(()=>{
         let base = new Decimal(1);
-        if (this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.gloom) {
+        if (this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.gloom.greaterThan(0)) {
             base = moreDecimal(base, this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.gloom.times(.01));
         }
         return base; 

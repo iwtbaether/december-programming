@@ -1,7 +1,8 @@
-import Decimal from "break_infinity.js";
+import Decimal, { DecimalSource } from "break_infinity.js";
 import { Datamap } from "../Datamap";
 import CalcedDecimal from "../externalfns/decimalInterfaces/CalcedDecimal";
 import { GuideTypes } from "../garden/Juice";
+import MagicEquipment from "./MagicEquipment";
 import { Magic_Data } from "./MagicTypes";
 import { SingleManagedSkill } from "./SingleManagedSkill";
 
@@ -15,6 +16,8 @@ export default class Magic_Skill extends SingleManagedSkill {
     get skillData () {
         return this.engine.datamap.skillManager.magic;
     }
+
+    equipment: MagicEquipment = new MagicEquipment(this);
 
     spellBook: number[] = [];
     setSpellbook = () => {
@@ -31,7 +34,7 @@ export default class Magic_Skill extends SingleManagedSkill {
     magicDelta = (deltaS: number) => {
         this.data.currentMana = Decimal.min(
             this.maxMana.current,
-            this.data.currentMana.add(deltaS*.1)
+            this.data.currentMana.add(this.manaRegen.current.times(deltaS))
         )
 
         this.calcTicker += deltaS;
@@ -41,6 +44,18 @@ export default class Magic_Skill extends SingleManagedSkill {
             this.maxMana.set();
         }
     }
+
+    manaRegen: CalcedDecimal = new CalcedDecimal(()=>{
+        let regen = new Decimal(0.1);
+        if (this.equipment.stats.flatManaRegen > 0) {
+            regen = regen.add(this.equipment.stats.flatManaRegen * .1)
+        }
+        if (this.equipment.stats.increasedManaRegen > 0) {
+            regen = regen.times(this.equipment.stats.increasedManaRegen * .01 + 1)
+        }
+
+        return regen;
+    })
 
 
     
@@ -57,8 +72,17 @@ export default class Magic_Skill extends SingleManagedSkill {
             )
         } else throw new Error('lmao error')    
 
+        if (this.equipment.stats.flatMaxMana > 0) {
+            manaFromSize = manaFromSize.add(this.equipment.stats.flatMaxMana)
+        }
+        if (this.equipment.stats.increasedMaxMana > 0) {
+            manaFromSize = manaFromSize.times(this.equipment.stats.increasedMaxMana * .01 + 1)
+        }
+
         const levelMulti = this.skillData.level.times(.1).add(1);
         manaFromSize = manaFromSize.times(levelMulti);
+
+        
 
         if (this.data.currentMana.greaterThan(manaFromSize)) {
             this.data.currentMana = manaFromSize;
@@ -84,14 +108,13 @@ export default class Magic_Skill extends SingleManagedSkill {
 
     spell_growSkip = () => {
         //make job progress happen mana^s seconds
-        const start = this.data.currentMana;
-        const sq = start.sqr();
-        this.engine.jobs.progress(sq);
-
+        const progress = this.data.currentMana.sqr();
+        
+        this.engine.jobs.progress(progress);
+        
         //make magic xp happen
-        this.gainXP(start.div(10))
         //"spend" all mana
-        this.data.currentMana = ZERO;
+        this.spendManaGainXp(this.data.currentMana);
 
         //set max mana because size growth
         this.maxMana.set();
@@ -104,10 +127,23 @@ export default class Magic_Skill extends SingleManagedSkill {
     spell_influenced1 = () => {
 
     }
+    spell_clawsOfTrixies = () => {
+        this.engine.garden.clawsHarvest();
+        this.spendManaGainXp(30)
+    }
+    spell_saraStrike = () => {
+        this.engine.garden.juice.powerResource.gainResource(100);
+        this.spendManaGainXp(30)
+    }
+
+    spendManaGainXp = (manaSpend: DecimalSource) => {
+        this.data.currentMana = this.data.currentMana.minus(manaSpend);
+        this.gainXP(Decimal.times(manaSpend, .1))
+    }
     
     spellInfos: SpellClassInfo[] = [
         {name: 'Chulsaeng', id: 0, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.growSkip), action:()=>{this.spell_growSkip()},
-            cost: 1},
+            cost: 10},
         {name: 'Won-Ye', id: 1, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.gardenTimeSkip), action:()=>{this.spell_gardenTimeSkip()},
         cost: 60},
         {name: 'Eneo Ja Ijeu', id: 2, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.energyTimeSkip), action:()=>{this.spell_energyTimeSkip()},
@@ -117,12 +153,12 @@ export default class Magic_Skill extends SingleManagedSkill {
         {name: 'Abchag', id: 4, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.juiceTicks), action:()=>{this.spell_juiceTicks()},
         cost: 100},
         
-        {name: 'Sara Strike', id: 5, unlock:()=>this.data.spellbook === GuideTypes.Sara, action:()=>{this.spell_influenced1()},
-        cost: 10},
-        {name: 'Claws of Trixie', id: 6, unlock:()=>this.data.spellbook === GuideTypes.Guth, action:()=>{this.spell_influenced1()},
-        cost: 10},
+        {name: 'Sara Strike', id: 5, unlock:()=>this.data.spellbook === GuideTypes.Sara, action:()=>{this.spell_saraStrike()},
+        cost: 30},
+        {name: 'Claws of Trixie', id: 6, unlock:()=>this.data.spellbook === GuideTypes.Guth, action:()=>{this.spell_clawsOfTrixies()},
+        cost: 30},
         {name: 'Flames of Rakozam', id: 7, unlock:()=>this.data.spellbook === GuideTypes.Zammy, action:()=>{this.spell_influenced1()},
-        cost: 10},
+        cost: 30},
     ]
 
 }

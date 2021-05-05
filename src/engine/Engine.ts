@@ -737,6 +737,7 @@ export default class Engine extends CoreEngine {
 
         this.gloomManger.extraLoad();
         this.skillManager.skills.patience.extraLoad();
+        this.skillManager.skills.magic.equipment.processItems();
     }
   
     clearPopup = () => {

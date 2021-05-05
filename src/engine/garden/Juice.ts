@@ -164,6 +164,8 @@ export default class JuiceLmao {
         this.data.powerDecayed = this.data.powerDecayed.add(decay)
     }
 
+
+
     getFuelFruit = () => {
         if (this.data.guide === GuideTypes.Sara) return this.engine.garden.doomedFruits;
         if (this.data.guide === GuideTypes.Guth) return this.engine.garden.plainFruit;

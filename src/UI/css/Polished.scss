@@ -323,5 +323,39 @@ a {
 }
 
 .EffectWindow {
-    width: 500px;
+    width: 600px;
+}
+
+.ItemWrapper {
+    min-height: 100px;
+    min-width: 150px;
+    border: 1px solid;
+    margin: 3px;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: center;
+}
+
+.ItemWrapper :first-child {
+    border-bottom: 1px solid;
+    border-color: inherit;
+}
+
+.Wizard-ItemWrapper {
+    @extend .ItemWrapper;
+    border-color: skyblue;
+    background-color: $base03;
+} 
+
+.PItemWrapper {
+    @extend .ItemWrapper;
+    border-color: lightgreen;
+    background-color: $base03;
+}
+
+.TitleText {
+    text-align: center;
+    font-weight: bold;
 }

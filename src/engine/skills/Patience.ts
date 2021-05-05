@@ -197,6 +197,7 @@ export default class Patience_Skill extends SingleManagedSkill {
 
 
     calcPatienceOutcoems = () => {
+        //is this seriously called every fruit harvest?
         if (canCheat) console.log('cpo');
         
 
@@ -206,9 +207,9 @@ export default class Patience_Skill extends SingleManagedSkill {
         // [TODOTODOTODO]
 
         //todo
-        // D, E , F, G , J , M , P , W 
+        // D, M , P , W 
         //DONE 
-        // E, F, G??
+        // E, F, J, G??
         this.engine.calcEnergy();
         this.engine.garden.setFruitGainMulti();
         this.engine.gloomManger.gloomMulti.set();
@@ -272,7 +273,7 @@ export default class Patience_Skill extends SingleManagedSkill {
     }
 
     processForm = (form: PForm): SingleFormPower => {
-
+        //optimize this?
         let power: SingleFormPower = SingleFormPower_Init();
 
         //...like i mentioned, unnneded duplication of item data? may be needed, i guess.

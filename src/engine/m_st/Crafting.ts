@@ -8,6 +8,7 @@ import { Datamap } from "../Datamap";
 import Engine from "../Engine";
 import { canCheat, getRandomInt, randomEnum, randomEnumFromListWithExclusions, randomEnumWithExclusion } from "../externalfns/util";
 import { GardenData } from "../garden/Garden";
+import { MDV2 } from "../skills/PatienceItemTypes";
 import { DoomStoneModList, EnergyItemModList, GardeningItemModList } from "./ModLists";
 
 export default class Crafting {
@@ -33,13 +34,26 @@ export default class Crafting {
         this.calc();
     }
 
-    makeCatalyst = (size: number) => {
-        this.clearCraft();
-        if (this.data.currency.transmutes < 1) return;
+    tryMake = (): boolean => {
+        if (this.data.currency.transmutes > 0) {
+            this.data.currency.transmutes --;
+            return true
+        } return false;
+    }
 
-        this.data.currency.transmutes--;
-        this.data.currentCraft = makeSizedEnergyItem(size);
-        this.engine.notify();
+    tryEnchant = (): boolean => {
+        if (this.data.currency.augmentations > 0) {
+            this.data.currency.augmentations --;
+            return true
+        } return false;
+    }
+
+    makeCatalyst = (size: number) => {
+        if (this.tryMake()) {
+            this.clearCraft();
+            this.data.currentCraft = makeSizedEnergyItem(size);
+            this.engine.notify();
+        } else return;
     }
 
     makeRandomCatalyst = () => {
@@ -856,6 +870,14 @@ function getEnergyModExclusions(item: EnergyItem): EnergyItemModList[] {
     return exclusions;
 }
 
+export function getModExclusions(mods: MDV2[]): number[] {
+    let exclusions: number[] = [];
+    mods.forEach(mod=> {
+        exclusions.push(mod.mod)
+    })
+    return exclusions;
+}
+
 function getGardeningModExclusions(item: GardeningItem): GardeningItemModList[] {
     let exclusions: GardeningItemModList[] = [];
     item.mods.forEach(mod => {
@@ -916,6 +938,10 @@ export enum ItemTypes {
     EggForm,
     SquareForm,
     TriangleForm,
+
+    Wizard_Hat,
+    Wizard_Robe,
+
 }
 
 

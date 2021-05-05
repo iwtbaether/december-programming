@@ -6,6 +6,10 @@ export function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }   
 
+export function getRandomIntFromRange([min, max]:[number,number]) {
+  return getRandomInt(min,max)
+}
+
 export function formatNumber(num:number): string {
     if (Math.abs(num) < 1e6) return num.toFixed(2);
     else return num.toExponential(2);

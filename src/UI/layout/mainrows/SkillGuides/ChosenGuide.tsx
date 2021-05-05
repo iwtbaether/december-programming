@@ -3,6 +3,7 @@ import React from "react";
 import { gEngine } from "../../../..";
 import { Datamap } from "../../../../engine/Datamap";
 import Magic_Skill from "../../../../engine/skills/Magic";
+import { LevelAndDescription, MagicEquipmentLADs } from "../../../../engine/skills/MagicEquipment";
 import Patience_Skill, { SpiritualityLevelUnlocks } from "../../../../engine/skills/Patience";
 import { SingleManagedSkill } from "../../../../engine/skills/SingleManagedSkill";
 import FlexColumn from "../../../comps/FlexColumn";
@@ -10,6 +11,7 @@ import FlexRow from "../../../comps/FlexRow";
 import ProgressBar from "../../../comps/ProgressBar";
 import { ChildTip } from "../../../comps/TipFC";
 import { DICT_name_to_color } from "../SkillsRow";
+import MagicGuide from "./MagicGuice";
 import PatienceGuide from "./PatienceGuide";
 
 const ChosenGuide = (props: { data: Datamap }) => {
@@ -140,69 +142,6 @@ const SpiritualityGuide = (props: { chosenSkill: SingleManagedSkill }) => {
   </FlexColumn>)
 }
 
-const MagicGuide = (props: { chosenSkill: Magic_Skill }) => {
-  const skillData = props.chosenSkill.getData();
-  const unlocks = props.chosenSkill.levelOfUnlocks;
-  const level = skillData.level;
-  const color = DICT_name_to_color[props.chosenSkill.name]
-
-  const manaRegenBonus = Decimal.max(0, level.minus(18)).times(.1).add(1)
-
-  return (<FlexColumn>
-    
-    <div>
-      <b>Gain Magic XP</b> from casting spells.
-    </div>
-    <FlexRow>
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-
-      <span style={{textAlign:'center', fontWeight:"bold"}}>
-        Spell Unlocks
-      </span>
-
-      <ColorIfGtoE text={`Level ${unlocks.growSkip+1}: Chulsaeng`}
-        color={color} base={level} compare={unlocks.growSkip}
-        />
-
-
-<ColorIfGtoE text={`Level ${unlocks.gardenTimeSkip+1}: Won-Ye`}
-        color={color} base={level} compare={unlocks.gardenTimeSkip}
-        />
-<ColorIfGtoE text={`Level ${unlocks.energyTimeSkip+1}: Eneo Ja Ijeu`}
-        color={color} base={level} compare={unlocks.energyTimeSkip}
-        />
-
-<ColorIfGtoE text={`Level ${unlocks.seedCreation+1}: Ssi`}
-        color={color} base={level} compare={unlocks.seedCreation}
-        />
-
-<ColorIfGtoE text={`Level ${unlocks.juiceTicks+1}: Abchag`}
-        color={color} base={level} compare={unlocks.juiceTicks}
-        />
-
-        <span style={{textAlign:'center', fontWeight:"bold"}}>
-        Stat Bonuses
-        </span>
-
-<ColorIfGtoE text={`Level ${unlocks.maxMana+1}: Max Mana x${level.times(.1).add(1).toString()}`}
-        color={color} base={level} compare={unlocks.maxMana}
-        />
-
-<ColorIfGtoE text={`Level ${unlocks.manaRegen+1}: Mana Regen x${manaRegenBonus.toString()}`}
-        color={color} base={level} compare={unlocks.manaRegen}
-        />
-
-      
-    </div>
-        <FlexColumn>
-          <button onClick={()=>{gEngine.setNav(8)}}>
-            Use Magic
-          </button>
-        </FlexColumn>
-      </FlexRow>
-
-  </FlexColumn>)
-}
 
 export const ColorIfGtoE = (props: { text: string, color: string, base: Decimal, compare: DecimalSource, hideBefore?: DecimalSource }) => {
   const { text, color, base, compare, hideBefore } = props;
@@ -212,4 +151,23 @@ export const ColorIfGtoE = (props: { text: string, color: string, base: Decimal,
   return <span style={colored ? { color: color } : {}}>
    {text}
   </span>
+}
+
+export const LadsToLevels = (props: {lads: LevelAndDescription[], color: string, base: Decimal}) => {
+  const { lads, color, base} = props;
+  return (<React.Fragment>
+    {lads.map(((lad,index)=>{
+      return <LevelText {...{lad, color, base}} key={index}/>
+    }))}
+  </React.Fragment>)
+}
+
+export const LevelText = (props: {lad: LevelAndDescription, color: string, base: Decimal}) => {
+  const { lad, color, base} = props;
+  const colored = base.greaterThanOrEqualTo(lad.level)
+
+  return (<span>
+    Level {lad.level+1}: {lad.descrption}
+  </span>)
+
 }

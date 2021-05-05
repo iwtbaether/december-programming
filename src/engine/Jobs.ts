@@ -95,6 +95,7 @@ export default class Jobs {
         
         if (this.chargeCurrent.count.greaterThan(0)) {
             const speed = this.getChargeSpeed();
+            //is charge double dipping here?
             progressPerSecondAfterResistance.add(speed); 
             const trans = speed.times(deltaS);
             this.addJobProgress(trans);
@@ -417,6 +418,7 @@ export default class Jobs {
         name: 'Charge',
         get: () => this.engine.datamap.jobs.notReset.chargeCurrent,
         setDecimal: (dec) => {
+            if (dec.lessThan(0)) dec = ZERO;
             this.engine.datamap.jobs.notReset.chargeCurrent = dec
             //this.setResistanceDiv();
         },

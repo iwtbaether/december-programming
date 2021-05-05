@@ -32,12 +32,10 @@ export default class ConfirmCommandButton extends React.Component<ConfirmButtonP
     const props = this.props;
     if (props.hidden) return null;
 
-    return (<span>
-        <span >
+    return (<React.Fragment>
         <button disabled={props.disabled} onClick={this.fakeBuy}>
           {props.label}
         </button>
-        </span>
         <div className='WarningBox' hidden={!this.state.open}>
             <div className='WarningOverlay' onClick={this.fakeBuy}>
               <div className='WarningPopup'>
@@ -53,7 +51,7 @@ export default class ConfirmCommandButton extends React.Component<ConfirmButtonP
               </div>
             </div>
         </div>
-    </span>)
+    </React.Fragment>)
   }
 }
 

@@ -7,15 +7,18 @@ import { GuideTypes } from "../../../../engine/garden/Juice"
 import { SpellClassInfo } from "../../../../engine/skills/Magic"
 import FlexColumn from "../../../comps/FlexColumn"
 import FlexRow from "../../../comps/FlexRow"
+import DisplayDecimal from "../../../DisplayDecimal"
+import { ListedDecimal } from "../../../ListedResourceClass"
 import { ShowGardenPlots } from "../GardenRow"
 import { coloredClasses, spellBookNames } from "../MagicRow"
-import { MakesJobsProgressBar } from "../WorkRow"
+import { MakesJobsProgressBar, MakesJobsProgressBarAndStats } from "../WorkRow"
 
 const SpellsRow = (props: {data: Datamap, spells: number[]}) => {
+    const {data, spells} = props;
     const mClass = gEngine.skillManager.skills.magic;
     const [chosenSpell, setChosenSpell] = useState(0)
     const chosenSpellInfo = mClass.spellInfos[chosenSpell];
-    const mana = props.data.magic.currentMana;
+    const mana = data.magic.currentMana;
     return (
         <div>
             <FlexRow>
@@ -34,8 +37,14 @@ const SpellsRow = (props: {data: Datamap, spells: number[]}) => {
                 Chosen Spell
                 </div>
                 <SpellExpando info={chosenSpellInfo} mana={mana}>
-                {chosenSpell === 0 && <MakesJobsProgressBar data={props.data}/>}
+                {chosenSpell === 0 && 
+                    <React.Fragment>
+                        <MakesJobsProgressBarAndStats data={props.data} /> 
+                    </React.Fragment>
+                }
                 {chosenSpell === 6 && <ShowGardenPlots data={props.data} />}
+                {chosenSpell === 5 && <div>                            <span className='yellow-text' style={{ fontSize: '2em' }}>
+                                Power: <DisplayDecimal decimal={props.data.juice.powerAmount} />                     </span></div>}
                 </SpellExpando>
             </FlexColumn>
                 </FlexRow>
@@ -68,8 +77,8 @@ const SpellExpando = (props: {info: SpellClassInfo, mana: Decimal, children?: Re
             {Spell_Descriptions[props.info.id]}
         </span>
         <div className='SpellExpandoStats skyblue-text'>
-            <span>Cost:</span>
-            <span>XP Gain</span>
+            <span>{props.info.cost} Mana</span>
+            <span>Gives XP</span>
         </div>
         {props.children && <React.Fragment>
             <span>Effect Window</span>

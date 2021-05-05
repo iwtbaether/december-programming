@@ -29,6 +29,9 @@ const JuiceTrades = (props: { data: Datamap }) => {
         <span style={{whiteSpace:'pre-wrap',color:'lightblue'}}>
             Trade Fresh (not drank, currently being made) Juice to your guide for rewards. This resets your juice, but you keep the previous Juice you drank and your Juicer upgrades. 
         </span>
+        <span className='red-text'>
+            Bonuses here are reset when you drink a new Juice.
+        </span>
 
         <FlexRow>
             <JuiceRecipe {...JR_SpellBook} able={canTrade.book} noLevel /> 

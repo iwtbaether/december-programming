@@ -5,6 +5,7 @@ import { GardenData, GardenData_Init, GardenData_SetDecimals } from "./garden/Ga
 import { JuiceData, JuiceData_Fix, JuiceData_Init } from "./garden/Juice";
 import Jobs, { JobsData, JobsData_Init, JobsData_SetDecimals } from "./Jobs";
 import { CraftingData, CraftingData_Init } from "./m_st/Crafting";
+import { MagicEquipmentData, MagicEquipmentData_Init } from "./skills/MagicEquipment";
 import { Magic_Data, Magic_Data_Init, fixMagic } from "./skills/MagicTypes";
 import { fixPatienceDecimals } from "./skills/Patience";
 import { SkillManager_Data, SkillManager_Data_Init, SkillManager_Data_SetDecimals } from "./skills/SkillManager";
@@ -36,6 +37,19 @@ export interface Datamap {
     crafting: CraftingData;
     magic: Magic_Data;
     juice: JuiceData;
+    magicEquipment: MagicEquipmentData;
+    stats: {
+        accountAge: number,
+        activeTime: number,
+        offlineTime: number,
+        seedsGrabbed: number,
+        energyUpgrades: number,
+        doomUpgrades: number,
+        gardenUpgrades: number,
+        itemsMade: number,
+        itemsPoofed: number,
+        jobUpgrades: number,
+    }
 }
 
 export function newDefaultMap() {
@@ -50,6 +64,7 @@ export function newDefaultMap() {
         doomResearch: DoomResearchData_Init(),
         skillManager: SkillManager_Data_Init(),
         achievments: Achievements_Data_Init(),
+        magicEquipment: MagicEquipmentData_Init(),
         nav: 0,
         cell: {
             a: ZERO,
@@ -64,33 +79,33 @@ export function newDefaultMap() {
             gloom: ZERO,
             zoom: ZERO,
             determination: ZERO,
-            swimmerNumber: new Decimal(1),
             rebirth: ZERO,
             autoclicker: ZERO,
-
+            
             doomGardenSpeed: ZERO,
             doomJobSpeed: ZERO,
-
+            
             d4: ZERO,
             d5: ZERO,
             d6: ZERO,
             d7: ZERO,
             d8: ZERO,
-
+            
             momentum: ZERO,
-
+            
             gloomGen1: ZERO,
             gloomGen2: ZERO,
             gloomGen3: ZERO,
             gloomGen4: ZERO,
-
+            
             gloomGen1E: ZERO,
             gloomGen2E: ZERO,
             gloomGen3E: ZERO,
             gloomGen4E: ZERO,
-
+            
             aewf: ZERO,
-
+            
+            swimmerNumber: new Decimal(1),
 
         },
         unlocksStates: {
@@ -99,6 +114,18 @@ export function newDefaultMap() {
             one: 0,
             three: 0,
             two: 0,
+        },
+        stats: {
+            accountAge: 0,
+            activeTime: 0,
+            offlineTime: 0,
+            doomUpgrades: 0,
+            energyUpgrades: 0,
+            gardenUpgrades: 0,
+            seedsGrabbed: 0, 
+            itemsMade: 0,
+            itemsPoofed: 0,
+            jobUpgrades: 0,
         },
 
 
@@ -124,33 +151,34 @@ interface I_HoldDecimals {
     d1: Decimal,
     d2: Decimal,
     d3: Decimal,
-    swimmerNumber: Decimal,
     determination: Decimal,
     rebirth: Decimal,
     autoclicker: Decimal,
     doomGardenSpeed: Decimal,
     doomJobSpeed: Decimal,
-
+    
     d4: Decimal,
     d5: Decimal,
     d6: Decimal,
     d7: Decimal,
     d8: Decimal,
-
+    
     momentum: Decimal,
-
+    
     gloomGen1: Decimal,
     gloomGen2: Decimal,
     gloomGen3: Decimal,
     gloomGen4: Decimal,
-
+    
     gloomGen1E: Decimal,
     gloomGen2E: Decimal,
     gloomGen3E: Decimal,
     gloomGen4E: Decimal,
-
+    
     aewf: Decimal,
-
+    
+    //stats!
+    swimmerNumber: Decimal,
 
     [key: string]: Decimal
 }

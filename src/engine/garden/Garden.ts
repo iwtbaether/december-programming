@@ -208,6 +208,20 @@ export default class Garden {
         }
     }
 
+    clawsHarvest = () => {
+        const normalGain = this.getFruitGain();
+        const guthGain = normalGain * 2;
+
+        for (let index = this.data.plots.length - 1; index >= 0; index--) {
+            const plant = this.data.plots[index];
+                this.data.plots.splice(index, 1)
+
+                this.seedTypeToResource(plant.seed.type).gainResource(guthGain);
+        }
+
+
+    }
+
     zammyHarvest = () => {
         const normalGain = this.getFruitGain();
         const zammyGain = normalGain / 2;
