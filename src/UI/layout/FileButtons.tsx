@@ -3,6 +3,7 @@ import { gEngine } from '../..';
 import { canCheat, MINUTE_MS } from '../../engine/externalfns/util';
 import CheatDiv from '../comps/CheatDiv';
 import FlexRow from '../comps/FlexRow';
+import { ChildTip } from '../comps/TipFC';
 import FancySaveButton from '../FancySaveButton';
 
 export const FileButtons = (props: { last: number; auto: boolean; }) => {
@@ -34,7 +35,7 @@ export const FileButtons = (props: { last: number; auto: boolean; }) => {
       </CheatDiv>
       </FlexRow>
       <span className='blue-text'>
-        v 0.8 - Difficulty, the Exchange, Growth, Magic 
+        v0.8.<span className='tippedText red-text'>beta2</span> - Difficulty, the Exchange, Growth, Magic (fixes patch 2)
         </span>
     </div>
   );

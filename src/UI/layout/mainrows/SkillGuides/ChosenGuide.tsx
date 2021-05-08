@@ -147,6 +147,7 @@ export const ColorIfGtoE = (props: { text: string, color: string, base: Decimal,
   const { text, color, base, compare, hideBefore } = props;
   if (hideBefore) if (props.base.lessThan(hideBefore)) return null;
   const colored = base.greaterThanOrEqualTo(compare);
+  //BAD FOR PERFOMANCE, USE CLASSNAME DUMMY
 
   return <span style={colored ? { color: color } : {}}>
    {text}
@@ -165,8 +166,8 @@ export const LadsToLevels = (props: {lads: LevelAndDescription[], color: string,
 export const LevelText = (props: {lad: LevelAndDescription, color: string, base: Decimal}) => {
   const { lad, color, base} = props;
   const colored = base.greaterThanOrEqualTo(lad.level)
-
-  return (<span>
+  //BAD FOR PERFOMANCE, USE CLASSNAME DUMMY
+  return (<span style={colored ?{color:color}:{}}>
     Level {lad.level+1}: {lad.descrption}
   </span>)
 

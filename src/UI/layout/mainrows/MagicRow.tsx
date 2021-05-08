@@ -95,9 +95,12 @@ const MagicRow = (props: { data: Datamap }) => {
                 <button onClick={()=>{setTab(2)}}>
                     Equipment
                 </button>
+                <CheatDiv>
+
                 <button onClick={()=>{setTab(3)}}>
                     Todo
                 </button>
+                </CheatDiv>
             </FlexRow>
             <span style={{ fontWeight: 'bold', fontSize:'1.5em', color:MagicColor }}>
                 {TabNames[tab]}

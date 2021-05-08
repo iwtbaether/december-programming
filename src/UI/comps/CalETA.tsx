@@ -10,7 +10,7 @@ export interface ProgressBarProps {
 
 const CalETA: React.FC <ProgressBarProps> = (props) => {
     let ETA_second = new Decimal(props.ETAs);
-    if (ETA_second.lessThan(0)) return <span>{ETA_second.toString()}</span>;
+    if (ETA_second.lessThan(0)) return null;
     if (ETA_second.lt(60)) return <span><DisplayDecimal decimal={ETA_second}/> seconds</span>
     else if (ETA_second.lt(60 * 60)) return <span><DisplayDecimal decimal={ETA_second.div(60)}/> minutes</span>
     else if (ETA_second.lt(60 * 60 * 24)) return <span><DisplayDecimal decimal={ETA_second.div(60 * 60)}/> hours</span>

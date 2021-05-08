@@ -32,6 +32,8 @@ export default class Magic_Skill extends SingleManagedSkill {
     calcTime = 60 //seconds;
     calcTicker = 0; //seconds
     magicDelta = (deltaS: number) => {
+        //console.log('magic delta max mana', this.maxMana.current);
+        
         this.data.currentMana = Decimal.min(
             this.maxMana.current,
             this.data.currentMana.add(this.manaRegen.current.times(deltaS))
@@ -83,10 +85,6 @@ export default class Magic_Skill extends SingleManagedSkill {
         manaFromSize = manaFromSize.times(levelMulti);
 
         
-
-        if (this.data.currentMana.greaterThan(manaFromSize)) {
-            this.data.currentMana = manaFromSize;
-        }
         return manaFromSize;
         
     })
@@ -110,7 +108,7 @@ export default class Magic_Skill extends SingleManagedSkill {
         //make job progress happen mana^s seconds
         const progress = this.data.currentMana.sqr();
         
-        this.engine.jobs.progress(progress);
+        this.engine.jobs.offlineProgress(progress);
         
         //make magic xp happen
         //"spend" all mana

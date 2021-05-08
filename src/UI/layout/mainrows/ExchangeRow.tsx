@@ -30,7 +30,7 @@ const ExchangeRow = (props: { data: Datamap }) => {
         </GERow>
         <GERow>
         <ListedNumber resource={currency.doomShards} name={'Doom Shard'} />
-        <span> Create 1 Doom Orb from 20 Shards </span>
+        <span> Create 1 Doom Pog from 20 Shards </span>
         </GERow>
         <GERow>
             

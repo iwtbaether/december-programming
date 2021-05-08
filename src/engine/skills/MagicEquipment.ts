@@ -166,10 +166,17 @@ export default class MagicEquipment {
     }
 
     tryDivine = () => {
-        
+        if (this.data.scrap > 0) {
+            this.data.scrap --;
+            return true;
+        } else return false;
     }
     divineCurrentCraft = () => {
-
+        if (this.data.currentCraft?.mods) {
+            if (this.tryDivine()) {
+                this.data.currentCraft.mods[0].value = getRandomIntFromRange(Wizard_Item_Mod_Ranges[this.data.currentCraft.mods[0].mod])
+            }
+        }
     }
 
     processItems = () => {

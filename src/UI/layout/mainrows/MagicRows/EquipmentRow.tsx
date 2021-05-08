@@ -9,6 +9,7 @@ import { IDV2, MDV2 } from "../../../../engine/skills/PatienceItemTypes"
 import ConfirmCommandButton from "../../../comps/ConfirmCommandButton"
 import FlexColumn from "../../../comps/FlexColumn"
 import FlexRow from "../../../comps/FlexRow"
+import TipFC, { ChildTip } from "../../../comps/TipFC"
 import { ListedNumber } from "../../../ListedResourceClass"
 import { CraftingResourceColumn } from "../CraftingRow"
 import { coloredClasses, spellBookNames } from "../MagicRow"
@@ -36,10 +37,10 @@ const EquipmentRow = (props: { data: Datamap }) => {
                         Equipment Stats
                     </span>
                     <div>
-                    <ListedNumber name='Max Mana' resource={eqClass.stats.flatMaxMana} min={0} />
-                    <ListedNumber name='Increased Max Mana' resource={eqClass.stats.increasedMaxMana} min={0} />
-                    <ListedNumber name='Mana Regen' resource={eqClass.stats.flatManaRegen} min={0} />
-                    <ListedNumber name='Increased Mana Regen' resource={eqClass.stats.increasedManaRegen} min={0} />
+                        <ListedNumber name='Max Mana' resource={eqClass.stats.flatMaxMana} min={0} />
+                        <ListedNumber name='Increased Max Mana' resource={eqClass.stats.increasedMaxMana} min={0} />
+                        <ListedNumber name='Mana Regen' resource={eqClass.stats.flatManaRegen} min={0} />
+                        <ListedNumber name='Increased Mana Regen' resource={eqClass.stats.increasedManaRegen} min={0} />
                     </div>
                 </FlexColumn>
                 <FlexColumn>
@@ -63,7 +64,12 @@ const EquipmentRow = (props: { data: Datamap }) => {
                                 <button onClick={eqClass.enchantCurrentCraft}>
                                     Enchant Current Craft
                 </button>
-                            <button>
+                                <button onClick={eqClass.divineCurrentCraft}>
+                                    <ChildTip>
+                                        Cost: 1 Magical Scrap<br />
+                                    The first enchantment on a Wizard Item is 'implicit'.<br />
+                                    For example, all Wizard Hats have +# Maximum Mana
+                                </ChildTip>
                                 Reroll Implicit Value
                             </button>
 
@@ -79,7 +85,11 @@ const EquipmentRow = (props: { data: Datamap }) => {
                             <FlexColumn>
                                 <button onClick={eqClass.equipCurrentCraft}>
                                     Equip Current Craft
-                    </button>
+                                    <ChildTip goLeft >
+                                        These items cannot be unquiped. Once a new item is equiped, the old one is simply destroyed.<br />
+                                        This provides 1 Magic Scrap when it happens.
+                                    </ChildTip>
+                                </button>
                                 <ConfirmCommandButton
                                     label={'Sell Current Craft'}
                                     warning={'This destroys your item and gives you currency\nShift+Click to bypass these warnings'}
@@ -101,11 +111,11 @@ const EquipmentRow = (props: { data: Datamap }) => {
     )
 }
 
-function WrapMagicItem (item:IDV2) {
+function WrapMagicItem(item: IDV2) {
     return (
         <ItemWrapper className='Wizard-ItemWrapper'
-        title={MagicItemTypeToTitle(item.itemType)}
-        modsStrings={item.mods?.map(MagicModToString)} />
+            title={MagicItemTypeToTitle(item.itemType)}
+            modsStrings={item.mods?.map(MagicModToString)} />
     )
 }
 
