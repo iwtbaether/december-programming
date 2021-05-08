@@ -23,6 +23,10 @@ export class SingleResource {
         );
     };
 
+    deltaS = (deltaS: DecimalSource) => {
+        this.gainResource(this.gainPS.times(deltaS))
+    }
+
     loseResource = (amount: DecimalSource) => {
         this.info.setDecimal(
             this.info.get().minus(amount)

@@ -117,8 +117,14 @@ export default class Magic_Skill extends SingleManagedSkill {
         //set max mana because size growth
         this.maxMana.set();
     }
-    spell_gardenTimeSkip = () => {}
-    spell_energyTimeSkip = () => {}
+    spell_gardenTimeSkip = () => {
+        this.engine.garden.processDelta(60 * 60 * 1000);
+        this.spendManaGainXp(1000);
+    }
+    spell_energyTimeSkip = () => {
+        this.engine.energyModule.energyDeltaS(60*60);
+        this.spendManaGainXp(10000);
+    }
     spell_seedCreation = () => {}
     spell_juiceTicks = () => {}
 
@@ -127,11 +133,18 @@ export default class Magic_Skill extends SingleManagedSkill {
     }
     spell_clawsOfTrixies = () => {
         this.engine.garden.clawsHarvest();
-        this.spendManaGainXp(30)
+        this.spendManaGainXp(100)
     }
     spell_saraStrike = () => {
         this.engine.garden.juice.powerResource.gainResource(100);
-        this.spendManaGainXp(30)
+        this.spendManaGainXp(100)
+    }
+    spell_flamesOfRakozam = () => {
+        let gain = this.engine.datamap.garden.plots.length;
+        this.engine.datamap.garden.plots = [];
+        this.gainXP(gain)
+        this.spendManaGainXp(100)
+
     }
 
     spendManaGainXp = (manaSpend: DecimalSource) => {
@@ -143,20 +156,20 @@ export default class Magic_Skill extends SingleManagedSkill {
         {name: 'Chulsaeng', id: 0, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.growSkip), action:()=>{this.spell_growSkip()},
             cost: 10},
         {name: 'Won-Ye', id: 1, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.gardenTimeSkip), action:()=>{this.spell_gardenTimeSkip()},
-        cost: 60},
+        cost: 1000},
         {name: 'Eneo Ja Ijeu', id: 2, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.energyTimeSkip), action:()=>{this.spell_energyTimeSkip()},
-        cost: 60*60},
+        cost: 10000},
         {name: 'Ssi', id: 3, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.seedCreation), action:()=>{this.spell_seedCreation()},
-        cost: 100},
+        cost: 100000},
         {name: 'Abchag', id: 4, unlock:()=>this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.juiceTicks), action:()=>{this.spell_juiceTicks()},
-        cost: 100},
+        cost: 1000000},
         
         {name: 'Sara Strike', id: 5, unlock:()=>this.data.spellbook === GuideTypes.Sara, action:()=>{this.spell_saraStrike()},
-        cost: 30},
+        cost: 100},
         {name: 'Claws of Trixie', id: 6, unlock:()=>this.data.spellbook === GuideTypes.Guth, action:()=>{this.spell_clawsOfTrixies()},
-        cost: 30},
-        {name: 'Flames of Rakozam', id: 7, unlock:()=>this.data.spellbook === GuideTypes.Zammy, action:()=>{this.spell_influenced1()},
-        cost: 30},
+        cost: 100},
+        {name: 'Flames of Rakozam', id: 7, unlock:()=>this.data.spellbook === GuideTypes.Zammy, action:()=>{this.spell_flamesOfRakozam()},
+        cost: 100},
     ]
 
 }

@@ -91,7 +91,10 @@ export default class EnergyModule {
         this.energyGainMult = Decimal.times(this.totalEnergyGainIncreased,this.totalEnergyGainMore);
     }
 
-    
+    energyDeltaS = (deltaS: DecimalSource) => {
+        this.engine.antiEnergyResource.deltaS(deltaS);
+        this.engine.energyResource.deltaS(deltaS);
+    }    
 
 
 }

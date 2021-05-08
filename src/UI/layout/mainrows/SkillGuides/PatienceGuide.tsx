@@ -4,6 +4,7 @@ import { ItemTypes } from "../../../../engine/m_st/Crafting";
 import Patience_Skill, { SingleFormPower } from "../../../../engine/skills/Patience";
 import { MDV2, PForm, PForm_Mods, PShroom, PShroom_Mods, ShroomTypes } from "../../../../engine/skills/PatienceItemTypes";
 import { SingleManagedSkill } from "../../../../engine/skills/SingleManagedSkill";
+import CheatDiv from "../../../comps/CheatDiv";
 import ConfirmCommandButton, { ConfirmBasicCommandButton } from "../../../comps/ConfirmCommandButton";
 import FlexColumn from "../../../comps/FlexColumn";
 import FlexRow from "../../../comps/FlexRow";
@@ -168,7 +169,9 @@ const PatienceGuide = (props: { chosenSkill: SingleManagedSkill }) => {
 
             <FlexColumn>
                 <OpenPopup label='View Form Stats' open={8} />
+                <CheatDiv>
                 <OpenPopup label='Spend Peace' open={9} />
+                </CheatDiv>
 
                 <span style={{ textAlign: 'center' }}>
                     Equiped Forms <span className='tippedText'>

@@ -42,6 +42,8 @@ const SpellsRow = (props: {data: Datamap, spells: number[]}) => {
                         <MakesJobsProgressBarAndStats data={props.data} /> 
                     </React.Fragment>
                 }
+                {chosenSpell === 1 && <ShowGardenPlots data={props.data} />}
+                {chosenSpell === 7 && <ShowGardenPlots data={props.data} />}
                 {chosenSpell === 6 && <ShowGardenPlots data={props.data} />}
                 {chosenSpell === 5 && <div>                            <span className='yellow-text' style={{ fontSize: '2em' }}>
                                 Power: <DisplayDecimal decimal={props.data.juice.powerAmount} />                     </span></div>}
@@ -90,7 +92,7 @@ const SpellExpando = (props: {info: SpellClassInfo, mana: Decimal, children?: Re
 }
 
 const Spell_Descriptions: string[] = [
-    'Spend all of your mana to accelerate Growth',
+    'Spend all of your mana to accelerate Growth, ignores speed cap and charge',
     'Instantly recieve 1 hour of energy progress',
     'Instantly recieve 1 hour of garden progress',
     'Create 100 garden seeds',

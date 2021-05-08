@@ -35,7 +35,7 @@ export const FileButtons = (props: { last: number; auto: boolean; }) => {
       </CheatDiv>
       </FlexRow>
       <span className='blue-text'>
-        v0.8.<span className='tippedText red-text'>beta2</span> - Difficulty, the Exchange, Growth, Magic (fixes patch 2)
+        v0.8.<span className='tippedText red-text'>beta3</span> - Difficulty, the Exchange, Growth, Magic
         </span>
     </div>
   );

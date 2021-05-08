@@ -249,7 +249,7 @@ export const MagicEquipmentLADs = {
     gloves: { level: 34, descrption: 'Wizard Gloves' },
     boots: { level: 44, descrption: 'Wizard Boots' },
     orb: { level: 55, descrption: 'Wizard Orb' },
-    staff: { level: 64, descrption: 'Wizard Statt' },
+    staff: { level: 64, descrption: 'Wizard Staff' },
 
     //crafting
     enchantplus1: { level: 9, descrption: 'Wizard Item Max Enchants +1' },

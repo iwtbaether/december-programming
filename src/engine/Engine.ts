@@ -81,8 +81,13 @@ export default class Engine extends CoreEngine {
 
         const deltaS = delta / 1000;
 
-        this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
-        this.antiEnergyResource.gainResource(this.antiEnergyResource.gainPS.times(deltaS))
+        this.energyModule.energyDeltaS(deltaS);
+
+        //this.energyResource.deltaS(deltaS);
+        //this.antiEnergyResource.deltaS(deltaS);
+
+        //this.energyResource.gainResource(this.energyResource.gainPS.times(deltaS))
+        //this.antiEnergyResource.gainResource(this.antiEnergyResource.gainPS.times(deltaS))
         
         if (this.datamap.unlocksStates.one >= 6) this.jobs.processDelta(delta);
 

@@ -80,25 +80,35 @@ export default class Jobs {
         this.calced.finalJobSpeed = precap;
     }
 
+    setJobProgress = (decimal: Decimal) => {
+        this.data.jobProgress = decimal;
+    }
+
     addJobProgress = (decimal: Decimal) => {
         this.data.jobProgress = this.data.jobProgress.add(decimal);
     }
 
     progress = (deltaS: Decimal) => {
 
+
         
         
         //console.log(this.calced.finalJobSpeed, this.calced.finalResitanceDiv);
         
-        
+        //x_2 = x_1 + ((t)(s) / ((x+1) * (r)))
+
+        //x is time, y is distance
+        //dy = t*k_1 / ((y+1))
         let progressPerSecondAfterResistance = this.calced.finalJobSpeed.div(this.data.jobProgress.add(1).times(this.calced.finalResitanceDiv));
-        
+        //CALCULUS PLELASE
+
+
         if (this.chargeCurrent.count.greaterThan(0)) {
             const speed = this.getChargeSpeed();
-            //is charge double dipping here?
             progressPerSecondAfterResistance.add(speed); 
             const trans = speed.times(deltaS);
-            this.addJobProgress(trans);
+            //is charge double dipping here? .. i commented it out because i think so. old implementation left over perhaps?
+            //this.addJobProgress(trans);
             this.chargeCurrent.loseResource(trans)
         }
 
@@ -111,6 +121,28 @@ export default class Jobs {
         //need to remove this call for optimizng
     }
 
+    chargeDrain = (deltaS: Decimal) => {
+        if (this.chargeCurrent.count.greaterThan(0)) {
+
+        }
+    }
+    //accurately handles big delta, but ignores other stuff.
+    progress2 = (deltaS: Decimal) => {
+        const baseSpeed = this.calced.finalJobSpeed;
+        const resistanceBase = this.calced.finalResitanceDiv;
+        const k = baseSpeed.div(resistanceBase);
+
+        const x0 = this.data.jobProgress;
+
+        const resistanceMult = this.data.jobProgress.add(1);
+
+
+        //x = sqrt(2kt + x^2)
+        const newX = Decimal.sqrt(k.times(2).times(deltaS).add(x0.sqr()))
+        this.setJobProgress(newX)
+
+    }
+
     getCap = ( ) => {
         const jobID = this.data.notReset.jobID;
         if (jobID === 0) return 1000;
@@ -120,11 +152,15 @@ export default class Jobs {
     }
 
     offlineProgress = (bigDeltaS: Decimal) => {
+        //skip charge?
+        //skip cap?
+        this.progress2(bigDeltaS);
+        /*
         while (bigDeltaS.greaterThan(0)) {
             const cappedTickLength = Decimal.min(10, bigDeltaS);
             bigDeltaS = bigDeltaS.minus(cappedTickLength);
             this.progress(cappedTickLength);
-        }
+        }*/
     }
 
     setResistanceDiv = () => {
@@ -136,8 +172,8 @@ export default class Jobs {
         const baseResist = this.data.jobResistance.add(1);
         const resist = baseResist.times(resistMult);
 
-        const baseProgress = new Decimal(1);
-        this.calced.finalResitanceDiv = baseProgress.div(resist);
+        const one = new Decimal(1);
+        this.calced.finalResitanceDiv = one.div(resist);
     }
 
 

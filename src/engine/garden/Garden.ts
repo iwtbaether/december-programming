@@ -681,8 +681,8 @@ export default class Garden {
 
     gardenJobSpeedMult = new Decimal(1);
     setGardenJobSpeedMult = () => {
-        const mult = this.data.fruits.egg.div(1).add(1);
-        this.gardenJobSpeedMult = Decimal.add(1, Decimal.ln(mult));
+        const count = this.data.fruits.egg.add(1);
+        this.gardenJobSpeedMult = Decimal.add(1, Decimal.ln(count));
     }
 
     res_expansion_two: SingleResearch = new SingleResearch({
