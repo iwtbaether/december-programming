@@ -80,6 +80,9 @@ const FortitudeGuide = (props: { skill: SingleManagedSkill }) => {
       </ChildTip>significant resets
     </span>.
     </div>
+    <div>
+      You can also <button>Check in!</button> each day for Fortitude XP.
+    </div>
     <div style={{display:'flex',flexDirection:'column'}}>
     <ColorIfGtoE
       text={'Level 1: Keep Exchange Upgrades'}

@@ -21,11 +21,40 @@ export default class ConfirmCommandButton extends React.Component<ConfirmButtonP
 
   }
 
+  //TODO AUTOFOCUS ENTER AND WATCH FOR ESCAPE
   fakeBuy = (ev: React.MouseEvent) => {
     if (ev.shiftKey) {
       this.props.do();
     } else this.setState({open:!this.state.open})
     
+  }
+
+  _handleKeyDown = (ev: KeyboardEvent)=> {
+    switch (ev.key) {
+      case 'Escape':
+        this.setState({open:false})
+        ev.preventDefault();
+        break;
+
+      case 'Enter':
+        if (this.state.open) {
+          this.props.do();
+          ev.preventDefault();
+        }
+        break;
+    
+      default:
+        console.log('nothing!', ev.key);
+        break;
+    }
+  }
+
+  componentDidMount () {
+    //document.addEventListener("keydown", this._handleKeyDown);
+  }
+  
+  componentWillUnmount () {
+    //document.removeEventListener("keydown", this._handleKeyDown);
   }
 
   render () {
@@ -41,7 +70,7 @@ export default class ConfirmCommandButton extends React.Component<ConfirmButtonP
               <div className='WarningPopup'>
                 {this.props.warning}
                 <div style={{display:'flex',justifyContent:'space-between'}}>
-                <button onClick={props.do}>
+                <button onClick={props.do} autoFocus={true}>
                   {props.label}
                 </button>
                 <button className='PlainD' onClick={this.fakeBuy}>

@@ -79,6 +79,17 @@ export function getValueOfModType (mods: MDV2[], find: number): number|undefined
     })?.value
 }
 
+
+export function addMod (item: IDV2, mod: number, value: number)  {
+    const newMod: MDV2 = {mod:mod, value};
+    if (item.mods) {
+        item.mods = item.mods.concat([newMod])
+    } else {
+        //this should never happen
+        item.mods = [newMod]
+    }
+}
+
 export interface MDV2 extends ModData {
     mod: number;//IDV2_Mods;
 }

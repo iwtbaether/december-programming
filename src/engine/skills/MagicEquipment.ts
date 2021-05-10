@@ -2,7 +2,7 @@ import { canCheat, getRandomInt, getRandomIntFromRange, randomEnumFromListWithEx
 import { getModExclusions, ItemTypes } from "../m_st/Crafting";
 import Magic_Skill from "./Magic";
 import { Wizard_Item_Mods, Wizard_Item_Mod_Ranges } from "./MagicEquipmentItemTypes";
-import { IDV2, MDV2 } from "./PatienceItemTypes";
+import { addMod, IDV2, MDV2 } from "./PatienceItemTypes";
 
 export default class MagicEquipment {
     constructor(public MagicSkill: Magic_Skill) {
@@ -132,10 +132,21 @@ export default class MagicEquipment {
         if (item.itemType === ItemTypes.Wizard_Hat) {
             const mod = Wizard_Item_Mods.flatmaxmana;
             const value = getRandomIntFromRange(Wizard_Item_Mod_Ranges[mod]);
-            item.mods?.push({ mod, value })
+            addMod(item, mod, value)
+            //item.mods?.push({ mod, value })
+            //const value = getRandomInt(Wizard_Item_Mod_Ranges[mod][0],Wizard_Item_Mod_Ranges[mod][1])
+        }
+
+        else if (item.itemType === ItemTypes.Wizard_Robe) {
+            const mod = Wizard_Item_Mods.flatmanaregen;
+            const value = getRandomIntFromRange(Wizard_Item_Mod_Ranges[mod]);
+            addMod(item, mod, value)
+            //item.mods?.push({ mod, value })
             //const value = getRandomInt(Wizard_Item_Mod_Ranges[mod][0],Wizard_Item_Mod_Ranges[mod][1])
         }
     }
+
+    
 
     getPossibleItemTypes = (): ItemTypes[] => {
         const level = this.MagicSkill.skillData.level;

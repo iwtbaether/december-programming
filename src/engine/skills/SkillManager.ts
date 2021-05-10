@@ -54,6 +54,19 @@ export default class SkillManager {
 
 }
 
+class FortitudePoints {
+
+    
+}
+
+interface FortitudePointData {
+
+}
+
+function FortitudePointData_Init () {
+
+}
+
 
 
 
@@ -75,6 +88,8 @@ export interface SkillManager_Data {
     
     //unused
     poeCrafting: Skill_Data;
+
+    lastDailyCheckIn: number;
 }
 
 export function SkillManager_Data_Init (): SkillManager_Data {
@@ -95,7 +110,10 @@ export function SkillManager_Data_Init (): SkillManager_Data {
 
         manager: {
             unlocked: false,
-        }
+        },
+
+        lastDailyCheckIn: Date.now(),
+        
     }
 }
 

@@ -93,8 +93,8 @@ const SpellExpando = (props: {info: SpellClassInfo, mana: Decimal, children?: Re
 
 const Spell_Descriptions: string[] = [
     'Spend all of your mana to accelerate Growth, ignores speed cap and charge',
-    'Instantly recieve 1 hour of energy progress',
     'Instantly recieve 1 hour of garden progress',
+    'Instantly recieve 1 hour of energy progress',
     'Create 100 garden seeds',
     'Get 1000 instant Juicer ticks',
 

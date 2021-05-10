@@ -1,6 +1,7 @@
 import Decimal, { DecimalSource } from "break_infinity.js";
 import { Datamap } from "../Datamap";
 import CalcedDecimal from "../externalfns/decimalInterfaces/CalcedDecimal";
+import { moreDecimal } from "../externalfns/util";
 import { GuideTypes } from "../garden/Juice";
 import MagicEquipment from "./MagicEquipment";
 import { Magic_Data } from "./MagicTypes";
@@ -8,6 +9,21 @@ import { SingleManagedSkill } from "./SingleManagedSkill";
 
 export default class Magic_Skill extends SingleManagedSkill {
 
+
+    levelOfUnlocks = {
+        //spells
+        growSkip: 0, //skips time in grower Job, spends all mana
+        gardenTimeSkip: 9,
+        energyTimeSkip: 19,
+        seedCreation: 29,
+        juiceTicks: 39,
+
+        
+        //stats multis
+        maxMana: 0,
+        manaRegen: 19,
+
+    }
     
     get data (): Magic_Data {
         return this.engine.datamap.magic;
@@ -55,9 +71,13 @@ export default class Magic_Skill extends SingleManagedSkill {
         if (this.equipment.stats.increasedManaRegen > 0) {
             regen = regen.times(this.equipment.stats.increasedManaRegen * .01 + 1)
         }
+        if (this.skillData.level.greaterThanOrEqualTo(this.levelOfUnlocks.manaRegen)) {
+            regen = moreDecimal(regen, this.skillData.level.minus(this.levelOfUnlocks.manaRegen).add(1).times(.1));
+        }
 
         return regen;
     })
+
 
 
     
@@ -89,20 +109,6 @@ export default class Magic_Skill extends SingleManagedSkill {
         
     })
 
-    levelOfUnlocks = {
-        //spells
-        growSkip: 0, //skips time in grower Job, spends all mana
-        gardenTimeSkip: 9,
-        energyTimeSkip: 19,
-        seedCreation: 29,
-        juiceTicks: 39,
-
-        
-        //stats multis
-        maxMana: 0,
-        manaRegen: 19,
-
-    }
 
     spell_growSkip = () => {
         //make job progress happen mana^s seconds
@@ -144,12 +150,11 @@ export default class Magic_Skill extends SingleManagedSkill {
         this.engine.datamap.garden.plots = [];
         this.gainXP(gain)
         this.spendManaGainXp(100)
-
     }
 
     spendManaGainXp = (manaSpend: DecimalSource) => {
         this.data.currentMana = this.data.currentMana.minus(manaSpend);
-        this.gainXP(Decimal.times(manaSpend, .1))
+        this.gainXP(Decimal.times(manaSpend, .07))
     }
     
     spellInfos: SpellClassInfo[] = [
