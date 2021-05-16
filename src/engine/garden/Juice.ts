@@ -18,7 +18,7 @@ export default class JuiceLmao {
 
     tradeManger: JuiceTradeManager = new JuiceTradeManager(this);
 
-    setup(){
+    setup() {
         this.calcDrinkPowers();
     }
 
@@ -83,6 +83,12 @@ export default class JuiceLmao {
         basePower: 0,
     }
 
+    clearDrinkPowers = () => {
+        this.drinkPowers = {
+            basePower: 0
+        }
+    }
+
     fillHopper = (ammount: DecimalSource): Decimal => {
         let maxCanGain = Decimal.max(0, this.calced_maxHopperFill.current.minus(this.data.hopperFruit));
         let gain = Decimal.min(maxCanGain, ammount);
@@ -118,7 +124,7 @@ export default class JuiceLmao {
     hopperToPlant = () => {
         let pipeSize = new Decimal(.01);
         if (this.data.pipe_hopper_powerPlant_level.greaterThan(0)) {
-            pipeSize = moreDecimal(pipeSize,this.data.pipe_hopper_powerPlant_level.times(.01))
+            pipeSize = moreDecimal(pipeSize, this.data.pipe_hopper_powerPlant_level.times(.01))
         }
         let diff = this.data.hopperFruit.times(pipeSize);
         this.tickedNumbers.toPlant = diff;
@@ -146,7 +152,7 @@ export default class JuiceLmao {
                 powerGain = powerGain.add(powerGain.times(this.drinkPowers.g1));
             }
             if (this.data.trades[2]) {
-                powerGain = moreDecimal(powerGain, this.data.trades[2]*.1)
+                powerGain = moreDecimal(powerGain, this.data.trades[2] * .1)
             }
             if (this.data.powerPlantLevel.greaterThan(0)) {
                 powerGain = moreDecimal(powerGain, this.data.powerPlantLevel.times(.01))
@@ -246,7 +252,7 @@ export default class JuiceLmao {
     }
 
 
-    
+
 
 
 
@@ -255,23 +261,25 @@ export default class JuiceLmao {
             const crushed = this.data.last_crushed;
             let DP = calcDrink(crushed)
             this.drinkPowers = DP
+        } else {
+            this.clearDrinkPowers();
+        }
+        this.engine.garden.setFruitGainMulti();
+        this.engine.calcGloom();
+        this.calced_maxHopperFill.set();
+        this.engine.jobs.calcJobSpeed();
 
-            this.engine.garden.setFruitGainMulti();
-            this.engine.calcGloom();
-            this.calced_maxHopperFill.set();
-            this.engine.jobs.calcJobSpeed();
-            
-            //g1 auto
-            this.engine.garden.setPlantSpeedMult();
-            
-            this.engine.garden.setSeedTimes();
+        //g1 auto
+        this.engine.garden.setPlantSpeedMult();
 
-            this.engine.calcEnergy();
-        
-        } else return;
+        this.engine.garden.setSeedTimes();
+
+        this.engine.calcEnergy();
+        return;
+
     }
 
-    juiceGainMulti: CalcedDecimal = new CalcedDecimal(()=>{
+    juiceGainMulti: CalcedDecimal = new CalcedDecimal(() => {
         let base = new Decimal(1);
         if (this.engine.skillManager?.skills.patience.totalFormPowers.totalExtraPowers.juice.greaterThan(0)) {
             base = moreDecimal(base, this.engine.skillManager.skills.patience.totalFormPowers.totalExtraPowers.juice.times(.01))
@@ -511,9 +519,9 @@ export interface JuiceData {
     powerPlantFruit: Decimal;
     powerPlantLevel: Decimal;
     powerAmount: Decimal;
-    trades: [number,number,number,
-            number,number,number,
-            number,number,number,]
+    trades: [number, number, number,
+        number, number, number,
+        number, number, number,]
     //waste stats
     fruitsSpentMakingPower: Decimal;
     powerDecayed: Decimal;
@@ -531,7 +539,7 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
     const trades = gEngine.datamap.juice.trades;
 
     if (trades[7]) {
-        basePower = basePower * (1+trades[7]*.1)
+        basePower = basePower * (1 + trades[7] * .1)
     }
 
     let DP: I_DrinkPowers = { basePower }
@@ -545,7 +553,7 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
     //bcest
     let silverBase = basePower;
     if (trades[4]) {
-        silverBase = silverBase * (1+trades[4]*.1)
+        silverBase = silverBase * (1 + trades[4] * .1)
     }
     if (silverPowers[0] === true) {
         DP.s1 = Decimal.times(1.1, silverBase)
@@ -565,7 +573,7 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
 
     let goldBase = basePower;
     if (trades[5]) {
-        goldBase = goldBase * (1+trades[5]*.1)
+        goldBase = goldBase * (1 + trades[5] * .1)
     }
 
     if (goldPowers[0] === true) {
@@ -581,7 +589,7 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
         DP.g4 = (goldValues[3].times(goldBase));
     }
     if (goldPowers[4] === true) {
-        DP.g5 = Decimal.max( Decimal.log10(goldValues[4].times(goldBase)) , 1 );
+        DP.g5 = Decimal.max(Decimal.log10(goldValues[4].times(goldBase)), 1);
     }
 
     const sumHD = crushed.hope.add(crushed.doom)
@@ -591,8 +599,8 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
             borderEffect = moreDecimal(borderEffect, trades[8] * .1)
         }
         DP.hd = borderEffect;
-    }   
-    
+    }
+
 
     /**
      const pointLengths = [
@@ -614,15 +622,15 @@ export function calcDrink(crushed: I_FruitDecimals): I_DrinkPowers {
     return DP;
 }
 
-function getSilverPowerArray (crushed: I_FruitDecimals):[boolean,boolean,boolean,boolean,boolean] {
-    const getEm:[boolean,boolean,boolean,boolean,boolean] = [false,false,false,false,false];
-    [crushed.bunched,crushed.circular,crushed.egg,crushed.square,crushed.triangular].forEach((dec,index)=>{
+function getSilverPowerArray(crushed: I_FruitDecimals): [boolean, boolean, boolean, boolean, boolean] {
+    const getEm: [boolean, boolean, boolean, boolean, boolean] = [false, false, false, false, false];
+    [crushed.bunched, crushed.circular, crushed.egg, crushed.square, crushed.triangular].forEach((dec, index) => {
         if (dec.greaterThan(100)) getEm[index] = true
     })
     return getEm
 }
 
-function getGoldPowerArray (crushed: I_FruitDecimals) {
+function getGoldPowerArray(crushed: I_FruitDecimals) {
     const starTotal = crushed.bunched.add(crushed.circular).add(crushed.egg).add(crushed.square).add(crushed.triangular);
     const sPD = [
         Decimal.div(crushed.bunched, starTotal),
@@ -631,11 +639,11 @@ function getGoldPowerArray (crushed: I_FruitDecimals) {
         Decimal.div(crushed.square, starTotal),
         Decimal.div(crushed.triangular, starTotal),
     ]
-    const getEm:[boolean,boolean,boolean,boolean,boolean] = [false,false,false,false,false];
-    sPD.forEach((dec,index)=>{
+    const getEm: [boolean, boolean, boolean, boolean, boolean] = [false, false, false, false, false];
+    sPD.forEach((dec, index) => {
         if (dec.greaterThanOrEqualTo(.3)) getEm[index] = true
     })
-    return {getEm, sPD}
+    return { getEm, sPD }
 }
 
 export interface I_DrinkPowers {
@@ -709,9 +717,9 @@ export function JuiceData_Init(): JuiceData {
             square: ZERO,
             triangular: ZERO
         },
-        trades: [0,0,0,
-                0,0,0,
-                0,0,0]
+        trades: [0, 0, 0,
+            0, 0, 0,
+            0, 0, 0]
     }
 }
 

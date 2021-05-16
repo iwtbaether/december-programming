@@ -156,7 +156,13 @@ export default abstract class CoreEngine {
         }
 
         this.checkSet();
-        
+        if (this.extraLoad) {
+            this.extraLoad();
+            this.extraLoad();   
+        } else {
+            console.log('no extra load');
+            
+        }
         this.stopCheaters();
         
 

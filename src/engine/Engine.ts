@@ -74,7 +74,7 @@ export default class Engine extends CoreEngine {
     
     processDelta = (delta: number) => {
 
-        if (delta >= HOUR_MS * 8) delta = HOUR_MS * 8;
+        if (delta >= HOUR_MS * 24) delta = HOUR_MS * 24;
         else if (delta < 0) delta = 0;
         
         this.garden.processDelta(delta)

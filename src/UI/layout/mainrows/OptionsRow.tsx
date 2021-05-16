@@ -51,6 +51,9 @@ const OptionsRow = (props: { data: Datamap }) => {
       All more modifiers are multiplicative. Changing any more modifier from 1x to 2x will result in double production. Five "2x more" modifiers results in a final total more of 242x.<br/>
       A multi is just a more modifier plus the 100% base more. Double is 100% more. A 4x multi is the same as 3x more.
     </div>
+    <div>
+      Maximum offline progress is 24 hours.
+    </div>
     <FlexRow>
     <button onClick={gEngine.energyModule.showCalcs}>
         Energy</button>

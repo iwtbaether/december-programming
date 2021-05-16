@@ -126,6 +126,7 @@ export default class Jobs {
 
         }
     }
+    
     //accurately handles big delta, but ignores other stuff.
     progress2 = (deltaS: Decimal) => {
         const baseSpeed = this.calced.finalJobSpeed;
