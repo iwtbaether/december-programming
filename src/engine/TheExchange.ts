@@ -238,7 +238,7 @@ export default class TheExchange {
     GU1point5: SingleResearch = new SingleResearch({
         name: "Discard Aversion",
         hidden: ()=>(this.data.research.moreGarden < 1 ),
-        description: "You can no longer Grab a Seed you have discarded since your last grab.",
+        description: "You can no longer Grab any Seed Type you have discarded since your last grab.",
         get: () => this.data.research.research_discardAversion,
         makeTrue: () => {
             this.data.research.research_discardAversion = true;

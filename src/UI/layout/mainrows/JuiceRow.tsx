@@ -67,6 +67,14 @@ const JuiceRow = (props: { data: Datamap }) => {
 
                     <FlexRow>
                         <FlexColumn>
+                        {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(SpiritualityLevelUnlocks.juicerUpgrades) && <div>
+                        <div>
+                            Juicer Upgrades
+                        </div>
+                        <SingleBuildingUI building={jClass.hopperLevel} />
+                        <SingleBuildingUI building={jClass.pipeLevel} />
+                        <SingleBuildingUI building={jClass.powerplantLevel} />
+                    </div>}
 
                             {juice.guide === GuideTypes.Sara && <span>Available Doom Fruit: <DisplayDecimal decimal={data.garden.fruits.doom} /></span>}
                             {juice.guide === GuideTypes.Guth && <span>Available Plain Fruit: <DisplayDecimal decimal={data.garden.fruits.plain} /></span>}
@@ -136,14 +144,7 @@ const JuiceRow = (props: { data: Datamap }) => {
                         </FlexColumn>
                     </FlexRow>
 
-                    {data.skillManager.spiritualGardening.level.greaterThanOrEqualTo(SpiritualityLevelUnlocks.juicerUpgrades) && <div>
-                        <div>
-                            Juicer Upgrades
-                        </div>
-                        <SingleBuildingUI building={jClass.hopperLevel} />
-                        <SingleBuildingUI building={jClass.pipeLevel} />
-                        <SingleBuildingUI building={jClass.powerplantLevel} />
-                    </div>}
+                    
 
                 </FlexColumn>}
 

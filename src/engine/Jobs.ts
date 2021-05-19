@@ -106,10 +106,13 @@ export default class Jobs {
         if (this.chargeCurrent.count.greaterThan(0)) {
             const speed = this.getChargeSpeed();
             progressPerSecondAfterResistance.add(speed); 
+            this.chargeCurrent.loseResource(speed.times(deltaS));
+            
+            /*       //old
             const trans = speed.times(deltaS);
             //is charge double dipping here? .. i commented it out because i think so. old implementation left over perhaps?
             //this.addJobProgress(trans);
-            this.chargeCurrent.loseResource(trans)
+            */
         }
 
         const capped = Decimal.min(this.getCap(), progressPerSecondAfterResistance);
@@ -121,12 +124,6 @@ export default class Jobs {
         //need to remove this call for optimizng
     }
 
-    chargeDrain = (deltaS: Decimal) => {
-        if (this.chargeCurrent.count.greaterThan(0)) {
-
-        }
-    }
-    
     //accurately handles big delta, but ignores other stuff.
     progress2 = (deltaS: Decimal) => {
         const baseSpeed = this.calced.finalJobSpeed;
@@ -139,10 +136,31 @@ export default class Jobs {
 
 
         //x = sqrt(2kt + x^2)
-        const newX = Decimal.sqrt(k.times(2).times(deltaS).add(x0.sqr()))
+        const newX = Decimal.sqrt(k.times(2).times(deltaS).add(x0.sqr()));
+        const gain = newX.minus(x0);
         this.setJobProgress(newX)
-
     }
+    
+    progress2BadCapped = (deltaS: Decimal) => {
+        const baseSpeed = this.calced.finalJobSpeed;
+        const resistanceBase = this.calced.finalResitanceDiv;
+        const k = baseSpeed.div(resistanceBase);
+
+        const x0 = this.data.jobProgress;
+
+        const resistanceMult = this.data.jobProgress.add(1);
+
+        const capped = Decimal.min(this.getCap(), k);
+
+
+
+        //x = sqrt(2kt + x^2)
+        const newX = Decimal.sqrt(capped.times(2).times(deltaS).add(x0.sqr()));
+        const gain = newX.minus(x0);
+        this.setJobProgress(newX)
+    }
+
+
 
     getCap = ( ) => {
         const jobID = this.data.notReset.jobID;
@@ -155,7 +173,7 @@ export default class Jobs {
     offlineProgress = (bigDeltaS: Decimal) => {
         //skip charge?
         //skip cap?
-        this.progress2(bigDeltaS);
+        this.progress2BadCapped(bigDeltaS);
         /*
         while (bigDeltaS.greaterThan(0)) {
             const cappedTickLength = Decimal.min(10, bigDeltaS);
@@ -604,7 +622,10 @@ export default class Jobs {
         hidden: () => this.data.notReset.upgrades.garden < 2,
         description: "More Plot!",
         get: () => this.data.notReset.upgrades.garden > 2,
-        makeTrue: () => { this.data.notReset.upgrades.garden = 3 },
+        makeTrue: () => { 
+            this.data.notReset.upgrades.garden = 3 
+            this.engine.garden.calcGardenPlots();
+        },
         costs: [
             { resource: this.xpResource, count: new Decimal(12) }
         ]
@@ -615,7 +636,9 @@ export default class Jobs {
         hidden: () => this.data.notReset.upgrades.garden < 3,
         description: "More Slot!",
         get: () => this.data.notReset.upgrades.garden > 3,
-        makeTrue: () => { this.data.notReset.upgrades.garden = 4 },
+        makeTrue: () => { this.data.notReset.upgrades.garden = 4;
+            this.engine.garden.calcBagSlots(); 
+        },
         costs: [
             { resource: this.xpResource, count: new Decimal(24) }
         ]

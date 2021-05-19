@@ -21,6 +21,7 @@ const GardenRow = (props: { data: Datamap }) => {
     const engine = gEngine;
     const garden = gEngine.garden;
     const wt = garden.waterTimeBase.times(garden.waterTimeMulti).div(1000)
+    const fruitGain = garden.getFruitGain();
     return (
         <div>
             Spiritual Garden<br />
@@ -37,7 +38,7 @@ const GardenRow = (props: { data: Datamap }) => {
                     </span>}
                     {data.jobs.notReset.records.zero.greaterThan(0) && <span style={{ display: 'flex' }}>Seed Gain Speed: x<DisplayNumber num={engine.jobs.seedGainSpeedMult * engine.crafting.gardeningCalcData.seedGainMore} /></span>}
                     Seed Generation: {percentOf(data.garden.seedTimer, TimeRequiredForSeed)}
-                    {garden.equipment.fruitGainBase > 0 && <div style={{ position: 'relative' }}>
+                    {fruitGain > 1 && <div style={{ position: 'relative' }}>
                         Total Fruit Gain: <DisplayNumber num={garden.getFruitGain()} />
                         <TipFC tip={<span>
                             Base <DisplayNumber num={garden.equipment.fruitGainBase + 1} /> * Mult <DisplayNumber num={garden.fruitGainMult} />
